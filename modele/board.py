@@ -37,14 +37,24 @@ VIDE = 6
 MUR = 1
 POWER_PELLET = 8
 POINT = 0
+SCALING = 24
+DECALAGE = 115
 
 
 def pastille():
-    pass
+    groupe = pygame.sprite.Group()
+    for ligne in GRILLE_DE_JEU:
+        for col in ligne:
+            if GRILLE_DE_JEU[ligne][col] == POINT:
+                groupe.add(Pastille((ligne * SCALING, col * SCALING + DECALAGE)))
 
 
 def grosses_pastilles():
-    pass
+    groupe = pygame.sprite.Group()
+    for ligne in GRILLE_DE_JEU:
+        for col in ligne:
+            if GRILLE_DE_JEU[ligne][col] == POWER_PELLET:
+                groupe.add(Pastille((ligne * SCALING, col * SCALING + DECALAGE)))
 
 
 class Pastille(pygame.sprite.Sprite):
