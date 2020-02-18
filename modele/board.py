@@ -1,4 +1,5 @@
 import pygame
+import os
 
 GRILLE_DE_JEU = [
     [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
@@ -38,7 +39,7 @@ POWER_PELLET = 8
 POINT = 0
 
 
-def patille():
+def pastille():
     pass
 
 
@@ -47,10 +48,14 @@ def grosses_pastilles():
 
 
 class Pastille(pygame.sprite.Sprite):
-    def __init__(self):
-        pass
+    def __init__(self, pos):
+        super.__init__(self)
+        self.image(os.path.join('ressource', 'images', 'Pellet.png'))
+        self.rect = self.image.get_rect(center=pos)
 
 
 class GrossePastille(pygame.sprite.Sprite):
-    def __init__(self):
-        pass
+    def __init__(self, pos):
+        super.__init__(self)
+        self.image(os.path.join('ressource', 'images', 'BigPellet.png'))
+        self.rect = self.image.get_rect(center=pos)
