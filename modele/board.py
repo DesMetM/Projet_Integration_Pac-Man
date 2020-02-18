@@ -25,7 +25,7 @@ GRILLE_DE_JEU = [
     [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
     [1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 1],
     [1, 8, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 8, 1],
-    [1, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 1],
+    [1, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 6, 6, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 1],
     [1, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 1],
     [1, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 1],
     [1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1],
@@ -38,7 +38,8 @@ MUR = 1
 POWER_PELLET = 8
 POINT = 0
 SCALING = 24
-DECALAGE = 115
+DECALAGE = 85
+DECALAGEX = 12
 
 
 def pastille():
@@ -46,26 +47,29 @@ def pastille():
     for ligne in range(len(GRILLE_DE_JEU)):
         for col in range(len(GRILLE_DE_JEU[ligne])):
             if GRILLE_DE_JEU[ligne][col] == POINT:
-                groupe.add(Pastille((ligne * SCALING, col * SCALING + DECALAGE)))
+                groupe.add(Pastille((col * SCALING + DECALAGEX, ligne * SCALING  + DECALAGE)))
+    return groupe
 
 
 def grosses_pastilles():
     groupe = pygame.sprite.Group()
-    for ligne in GRILLE_DE_JEU:
-        for col in ligne:
+    for ligne in range(len(GRILLE_DE_JEU)):
+        for col in range(len(GRILLE_DE_JEU[ligne])):
             if GRILLE_DE_JEU[ligne][col] == POWER_PELLET:
-                groupe.add(Pastille((ligne * SCALING, col * SCALING + DECALAGE)))
+                groupe.add(GrossePastille((col * SCALING + DECALAGEX, ligne * SCALING + DECALAGE)))
+    return groupe
 
 
 class Pastille(pygame.sprite.Sprite):
     def __init__(self, pos):
-        super.__init__(self)
-        self.image(os.path.join('ressource', 'images', 'Pellet.png'))
+        pygame.sprite.Sprite.__init__(self)
+        self.image = pygame.image.load(os.path.join('ressource', 'images', 'Pellet.png'))
         self.rect = self.image.get_rect(center=pos)
 
 
 class GrossePastille(pygame.sprite.Sprite):
     def __init__(self, pos):
-        super.__init__(self)
-        self.image(os.path.join('ressource', 'images', 'BigPellet.png'))
+        pygame.sprite.Sprite.__init__(self)
+        self.image = pygame.image.load(os.path.join('ressource', 'images', 'BigPellet.png'))
         self.rect = self.image.get_rect(center=pos)
+        self.isVisible = True
