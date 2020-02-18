@@ -28,6 +28,8 @@ class Vue(object):
         background = pygame.image.load(os.path.join('ressource', 'images', 'Board.png'))
         self.ctrl.modele.currentPastilles.draw(background)
         self.ctrl.modele.currentPowerP.draw(background)
+        self.ctrl.modele.pac.draw(background)
+        self.ctrl.modele.fantomes.draw(background)
 
         return background
 
