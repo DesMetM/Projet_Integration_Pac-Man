@@ -43,8 +43,8 @@ DECALAGE = 115
 
 def pastille():
     groupe = pygame.sprite.Group()
-    for ligne in GRILLE_DE_JEU:
-        for col in ligne:
+    for ligne in range(len(GRILLE_DE_JEU)):
+        for col in range(len(GRILLE_DE_JEU[ligne])):
             if GRILLE_DE_JEU[ligne][col] == POINT:
                 groupe.add(Pastille((ligne * SCALING, col * SCALING + DECALAGE)))
 
