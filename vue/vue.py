@@ -37,12 +37,18 @@ class Vue(object):
     def mode_joueur(self):
 
         quitter = False
-
+        count = 0
         while not quitter:
-
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     quitter = True
+            if count >2:
+                count=0
+                for s in self.ctrl.modele.currentPowerP:
+                    s.frame = (s.frame+1) %2
+                    s.image = s.images[s.frame]
+            else:
+                count+=1
 
             window.blit(self.ctrl.vue.get_surface(0), (0, 0))
             pygame.display.update()

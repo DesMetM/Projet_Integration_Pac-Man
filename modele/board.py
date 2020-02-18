@@ -87,7 +87,9 @@ class Pastille(pygame.sprite.Sprite):
 class GrossePastille(pygame.sprite.Sprite):
     def __init__(self, pos):
         pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.image.load(os.path.join('ressource', 'images', 'BigPellet.png'))
+        self.images = [pygame.image.load(os.path.join('ressource', 'images', 'BigPellet.png')), pygame.image.load(os.path.join('ressource', 'images', 'Empty.png'))]
+        self.frame = 0
+        self.image = self.images[self.frame]
         self.rect = self.image.get_rect(center=pos)
         self.isVisible = True
 
