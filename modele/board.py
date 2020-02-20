@@ -79,6 +79,32 @@ def fantomes_init_pos():
     return groupe
 
 
+def est_un_mur(position):
+    return GRILLE_DE_JEU[position] == MUR
+
+
+def collision_mur(pacman: pygame.sprite.GroupSingle):
+    rect = pacman.sprite.rect
+    d = pacman.sprite.direction
+
+    if d == 0:  # Left
+        # Regarder si la position (rect.left,rect.y) **un coup ajusté a la grille** est un mur. on set la vitesse de pacman à 0.
+        pos_grille = ((rect.left) // SCALING - 1, (rect.y - DECALAGE) // SCALING)
+        return est_un_mur(pos_grille)
+
+    elif d == 1:  # Up
+        pos_grille = ((rect.x) // SCALING, (rect.top - DECALAGE) // SCALING - 1)
+        return est_un_mur(pos_grille)
+
+    elif d == 2: #Right
+        pos_grille = ((rect.right) // SCALING + 1, (rect.y - DECALAGE) // SCALING)
+        return est_un_mur(pos_grille)
+
+    else: # Down
+        pos_grille = ((rect.x) // SCALING, (rect.bottom - DECALAGE) // SCALING + 1)
+        return est_un_mur(pos_grille)
+
+
 class Pastille(pygame.sprite.Sprite):
     def __init__(self, pos):
         pygame.sprite.Sprite.__init__(self)
@@ -145,6 +171,7 @@ class PacMan(pygame.sprite.Sprite):
 
         # self.rect = self.rect.move(self.vitesse[0]*SCALING, self.vitesse[1]*SCALING)
         # self.rect = self.image.get_rect().move(15,15)
+
 
 
 class Fantome(pygame.sprite.Sprite):
