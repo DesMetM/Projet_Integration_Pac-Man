@@ -1,9 +1,10 @@
 import modele
 import vue.vue as v
 
-
+#Classe contrôleur; passe l'information de la vue au modèle
 class Ctrl(object):
 
+    #constructeur du contrôleur
     def __init__(self, model:modele.jeu.Jeu):
         self.currentJeu = None
         self.modele = model
