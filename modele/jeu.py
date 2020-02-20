@@ -2,7 +2,7 @@ import pygame
 import os
 import modele.board as board
 
-
+#permet de partir une nouvelle partie avec les éléments
 class Jeu(object):
 
 
@@ -13,7 +13,7 @@ class Jeu(object):
         self.pac = None
         self.fantomes = None
 
-
+    #débute une nouvelle partie
     def nouvelle_partie(self):
         '''Reset tout pour une nouvelle partie.'''
         self.currentPastilles = board.pastille()
