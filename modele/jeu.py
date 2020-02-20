@@ -40,7 +40,7 @@ class Jeu(object):
         self.pac.draw(background)
         self.fantomes.draw(background)
 
-        if self.count > 2:
+        if self.count > 6:
             self.count = 0
             for s in self.currentPowerP:
                 s.frame = (s.frame + 1) % 2

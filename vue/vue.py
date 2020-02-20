@@ -26,13 +26,15 @@ class Vue(object):
     def mode_joueur(self):
 
         quitter = False
-        count = 0
         clock = pygame.time.Clock()
         pac_direction = 0
+
         while not quitter:
             for event in pygame.event.get():
+
                 if event.type == pygame.QUIT:
                     quitter = True
+
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_LEFT:
                         pac_direction = 0
@@ -43,8 +45,16 @@ class Vue(object):
                     if event.key == pygame.K_DOWN:
                         pac_direction = 3
 
+                    if pac_direction == 0:
+                        img = self.ctrl.currentJeu.pac.sprite.left_images[0]
+                    elif pac_direction == 1:
+                        img = self.ctrl.currentJeu.pac.sprite.up_images[0]
+                    elif pac_direction == 2:
+                        img = self.ctrl.currentJeu.pac.sprite.right_images[0]
+                    else:
+                        img = self.ctrl.currentJeu.pac.sprite.down_images[0]
+                    self.ctrl.currentJeu.pac.sprite.image =img
 
-            self.ctrl.move_pac(pac_direction)
             window.blit(self.ctrl.get_surface(pac_direction), (0, 0))
             pygame.display.update()
-            clock.tick(20)
+            clock.tick(40)
