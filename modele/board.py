@@ -66,7 +66,7 @@ def grosses_pastilles():
     return groupe
 
 def pac_init_pos():
-    groupe = pygame.sprite.Group()
+    groupe = pygame.sprite.GroupSingle()
     groupe.add(PacMan(PACSPAWN))
     return groupe
 
@@ -98,6 +98,28 @@ class PacMan(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
         self.image = pygame.image.load(os.path.join('ressource', 'images', 'PacManLeft1.png'))
         self.rect = self.image.get_rect(center=pos)
+        self.pos = [PACSPAWN[0],PACSPAWN[1]]
+        """Direction (en attendant l'enum) : 0 = Left   1 = Up    2 = Right   3 = Down"""
+        self.direction = 0
+        self.GoLeft = [-1,0]
+        self.GoUp = [0,1]
+        self.GoRight = [1,0]
+        self.GoDown = [0,-1]
+        self.vitesse = [0,0]
+
+    def update(self):
+        if self.direction == 0:
+            self.vitesse = self.GoLeft
+        elif self.direction == 1:
+            self.vitesse = self.GoUp
+        elif self.direction == 2:
+            self.vitesse = self.GoRight
+        elif self.direction == 3:
+            self.vitesse = self.GoDown
+
+        print('Works{}'.format(self.direction))
+        self.rect.move(self.vitesse[0], self.vitesse[1])
+
 
 class Fantome(pygame.sprite.Sprite):
     def __init__(self, pos, nom):
