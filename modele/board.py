@@ -40,12 +40,12 @@ POINT = 0
 SCALING = 24
 DECALAGE = 85
 DECALAGEX = 12
-PACSPAWN = (14*SCALING,23*SCALING+DECALAGE)
-INKYSPAWN = (12*SCALING, 14*SCALING+DECALAGE)
-PINKYSPAWN = (14*SCALING, 14*SCALING+DECALAGE)
-CLYDESPAWN = (16*SCALING, 14*SCALING+DECALAGE)
-BLINKYSPAWN = (14*SCALING, 11*SCALING+DECALAGE)
-FANTOMES_SPAWN = {BLINKYSPAWN:'Blinky', PINKYSPAWN:'Pinky', INKYSPAWN:'Inky', CLYDESPAWN:'Clyde'}
+PACSPAWN = (14 * SCALING, 23 * SCALING + DECALAGE)
+INKYSPAWN = (12 * SCALING, 14 * SCALING + DECALAGE)
+PINKYSPAWN = (14 * SCALING, 14 * SCALING + DECALAGE)
+CLYDESPAWN = (16 * SCALING, 14 * SCALING + DECALAGE)
+BLINKYSPAWN = (14 * SCALING, 11 * SCALING + DECALAGE)
+FANTOMES_SPAWN = {BLINKYSPAWN: 'Blinky', PINKYSPAWN: 'Pinky', INKYSPAWN: 'Inky', CLYDESPAWN: 'Clyde'}
 
 
 def pastille():
@@ -53,7 +53,7 @@ def pastille():
     for ligne in range(len(GRILLE_DE_JEU)):
         for col in range(len(GRILLE_DE_JEU[ligne])):
             if GRILLE_DE_JEU[ligne][col] == POINT:
-                groupe.add(Pastille((col * SCALING + DECALAGEX, ligne * SCALING  + DECALAGE)))
+                groupe.add(Pastille((col * SCALING + DECALAGEX, ligne * SCALING + DECALAGE)))
     return groupe
 
 
@@ -65,10 +65,12 @@ def grosses_pastilles():
                 groupe.add(GrossePastille((col * SCALING + DECALAGEX, ligne * SCALING + DECALAGE)))
     return groupe
 
+
 def pac_init_pos():
     groupe = pygame.sprite.GroupSingle()
     groupe.add(PacMan(PACSPAWN))
     return groupe
+
 
 def fantomes_init_pos():
     groupe = pygame.sprite.Group()
@@ -87,38 +89,62 @@ class Pastille(pygame.sprite.Sprite):
 class GrossePastille(pygame.sprite.Sprite):
     def __init__(self, pos):
         pygame.sprite.Sprite.__init__(self)
-        self.images = [pygame.image.load(os.path.join('ressource', 'images', 'BigPellet.png')), pygame.image.load(os.path.join('ressource', 'images', 'Empty.png'))]
+        self.images = [pygame.image.load(os.path.join('ressource', 'images', 'BigPellet.png')),
+                       pygame.image.load(os.path.join('ressource', 'images', 'Empty.png'))]
         self.frame = 0
         self.image = self.images[self.frame]
         self.rect = self.image.get_rect(center=pos)
         self.isVisible = True
 
+
 class PacMan(pygame.sprite.Sprite):
     def __init__(self, pos):
+        self.frame = 0
         pygame.sprite.Sprite.__init__(self)
+        self.up_images = [pygame.image.load(os.path.join('ressource', 'images', 'PacManUp0.png')),
+                          pygame.image.load(os.path.join('ressource', 'images', 'PacManUp1.png'))]
+        self.down_images = [pygame.image.load(os.path.join('ressource', 'images', 'PacManDown0.png')),
+                          pygame.image.load(os.path.join('ressource', 'images', 'PacManDown1.png'))]
+        self.left_images = [pygame.image.load(os.path.join('ressource', 'images', 'PacManLeft0.png')),
+                          pygame.image.load(os.path.join('ressource', 'images', 'PacManLeft1.png'))]
+        self.right_images = [pygame.image.load(os.path.join('ressource', 'images', 'PacManRight0.png')),
+                          pygame.image.load(os.path.join('ressource', 'images', 'PacManRight1.png'))]
         self.image = pygame.image.load(os.path.join('ressource', 'images', 'PacManLeft1.png'))
         self.rect = self.image.get_rect(center=pos)
-        self.pos = [PACSPAWN[0],PACSPAWN[1]]
+        self.pos = [PACSPAWN[0], PACSPAWN[1]]
         """Direction (en attendant l'enum) : 0 = Left   1 = Up    2 = Right   3 = Down"""
         self.direction = 0
-        self.GoLeft = [-1,0]
-        self.GoUp = [0,1]
-        self.GoRight = [1,0]
-        self.GoDown = [0,-1]
-        self.vitesse = [0,0]
+        self.CNSTE_VITESSE = 8
+        self.GoLeft = [-self.CNSTE_VITESSE, 0]
+        self.GoUp = [0, -self.CNSTE_VITESSE]
+        self.GoRight = [self.CNSTE_VITESSE, 0]
+        self.GoDown = [0, self.CNSTE_VITESSE]
+        self.vitesse = [0, 0]
 
-    def update(self):
-        if self.direction == 0:
+    def update(self, directionnn):
+        if directionnn == 0:
             self.vitesse = self.GoLeft
-        elif self.direction == 1:
+            #self.image = self.left_images[0]
+        elif directionnn == 1:
             self.vitesse = self.GoUp
-        elif self.direction == 2:
+            #self.image = self.up_images[0]
+        elif directionnn == 2:
             self.vitesse = self.GoRight
-        elif self.direction == 3:
+            #self.image = self.right_images[0]
+        elif directionnn == 3:
             self.vitesse = self.GoDown
+            #elf.image = self.down_images[0]
 
-        print('Works{}'.format(self.direction))
-        self.rect.move(self.vitesse[0], self.vitesse[1])
+        # print('Works{}'.format(self.direction))
+        # print(self.rect)
+        # print(self.vitesse)
+        self.pos = (self.pos[0] + (self.vitesse[0]), self.pos[1] + (self.vitesse[1]))
+        # print(self.pos)
+
+        self.rect.center = self.pos
+
+        # self.rect = self.rect.move(self.vitesse[0]*SCALING, self.vitesse[1]*SCALING)
+        # self.rect = self.image.get_rect().move(15,15)
 
 
 class Fantome(pygame.sprite.Sprite):
