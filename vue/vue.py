@@ -27,6 +27,7 @@ class Vue(object):
 
         quitter = False
         count = 0
+        clock = pygame.time.Clock()
         pac_direction = 0
         while not quitter:
             for event in pygame.event.get():
@@ -41,7 +42,7 @@ class Vue(object):
                         pac_direction = 2
                     if event.key == pygame.K_DOWN:
                         pac_direction = 3
-                self.ctrl.move_pac(pac_direction)
-
+            self.ctrl.move_pac(pac_direction)
             window.blit(self.ctrl.get_surface(pac_direction), (0, 0))
             pygame.display.update()
+            clock.tick(20)
