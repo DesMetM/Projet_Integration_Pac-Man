@@ -13,6 +13,7 @@ class Jeu(object):
         self.pac = None
         self.fantomes = None
         self.count =0
+        self.count_pac = 0
 
 
     def nouvelle_partie(self):
@@ -29,6 +30,7 @@ class Jeu(object):
         background = pygame.image.load(os.path.join('ressource', 'images', 'Board.png'))
         self.currentPastilles.draw(background)
         self.currentPowerP.draw(background)
+        self.pac.update(direction)
         self.pac.draw(background)
         self.fantomes.draw(background)
 
@@ -39,6 +41,22 @@ class Jeu(object):
                 s.image = s.images[s.frame]
         else:
             self.count += 1
+
+        if self.count_pac > 2:
+            self.count_pac = 0
+            for s in self.pac:
+                s.frame = (s.frame + 1) % 2
+                if direction == 0:
+                    s.image = s.left_images[s.frame]
+                elif direction == 1:
+                    s.image = s.up_images[s.frame]
+                elif direction == 2:
+                    s.image = s.right_images[s.frame]
+                elif direction == 3:
+                    s.image = s.down_images[s.frame]
+        else:
+            self.count_pac += 1
+
 
         return background
 

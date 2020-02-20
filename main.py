@@ -5,7 +5,8 @@ import modele.jeu as j
 
 # Initialiser pygame.
 pygame.init()
-
+clock = pygame.time.Clock()
+clock.tick(30)
 # Le contrôleur débute la partie.
 monJeu = j.Jeu()
 monCtrl = c.Ctrl(monJeu)
