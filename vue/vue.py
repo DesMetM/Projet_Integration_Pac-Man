@@ -8,8 +8,8 @@ pygame.display.set_icon(pygame.image.load(os.path.join('ressource', 'images', 'C
 
 class Vue(object):
 
-    def __init__(self, ctrl):
-        self.ctrl = ctrl
+    def __init__(self, p_ctrl):
+        self.ctrl = p_ctrl
 
 
     def interface_debut(self):
@@ -22,17 +22,6 @@ class Vue(object):
         '''Lance une partie avec l'IA.'''
         return 0
 
-    def get_surface(self, direction) -> pygame.Surface:
-        '''Point d'entrée du ctrl.'''
-
-        background = pygame.image.load(os.path.join('ressource', 'images', 'Board.png'))
-        self.ctrl.modele.currentPastilles.draw(background)
-        self.ctrl.modele.currentPowerP.draw(background)
-        self.ctrl.modele.pac.draw(background)
-        self.ctrl.modele.fantomes.draw(background)
-
-        return background
-
 
     def mode_joueur(self):
 
@@ -42,13 +31,6 @@ class Vue(object):
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     quitter = True
-            if count >2:
-                count=0
-                for s in self.ctrl.modele.currentPowerP:
-                    s.frame = (s.frame+1) %2
-                    s.image = s.images[s.frame]
-            else:
-                count+=1
 
-            window.blit(self.ctrl.vue.get_surface(0), (0, 0))
+            window.blit(self.ctrl.get_surface(0), (0, 0))
             pygame.display.update()
