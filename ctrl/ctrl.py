@@ -21,6 +21,11 @@ class Ctrl(object):
         else:
             self.vue.mode_IA()
 
+    def move_pac(self, nouvelle_direction):
+        print("\n\n\n\n\n\n\n\n\n\n\n\n\n\n{}".format(nouvelle_direction))
+        self.modele.pac.direction = nouvelle_direction
+        self.modele.pac.update()
+
     def nouvelle_partie(self):
         self.currentJeu = modele.jeu.Jeu()
         self.currentJeu.nouvelle_partie()

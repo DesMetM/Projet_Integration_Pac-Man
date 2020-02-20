@@ -27,10 +27,21 @@ class Vue(object):
 
         quitter = False
         count = 0
+        pac_direction = 0
         while not quitter:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     quitter = True
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_LEFT:
+                        pac_direction = 0
+                    if event.key == pygame.K_UP:
+                        pac_direction = 1
+                    if event.key == pygame.K_RIGHT:
+                        pac_direction = 2
+                    if event.key == pygame.K_DOWN:
+                        pac_direction = 3
+                self.ctrl.move_pac(pac_direction)
 
-            window.blit(self.ctrl.get_surface(0), (0, 0))
+            window.blit(self.ctrl.get_surface(pac_direction), (0, 0))
             pygame.display.update()
