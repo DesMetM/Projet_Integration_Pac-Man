@@ -1,10 +1,12 @@
+from builtins import print
+
 import pygame
 import os
 import modele.board as board
 
 
+# permet de partir une nouvelle partie avec les éléments
 class Jeu(object):
-
 
     def __init__(self):
         self.nouvelle_partie()
@@ -12,10 +14,11 @@ class Jeu(object):
         self.currentPowerP = None
         self.pac = None
         self.fantomes = None
-        self.count =0
+        self.count = 0
         self.count_pac = 0
+        self.count_pastille_manger = 0
 
-
+    # débute une nouvelle partie
     def nouvelle_partie(self):
         '''Reset tout pour une nouvelle partie.'''
         self.currentPastilles = board.pastille()
@@ -26,6 +29,9 @@ class Jeu(object):
 
     def get_surface_drawn(self, direction) -> pygame.Surface:
         '''Point d'entrée du ctrl.'''
+        if pygame.sprite.groupcollide(groupa=self.pac, groupb=self.currentPastilles, dokilla=False, dokillb=True):
+            self.count_pastille_manger += 1
+            print(self.count_pastille_manger)
 
         background = pygame.image.load(os.path.join('ressource', 'images', 'Board.png'))
         self.currentPastilles.draw(background)
@@ -57,8 +63,4 @@ class Jeu(object):
         else:
             self.count_pac += 1
 
-
         return background
-
-
-
