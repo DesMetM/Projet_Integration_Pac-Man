@@ -1,20 +1,26 @@
 import modele
-import vue.vue
+import vue.vue as v
 
 
-def start():
-    mode_de_jeu = vue.vue.interface_debut()
+class Ctrl(object):
 
-    # Si mode_de_jeu est vrai, alors on lance la partie en mode joueur. Sinon, on lance la partie en mode IA.
-    if mode_de_jeu:
-        vue.vue.mode_joueur()
-    else:
-        vue.vue.mode_IA()
+    def __init__(self, model:modele.jeu.Jeu):
+        self.modele = model
+        model.nouvelle_partie()
+        self.vue = v.Vue(self)
 
+    def start(self):
+        mode_de_jeu = self.vue.interface_debut()
 
-def nouvelle_partie():
-    modele.jeu.nouvelle_partie()
+        # Si mode_de_jeu est vrai, alors on lance la partie en mode joueur. Sinon, on lance la partie en mode IA.
+        if mode_de_jeu:
+            self.vue.mode_joueur()
+        else:
+            self.vue.mode_IA()
+        self.nouvelle_partie()
 
+    def nouvelle_partie(self):
+        self.currentJeu = modele.jeu.Jeu
 
-def get_surface(direction):
-    return modele.jeu.get_surface(direction)
+    def get_surface(self, direction):
+        return self.currentJeu.get_surface(direction)
