@@ -8,6 +8,7 @@ import modele.board as board
 # permet de partir une nouvelle partie avec les éléments
 class Jeu(object):
 
+    VITESSE_MORT = 50
     def __init__(self):
         self.nouvelle_partie()
         self.currentPastilles = None
@@ -29,9 +30,17 @@ class Jeu(object):
 
     def get_surface_drawn(self, direction) -> pygame.Surface:
         '''Point d'entrée du ctrl.'''
+
+
+        '''Ici on fait les collision entre les pellets et le pacman'''
         if pygame.sprite.groupcollide(groupa=self.pac, groupb=self.currentPastilles, dokilla=False, dokillb=True):
             self.count_pastille_manger += 1
             print(self.count_pastille_manger)
+        if pygame.sprite.groupcollide(groupa=self.pac, groupb=self.currentPowerP, dokilla=False, dokillb=True):
+            print("manger manger manger")
+
+        if pygame.sprite.groupcollide(groupa=self.pac, groupb=self.fantomes, dokilla=False, dokillb=False):
+            self.pac.kill()
 
         background = pygame.image.load(os.path.join('ressource', 'images', 'Board.png'))
         self.currentPastilles.draw(background)
