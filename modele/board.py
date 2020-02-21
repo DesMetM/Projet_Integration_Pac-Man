@@ -80,7 +80,9 @@ def fantomes_init_pos():
 
 
 def est_un_mur(position):
-    return GRILLE_DE_JEU[position[0]][position[1]] == MUR
+    print(position)
+    print(GRILLE_DE_JEU[position[1]][position[0]])
+    return GRILLE_DE_JEU[position[1]][position[0]] == MUR
 
 
 def collision_mur(pacman):
@@ -89,20 +91,21 @@ def collision_mur(pacman):
 
     if d == 0:  # Left
         # Regarder si la position (rect.left,rect.y) **un coup ajusté a la grille** est un mur. on set la vitesse de pacman à 0.
-        pos_grille = ((rect.centerx) // SCALING - 1, (rect.centery - DECALAGE) // SCALING)
+        pos_grille = ((rect.left) // SCALING, (rect.centery - DECALAGE) // SCALING)
+        return est_un_mur(pos_grille)
+
+    elif d == 2:  # Right
+        pos_grille = (rect.right // SCALING, (rect.centery - DECALAGE) // SCALING)
         return est_un_mur(pos_grille)
 
     elif d == 1:  # Up
-        pos_grille = ((rect.centerx) // SCALING, (rect.y - DECALAGE) // SCALING - 1)
+        pos_grille = ((rect.centerx // SCALING), (rect.top - DECALAGE - 4) // SCALING + 1)
         return est_un_mur(pos_grille)
 
-    elif d == 2: #Right
-        pos_grille = ((rect.x + rect.width) // SCALING + 1, (rect.centery - DECALAGE) // SCALING)
+    elif d == 3:  # Down
+        pos_grille = ((rect.centerx) // SCALING, (rect.bottom - DECALAGE - 4) // SCALING)
         return est_un_mur(pos_grille)
 
-    else: # Down
-        pos_grille = ((rect.centerx) // SCALING, (rect.y + rect.height - DECALAGE) // SCALING + 1)
-        return est_un_mur(pos_grille)
 
 
 class Pastille(pygame.sprite.Sprite):
@@ -130,11 +133,11 @@ class PacMan(pygame.sprite.Sprite):
         self.up_images = [pygame.image.load(os.path.join('ressource', 'images', 'PacManUp0.png')),
                           pygame.image.load(os.path.join('ressource', 'images', 'PacManUp1.png'))]
         self.down_images = [pygame.image.load(os.path.join('ressource', 'images', 'PacManDown0.png')),
-                          pygame.image.load(os.path.join('ressource', 'images', 'PacManDown1.png'))]
+                            pygame.image.load(os.path.join('ressource', 'images', 'PacManDown1.png'))]
         self.left_images = [pygame.image.load(os.path.join('ressource', 'images', 'PacManLeft0.png')),
-                          pygame.image.load(os.path.join('ressource', 'images', 'PacManLeft1.png'))]
+                            pygame.image.load(os.path.join('ressource', 'images', 'PacManLeft1.png'))]
         self.right_images = [pygame.image.load(os.path.join('ressource', 'images', 'PacManRight0.png')),
-                          pygame.image.load(os.path.join('ressource', 'images', 'PacManRight1.png'))]
+                             pygame.image.load(os.path.join('ressource', 'images', 'PacManRight1.png'))]
         self.image = pygame.image.load(os.path.join('ressource', 'images', 'PacManLeft1.png'))
         self.rect = self.image.get_rect(center=pos)
         self.pos = [PACSPAWN[0], PACSPAWN[1]]
@@ -151,16 +154,16 @@ class PacMan(pygame.sprite.Sprite):
         self.direction = direction
         if direction == 0:
             self.vitesse = self.GoLeft
-            #self.image = self.left_images[0]
+            # self.image = self.left_images[0]
         elif direction == 1:
             self.vitesse = self.GoUp
-            #self.image = self.up_images[0]
+            # self.image = self.up_images[0]
         elif direction == 2:
             self.vitesse = self.GoRight
-            #self.image = self.right_images[0]
+            # self.image = self.right_images[0]
         elif direction == 3:
             self.vitesse = self.GoDown
-            #elf.image = self.down_images[0]
+            # elf.image = self.down_images[0]
 
         if collision_mur(self):
             self.vitesse = [0, 0]
@@ -175,7 +178,6 @@ class PacMan(pygame.sprite.Sprite):
 
         # self.rect = self.rect.move(self.vitesse[0]*SCALING, self.vitesse[1]*SCALING)
         # self.rect = self.image.get_rect().move(15,15)
-
 
 
 class Fantome(pygame.sprite.Sprite):
