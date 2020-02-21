@@ -175,30 +175,19 @@ class PacMan(pygame.sprite.Sprite):
         pygame.time.wait(self.VITESSE_MORT)
 
     def update(self, directionnn):
+        self.direction = directionnn
         if directionnn == 0:
             self.vitesse = self.GoLeft
-            #self.image = self.left_images[0]
         elif directionnn == 1:
             self.vitesse = self.GoUp
-            #self.image = self.up_images[0]
         elif directionnn == 2:
             self.vitesse = self.GoRight
-            #self.image = self.right_images[0]
         elif directionnn == 3:
             self.vitesse = self.GoDown
-            #elf.image = self.down_images[0]
 
-
-        # print('Works{}'.format(self.direction))
-        # print(self.rect)
-        # print(self.vitesse)
         self.pos = (self.pos[0] + (self.vitesse[0]), self.pos[1] + (self.vitesse[1]))
-        # print(self.pos)
-
         self.rect.center = self.pos
 
-        # self.rect = self.rect.move(self.vitesse[0]*SCALING, self.vitesse[1]*SCALING)
-        # self.rect = self.image.get_rect().move(15,15)
 
 
 

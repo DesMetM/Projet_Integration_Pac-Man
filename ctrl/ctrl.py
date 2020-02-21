@@ -21,16 +21,6 @@ class Ctrl(object):
         else:
             self.vue.mode_IA()
 
-    def move_pac(self, nouvelle_direction):
-        #print("\n\n\n\n\n\n\n\n\n\n\n\n\n\n{}".format(nouvelle_direction))
-        self.modele.pac.sprite.direction = nouvelle_direction
-        print('\n\n')
-        print(self.modele.pac.sprite.pos)
-        print('rect : {}'.format(self.modele.pac.sprite.rect))
-        #self.modele.pac.update()
-        print(self.modele.pac.sprite.pos)
-        print('rect : {}'.format(self.modele.pac.sprite.rect))
-
     def nouvelle_partie(self):
         self.currentJeu = modele.jeu.Jeu()
         self.currentJeu.nouvelle_partie()
