@@ -21,7 +21,6 @@ class Ctrl(object):
         else:
             self.vue.mode_IA()
 
-
     def nouvelle_partie(self):
         self.currentJeu = modele.jeu.Jeu()
         self.currentJeu.nouvelle_partie()
