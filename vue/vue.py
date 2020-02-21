@@ -45,6 +45,7 @@ class Vue(object):
                     if event.key == pygame.K_DOWN:
                         pac_direction = 3
 
+
                     if pac_direction == 0:
                         img = self.ctrl.currentJeu.pac.sprite.left_images[0]
                     elif pac_direction == 1:
@@ -54,6 +55,7 @@ class Vue(object):
                     else:
                         img = self.ctrl.currentJeu.pac.sprite.down_images[0]
                     self.ctrl.currentJeu.pac.sprite.image =img
+
 
             window.blit(self.ctrl.get_surface(pac_direction), (0, 0))
             pygame.display.update()
