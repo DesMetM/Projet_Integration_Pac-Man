@@ -147,6 +147,33 @@ class PacMan(pygame.sprite.Sprite):
         self.GoDown = [0, self.CNSTE_VITESSE]
         self.vitesse = [0, 0]
 
+    def kill(self):
+        self.pac.vitesse = [0, 0]
+        self.pac.image = pygame.image.load(os.path.join(os.path.join('ressource', 'images', 'PacDead0.png')))
+        pygame.time.wait(self.VITESSE_MORT)
+        self.pac.image = pygame.image.load(os.path.join('ressource', 'images', 'PacDead1.png'))
+        pygame.time.wait(self.VITESSE_MORT)
+        self.pac.image = pygame.image.load(os.path.join('ressource', 'images', 'PacDead2.png'))
+        pygame.time.wait(self.VITESSE_MORT)
+        self.pac.image = pygame.image.load(os.path.join('ressource', 'images', 'PacDead3.png'))
+        pygame.time.wait(self.VITESSE_MORT)
+        self.pac.image = pygame.image.load(os.path.join('ressource', 'images', 'PacDead4.png'))
+        pygame.time.wait(self.VITESSE_MORT)
+        self.pac.image = pygame.image.load(os.path.join('ressource', 'images', 'PacDead5.png'))
+        pygame.time.wait(self.VITESSE_MORT)
+        self.pac.image = pygame.image.load(os.path.join('ressource', 'images', 'PacDead6.png'))
+        pygame.time.wait(self.VITESSE_MORT)
+        self.pac.image = pygame.image.load(os.path.join('ressource', 'images', 'PacDead7.png'))
+        pygame.time.wait(self.VITESSE_MORT)
+        self.pac.image = pygame.image.load(os.path.join('ressource', 'images', 'PacDead8.png'))
+        pygame.time.wait(self.VITESSE_MORT)
+        self.pac.image = pygame.image.load(os.path.join('ressource', 'images', 'PacDead9.png'))
+        pygame.time.wait(self.VITESSE_MORT)
+        self.pac.image = pygame.image.load(os.path.join('ressource', 'images', 'PacDead10.png'))
+        pygame.time.wait(self.VITESSE_MORT)
+        self.pac.image = pygame.image.load(os.path.join('ressource', 'images', 'PacDead11.png'))
+        pygame.time.wait(self.VITESSE_MORT)
+
     def update(self, directionnn):
         if directionnn == 0:
             self.vitesse = self.GoLeft
@@ -160,6 +187,7 @@ class PacMan(pygame.sprite.Sprite):
         elif directionnn == 3:
             self.vitesse = self.GoDown
             #elf.image = self.down_images[0]
+
 
         # print('Works{}'.format(self.direction))
         # print(self.rect)
