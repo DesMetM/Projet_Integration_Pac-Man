@@ -1,6 +1,7 @@
 import pygame
 import os
 
+# 28i x 30j
 GRILLE_DE_JEU = [
     [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
     [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
@@ -52,7 +53,7 @@ def pastille():
     groupe = pygame.sprite.Group()
     for ligne in range(len(GRILLE_DE_JEU)):
         for col in range(len(GRILLE_DE_JEU[ligne])):
-            if GRILLE_DE_JEU[ligne][col] == MUR:
+            if GRILLE_DE_JEU[ligne][col] == POINT:
                 groupe.add(Pastille((col * SCALING + DECALAGEX, ligne * SCALING + DECALAGE)))
     return groupe
 
@@ -80,9 +81,26 @@ def fantomes_init_pos():
 
 
 def est_un_mur(position):
-    print(position)
-    print(GRILLE_DE_JEU[position[1]][position[0]])
-    return GRILLE_DE_JEU[position[1]][position[0]] == MUR
+    pacman = PacMan
+    try:
+        #print(position)
+        #print(GRILLE_DE_JEU[position[1]][position[0]])
+        return GRILLE_DE_JEU[position[1]][position[0]] == MUR
+    except IndexError:
+        if position[1] > 15:
+            pacman.pos((20, 432))
+            print("position changé")
+        else:
+            pacman.pos((650, 432))
+            print("position changé")
+
+    ''' rect = self.rect
+     pos_grille = ((rect.left) // SCALING, (rect.centery - DECALAGE) // SCALING)
+     if pos_grille == [0, 15]:
+         self.pos = (20 + (self.vitesse[0]), self.pos[1] + (self.vitesse[1]))
+
+     elif pos_grille == [28, 15]:
+         self.pos = (650 + (self.vitesse[0]), self.pos[1] + (self.vitesse[1]))'''
 
 
 def collision_mur(pacman):
@@ -105,7 +123,6 @@ def collision_mur(pacman):
     elif d == 3:  # Down
         pos_grille = ((rect.centerx) // SCALING, (rect.bottom - DECALAGE - 4) // SCALING)
         return est_un_mur(pos_grille)
-
 
 
 class Pastille(pygame.sprite.Sprite):
@@ -198,8 +215,8 @@ class PacMan(pygame.sprite.Sprite):
         self.pac.image = pygame.image.load(os.path.join('ressource', 'images', 'PacDead11.png'))
         pygame.time.wait(self.VITESSE_MORT)
 
-
-
+    def set_position(self, position):
+        self.pos = position
 
 
 class Fantome(pygame.sprite.Sprite):
