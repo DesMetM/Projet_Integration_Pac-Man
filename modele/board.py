@@ -150,7 +150,6 @@ class PacMan(pygame.sprite.Sprite):
         self.GoDown = [0, self.CNSTE_VITESSE]
         self.vitesse = [0, 0]
 
-
     def update(self, direction):
         self.direction = direction
         if direction == 0:
@@ -169,7 +168,7 @@ class PacMan(pygame.sprite.Sprite):
         if collision_mur(self):
             self.vitesse = [0, 0]
 
-    def kill(self):
+    def kill_animation(self):
         self.pac.vitesse = [0, 0]
         self.pac.image = pygame.image.load(os.path.join(os.path.join('ressource', 'images', 'PacDead0.png')))
         pygame.time.wait(self.VITESSE_MORT)

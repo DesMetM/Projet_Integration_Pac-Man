@@ -40,7 +40,7 @@ class Jeu(object):
             print("manger manger manger")
 
         if pygame.sprite.groupcollide(groupa=self.pac, groupb=self.fantomes, dokilla=False, dokillb=False):
-            self.pac.kill()
+            self.pac.kill_animation()
 
         background = pygame.image.load(os.path.join('ressource', 'images', 'Board.png'))
         self.currentPastilles.draw(background)
