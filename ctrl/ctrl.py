@@ -5,10 +5,8 @@ import vue.vue as v
 class Ctrl(object):
 
     #constructeur du contrôleur
-    def __init__(self, model:modele.jeu.Jeu):
+    def __init__(self):
         self.currentJeu = None
-        self.modele = model
-        model.nouvelle_partie()
         self.vue = v.Vue(self)
 
     def start(self):
@@ -23,7 +21,6 @@ class Ctrl(object):
 
     def nouvelle_partie(self):
         self.currentJeu = modele.jeu.Jeu()
-        self.currentJeu.nouvelle_partie()
 
     def get_surface(self, direction):
         return self.currentJeu.get_surface_drawn(direction)

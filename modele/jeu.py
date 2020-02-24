@@ -1,23 +1,19 @@
-from builtins import print
-
 import pygame
 import os
 import modele.board as board
 
-
 # permet de partir une nouvelle partie avec les éléments
-class Jeu(object):
+class Jeu:
 
-    VITESSE_MORT = 50
     def __init__(self):
-        self.nouvelle_partie()
         self.currentPastilles = None
         self.currentPowerP = None
         self.pac = None
         self.fantomes = None
-        self.count = 0
-        self.count_pac = 0
+        self.pellet_anim = 0
         self.count_pastille_manger = 0
+        self.partie_terminee = False
+        self.nouvelle_partie()
 
     # débute une nouvelle partie
     def nouvelle_partie(self):
@@ -26,50 +22,47 @@ class Jeu(object):
         self.currentPowerP = board.grosses_pastilles()
         self.pac = board.pac_init_pos()
         self.fantomes = board.fantomes_init_pos()
-        return 0
+        self.partie_terminee = False
 
-    def get_surface_drawn(self, direction) -> pygame.Surface:
-        '''Point d'entrée du ctrl.'''
+    def pellets_animation(self):
+        if self.pellet_anim > 6:
+            self.pellet_anim = 0
+            for sprite in self.currentPowerP:
+                sprite.frame = not sprite.frame
+                sprite.image = sprite.images[sprite.frame]
+        else:
+            self.pellet_anim += 1
 
-
-        '''Ici on fait les collision entre les pellets et le pacman'''
+    def collision(self):
         if pygame.sprite.groupcollide(groupa=self.pac, groupb=self.currentPastilles, dokilla=False, dokillb=True):
             self.count_pastille_manger += 1
-            print(self.count_pastille_manger)
+
         if pygame.sprite.groupcollide(groupa=self.pac, groupb=self.currentPowerP, dokilla=False, dokillb=True):
             print("manger manger manger")
 
         if pygame.sprite.groupcollide(groupa=self.pac, groupb=self.fantomes, dokilla=False, dokillb=False):
-            self.pac.kill_animation()
+            self.pac.sprite.is_alive = False
+            self.pac.sprite.count_anim = 0
 
+    def get_surface_drawn(self, direction) -> pygame.Surface:
+        '''Point d'entrée du ctrl.'''
         background = pygame.image.load(os.path.join('ressource', 'images', 'Board.png'))
+        self.pellets_animation()
         self.currentPastilles.draw(background)
         self.currentPowerP.draw(background)
-        self.pac.update(direction)
+
+        if self.pac.sprite.is_alive:
+            self.collision()
+            self.pac.sprite.move_animation()
+            self.pac.update(direction)
+            self.fantomes.draw(background)
+
+        else:
+            self.partie_terminee = self.pac.sprite.kill_animation()
         self.pac.draw(background)
-        self.fantomes.draw(background)
 
-        if self.count > 6:
-            self.count = 0
-            for s in self.currentPowerP:
-                s.frame = (s.frame + 1) % 2
-                s.image = s.images[s.frame]
-        else:
-            self.count += 1
-
-        if self.count_pac > 2:
-            self.count_pac = 0
-            for s in self.pac:
-                s.frame = (s.frame + 1) % 2
-                if direction == 0:
-                    s.image = s.left_images[s.frame]
-                elif direction == 1:
-                    s.image = s.up_images[s.frame]
-                elif direction == 2:
-                    s.image = s.right_images[s.frame]
-                elif direction == 3:
-                    s.image = s.down_images[s.frame]
-        else:
-            self.count_pac += 1
-
+        if self.partie_terminee:
+            #Créé un nouveau Pac-Man.
+            # self.partie_terminee devient vrai seulement à la fin de l'animation de mort.
+            pass
         return background
