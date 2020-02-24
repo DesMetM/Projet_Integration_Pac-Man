@@ -109,21 +109,19 @@ def collision_mur(pacman):
 
     if d == 0:  # Left
         # Regarder si la position (rect.left,rect.y) **un coup ajusté a la grille** est un mur. on set la vitesse de pacman à 0.
-        pos_grille = ((rect.left) // SCALING, (rect.centery - DECALAGE) // SCALING)
+        pos_grille = ((rect.centerx) // SCALING - 1, (rect.centery - DECALAGE) // SCALING)
         return est_un_mur(pos_grille)
 
     elif d == 2:  # Right
-        pos_grille = (rect.right // SCALING, (rect.centery - DECALAGE) // SCALING)
-        return est_un_mur(pos_grille)
-
-    elif d == 1:  # Up
-        pos_grille = ((rect.centerx // SCALING), (rect.top - DECALAGE - 4) // SCALING + 1)
+        pos_grille = ((rect.centerx - 4) // SCALING + 1, (rect.centery - DECALAGE) // SCALING)
         return est_un_mur(pos_grille)
 
     elif d == 3:  # Down
-        pos_grille = ((rect.centerx) // SCALING, (rect.bottom - DECALAGE - 4) // SCALING)
+        pos_grille = ((rect.centerx) // SCALING, (rect.centery - DECALAGE) // SCALING + 1)
         return est_un_mur(pos_grille)
-
+    elif d == 1:  # Up
+        pos_grille = ((rect.centerx // SCALING), (rect.centery - DECALAGE - 4) // SCALING)
+        return est_un_mur(pos_grille)
 
 class Pastille(pygame.sprite.Sprite):
     def __init__(self, pos):
