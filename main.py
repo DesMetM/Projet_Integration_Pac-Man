@@ -1,13 +1,13 @@
 import pygame
-import ctrl.ctrl as c
-import vue.vue as v
-import modele.jeu as j
+import ctrl.ctrl as ctrl
+import os
 
 # Initialiser pygame.
 pygame.init()
-clock = pygame.time.Clock()
-clock.tick(30)
+pygame.display.set_caption('Pac-Man')
+pygame.display.set_icon(pygame.image.load(os.path.join('ressource', 'images', 'Cherry.png')))
+
 # Le contrôleur débute la partie.
-monJeu = j.Jeu()
-monCtrl = c.Ctrl(monJeu)
+
+monCtrl = ctrl.Ctrl()
 monCtrl.start()
