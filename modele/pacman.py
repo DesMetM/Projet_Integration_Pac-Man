@@ -5,6 +5,8 @@ import modele.board as board
 
 
 class PacMan(pygame.sprite.Sprite):
+    CNSTE_VITESSE = 6
+
     def __init__(self, pos):
         self.frame = 0
         pygame.sprite.Sprite.__init__(self)
@@ -19,11 +21,6 @@ class PacMan(pygame.sprite.Sprite):
         self.image = pygame.image.load(os.path.join('ressource', 'images', 'PacManLeft1.png'))
         self.rect = self.image.get_rect(center=pos)
         self.direction = Direction.GAUCHE
-        self.CNSTE_VITESSE = 6
-        self.GoLeft = [-self.CNSTE_VITESSE, 0]
-        self.GoUp = [0, -self.CNSTE_VITESSE]
-        self.GoRight = [self.CNSTE_VITESSE, 0]
-        self.GoDown = [0, self.CNSTE_VITESSE]
         self.vitesse = [0, 0]
         self.count_anim = 0
         self.is_alive = True
@@ -31,15 +28,7 @@ class PacMan(pygame.sprite.Sprite):
     def update(self, direction):
         if direction != Direction.AUCUNE and not board.collision_mur(self.rect, direction):
             self.direction = direction
-
-            if direction == Direction.GAUCHE:
-                self.vitesse = self.GoLeft
-            elif direction == Direction.HAUT:
-                self.vitesse = self.GoUp
-            elif direction == Direction.DROITE:
-                self.vitesse = self.GoRight
-            elif direction == Direction.BAS:
-                self.vitesse = self.GoDown
+            self.vitesse = [PacMan.CNSTE_VITESSE * i for i in direction.get_vecteur()]
 
         elif board.collision_mur(self.rect, self.direction):
             self.vitesse = [0, 0]

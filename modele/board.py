@@ -2,6 +2,7 @@ import pygame
 import os
 from modele.direction import Direction
 from modele.pacman import PacMan
+from modele.fantome import Fantome
 
 # 28i x 30j
 GRILLE_DE_JEU = [
@@ -51,7 +52,7 @@ BLINKYSPAWN = (14 * SCALING, 11 * SCALING + DECALAGE)
 FANTOMES_SPAWN = {BLINKYSPAWN: 'Blinky', PINKYSPAWN: 'Pinky', INKYSPAWN: 'Inky', CLYDESPAWN: 'Clyde'}
 
 
-def pastille():
+def pastilles():
     groupe = pygame.sprite.Group()
     for ligne in range(len(GRILLE_DE_JEU)):
         for col in range(len(GRILLE_DE_JEU[ligne])):
@@ -84,14 +85,6 @@ def fantomes_init_pos():
 
 def est_un_mur(position):
     return GRILLE_DE_JEU[position[1]][position[0]] == MUR
-
-    ''' rect = self.rect
-     pos_grille = ((rect.left) // SCALING, (rect.centery - DECALAGE) // SCALING)
-     if pos_grille == [0, 15]:
-         self.pos = (20 + (self.vitesse[0]), self.pos[1] + (self.vitesse[1]))
-
-     elif pos_grille == [28, 15]:
-         self.pos = (650 + (self.vitesse[0]), self.pos[1] + (self.vitesse[1]))'''
 
 
 def collision_mur(rect, direction):
@@ -129,10 +122,3 @@ class GrossePastille(pygame.sprite.Sprite):
         self.image = self.images[self.frame]
         self.rect = self.image.get_rect(center=pos)
         self.isVisible = True
-
-
-class Fantome(pygame.sprite.Sprite):
-    def __init__(self, pos, nom):
-        pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.image.load(os.path.join('ressource', 'images', '{0}Left0.png'.format(nom)))
-        self.rect = self.image.get_rect(center=pos)
