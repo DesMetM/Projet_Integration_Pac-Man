@@ -51,7 +51,8 @@ CLYDESPAWN = (16 * SCALING, 14 * SCALING + DECALAGE)
 BLINKYSPAWN = (14 * SCALING, 11 * SCALING + DECALAGE)
 FANTOMES_SPAWN = {BLINKYSPAWN: 'Blinky', PINKYSPAWN: 'Pinky', INKYSPAWN: 'Inky', CLYDESPAWN: 'Clyde'}
 
-
+"""Crée le groupe de pellets et les place à leur position de base selon la grille de jeu.
+Le groupe sert à intéragir avec Pac-Man"""
 def pastilles():
     groupe = pygame.sprite.Group()
     for ligne in range(len(GRILLE_DE_JEU)):
@@ -60,7 +61,8 @@ def pastilles():
                 groupe.add(Pastille((col * SCALING + DECALAGEX, ligne * SCALING + DECALAGE)))
     return groupe
 
-
+"""Crée le groupe de Power-pellets et les place à leur position de base selon la grille ed jeu
+Le groupe sert à intéragir avec Pac-Man"""
 def grosses_pastilles():
     groupe = pygame.sprite.Group()
     for ligne in range(len(GRILLE_DE_JEU)):
@@ -69,7 +71,7 @@ def grosses_pastilles():
                 groupe.add(GrossePastille((col * SCALING + DECALAGEX, ligne * SCALING + DECALAGE)))
     return groupe
 
-
+"""Crée une instance de Pac-Man et lui fait un groupe personnel pour le controller à partir des autres classes."""
 def pac_init_pos():
     groupe = pygame.sprite.GroupSingle()
     groupe.add(PacMan(PACSPAWN))
@@ -82,7 +84,7 @@ def fantomes_init_pos():
         groupe.add(Fantome(spawn, FANTOMES_SPAWN[spawn]))
     return groupe
 
-
+"""Vérifies si la position donnée est une entité donnée"""
 def est_un_mur(position):
     try:
         return GRILLE_DE_JEU[position[1]][position[0]] == MUR
@@ -98,7 +100,7 @@ def tunnel(rect):
         rect.y = 400
         rect.x = -39
 
-
+"""Vérifies si le prochain pixel dans la trajectoire d'une entité dynamique est un mur"""
 def collision_mur(rect, direction):
     if direction == Direction.GAUCHE:
         pos_grille = ((rect.left + 4) // SCALING, (rect.centery - DECALAGE) // SCALING)
