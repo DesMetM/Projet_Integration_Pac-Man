@@ -55,6 +55,8 @@ class Jeu:
             self.collision()
             self.pacman.update(direction)
             self.pacman.sprite.move_animation()
+            self.fantomes.update()
+            #self.fantomes.normal_animation()
             self.fantomes.draw(background)
 
         else:

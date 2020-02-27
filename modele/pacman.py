@@ -11,7 +11,6 @@ class PacMan(pygame.sprite.Sprite):
         self.frame = 0
         pygame.sprite.Sprite.__init__(self)
 
-
         self.up_images = [pygame.image.load(os.path.join('ressource', 'images', 'PacManUp0.png')),
                           pygame.image.load(os.path.join('ressource', 'images', 'PacManUp1.png'))]
 

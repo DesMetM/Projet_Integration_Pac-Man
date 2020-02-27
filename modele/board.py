@@ -85,9 +85,6 @@ def fantomes_init_pos():
     return groupe
 
 """Vérifies si la position donnée est une entité donnée"""
-def est_un(position, entite):
-    return GRILLE_DE_JEU[position[1]][position[0]] == entite
-
 def est_un_mur(position):
     try:
         return GRILLE_DE_JEU[position[1]][position[0]] == MUR
@@ -138,5 +135,3 @@ class GrossePastille(pygame.sprite.Sprite):
         self.image = self.images[self.frame]
         self.rect = self.image.get_rect(center=pos)
         self.isVisible = True
-
-"""Classe représentant un fantôme. (À remplacer) Est un enfant de pygame.Sprite"""
