@@ -52,8 +52,8 @@ class Jeu:
 
         if self.pacman.sprite.is_alive:
             self.collision()
-            self.pacman.sprite.move_animation()
             self.pacman.update(direction)
+            self.pacman.sprite.move_animation()
             self.fantomes.draw(background)
 
         else:
