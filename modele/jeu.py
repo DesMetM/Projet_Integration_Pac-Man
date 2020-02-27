@@ -12,6 +12,7 @@ class Jeu:
         self.fantomes = None
         self.pellet_anim = 0
         self.pastilles_mangees = 0
+        self.tests = None
         self.partie_terminee = False
         self.nouvelle_partie()
         self.nbr_vie = 5
@@ -23,6 +24,7 @@ class Jeu:
         self.power_pellets = board.grosses_pastilles()
         self.pacman = board.pac_init_pos()
         self.fantomes = board.fantomes_init_pos()
+        self.tests = board.tests()
         self.partie_terminee = False
 
     """Anime les Power-pellets(Clignotent)"""
@@ -53,11 +55,13 @@ class Jeu:
         self.pellets_animation()
         self.pastilles.draw(background)
         self.power_pellets.draw(background)
+        self.tests.draw(background)
 
         if self.pacman.sprite.is_alive:
             self.collision()
             self.pacman.update(direction)
             self.pacman.sprite.move_animation()
+            board.detecte_noeud(self.pacman.sprite.rect)
             self.fantomes.update()
             #self.fantomes.normal_animation()
             self.fantomes.draw(background)
