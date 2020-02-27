@@ -5,7 +5,6 @@ window = pygame.display.set_mode((672, 864))
 
 
 class Vue:
-
     def __init__(self, p_ctrl):
         self.ctrl = p_ctrl
 
@@ -19,6 +18,10 @@ class Vue:
         return 0
 
     def mode_joueur(self):
+        """
+        Crée les events pour que le joueur puisse puisse jouer
+        :return:
+        """
 
         quitter = False
         clock = pygame.time.Clock()
