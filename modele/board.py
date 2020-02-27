@@ -90,20 +90,20 @@ def est_un_mur(position):
 def collision_mur(rect, direction):
     if direction == Direction.GAUCHE:
         # Regarder si la position (rect.left,rect.y) **un coup ajusté a la grille** est un mur. on set la vitesse de pacman à 0.
-        pos_grille = (rect.left // SCALING, (rect.centery - DECALAGE) // SCALING)
-        return est_un_mur(pos_grille)
+        pos_grille = ((rect.left + 4) // SCALING, (rect.centery - DECALAGE) // SCALING)
+        return est_un_mur(pos_grille) or not pos_grille[1] * SCALING == rect.centery - DECALAGE
 
     elif direction == Direction.DROITE:
-        pos_grille = (rect.right // SCALING, (rect.centery - DECALAGE) // SCALING)
-        return est_un_mur(pos_grille)
+        pos_grille = ((rect.right - 4) // SCALING, (rect.centery - DECALAGE) // SCALING)
+        return est_un_mur(pos_grille) or not pos_grille[1] * SCALING == rect.centery - DECALAGE
 
     elif direction == Direction.HAUT:
         pos_grille = ((rect.centerx // SCALING), (rect.top - DECALAGE - 4) // SCALING + 1)
-        return est_un_mur(pos_grille)
+        return est_un_mur(pos_grille) or not pos_grille[0] * SCALING == rect.centerx - DECALAGEX
 
     elif direction == Direction.BAS:
-        pos_grille = (rect.centerx // SCALING, (rect.bottom - DECALAGE - 4) // SCALING)
-        return est_un_mur(pos_grille)
+        pos_grille = (rect.centerx // SCALING, (rect.bottom - DECALAGE + 4) // SCALING)
+        return est_un_mur(pos_grille) or not pos_grille[0] * SCALING == rect.centerx - DECALAGEX
 
 
 class Pastille(pygame.sprite.Sprite):
