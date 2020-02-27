@@ -13,6 +13,7 @@ class Jeu:
         self.pellet_anim = 0
         self.pastilles_mangees = 0
         self.tests = None
+        self.ready = None
         self.partie_terminee = False
         self.nouvelle_partie()
         self.nbr_vie = 5
@@ -26,6 +27,7 @@ class Jeu:
         self.fantomes = board.fantomes_init_pos()
         self.tests = board.tests()
         self.partie_terminee = False
+        self.ready = board.ready()
 
     """Anime les Power-pellets(Clignotent)"""
     def pellets_animation(self):
@@ -43,7 +45,7 @@ class Jeu:
             self.pastilles_mangees += 1
 
         if pygame.sprite.groupcollide(groupa=self.pacman, groupb=self.power_pellets, dokilla=False, dokillb=True):
-            print("manger manger manger")
+            self.fantomes.sprite.phase_apeuree()
 
         if pygame.sprite.groupcollide(groupa=self.pacman, groupb=self.fantomes, dokilla=False, dokillb=False):
             self.pacman.sprite.is_alive = False
@@ -56,6 +58,7 @@ class Jeu:
         self.pastilles.draw(background)
         self.power_pellets.draw(background)
         self.tests.draw(background)
+        self.ready.draw(background)
 
         if self.pacman.sprite.is_alive:
             self.collision()
