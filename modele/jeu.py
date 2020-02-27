@@ -23,7 +23,7 @@ class Jeu:
         self.pac = board.pac_init_pos()
         self.fantomes = board.fantomes_init_pos()
         self.partie_terminee = False
-
+    """Anime les Power-pellets(Clignotent)"""
     def pellets_animation(self):
         if self.pellet_anim > 6:
             self.pellet_anim = 0
@@ -32,7 +32,7 @@ class Jeu:
                 sprite.image = sprite.images[sprite.frame]
         else:
             self.pellet_anim += 1
-
+    """Vérifies les collisions entre les groupes de Sprites(voir board.py)"""
     def collision(self):
         if pygame.sprite.groupcollide(groupa=self.pac, groupb=self.currentPastilles, dokilla=False, dokillb=True):
             self.count_pastille_manger += 1
@@ -43,7 +43,7 @@ class Jeu:
         if pygame.sprite.groupcollide(groupa=self.pac, groupb=self.fantomes, dokilla=False, dokillb=False):
             self.pac.sprite.is_alive = False
             self.pac.sprite.count_anim = 0
-
+    """Coeur du jeu, update la position du Pac-Man, anime les différentes composantes et vérifies les collisions"""
     def get_surface_drawn(self, direction) -> pygame.Surface:
         '''Point d'entrée du ctrl.'''
         background = pygame.image.load(os.path.join('ressource', 'images', 'Board.png'))
@@ -53,8 +53,8 @@ class Jeu:
 
         if self.pac.sprite.is_alive:
             self.collision()
-            self.pac.sprite.move_animation()
             self.pac.update(direction)
+            self.pac.sprite.move_animation()
             self.fantomes.draw(background)
 
         else:
