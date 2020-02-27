@@ -5,6 +5,7 @@ import modele.board as board
 
 """Classe représentant le Pac-Man. Est un enfant de Sprite et redéfinie la méthode Update"""
 class PacMan(pygame.sprite.Sprite):
+    CNSTE_VITESSE = 6
     """Constructeur. Load les images d'animation, set l'image de base, crée le rect et instantie les frames pour l'animation."""
     def __init__(self, pos):
         self.frame = 0
@@ -28,7 +29,7 @@ class PacMan(pygame.sprite.Sprite):
 
         self.rect = self.image.get_rect(center=pos)
         self.direction = Direction.GAUCHE
-        self.CNSTE_VITESSE = 6
+
         self.GoLeft = [-self.CNSTE_VITESSE, 0]
         self.GoUp = [0, -self.CNSTE_VITESSE]
         self.GoRight = [self.CNSTE_VITESSE, 0]
@@ -41,7 +42,7 @@ class PacMan(pygame.sprite.Sprite):
 La vitesse acctuelle est un vecteur représentant la vitesse x et y. Tentative de portail Haha"""
     def update(self, direction):
         """Vérifies la présence d'un mur"""
-        if direction != Direction.AUCUNE and not board.collision_mur(self.rect, direction) and not board.collision_portail(self.rect, direction):
+        if direction != Direction.AUCUNE and not board.collision_mur(self.rect, direction):
             self.direction = direction
             self.vitesse = [PacMan.CNSTE_VITESSE * i for i in direction.get_vecteur()]
 

@@ -2,6 +2,7 @@ import pygame
 import os
 from modele.direction import Direction
 from modele.pacman import PacMan
+from modele.fantome import Fantome
 
 # 28i x 30j
 GRILLE_DE_JEU = [
@@ -52,8 +53,6 @@ FANTOMES_SPAWN = {BLINKYSPAWN: 'Blinky', PINKYSPAWN: 'Pinky', INKYSPAWN: 'Inky',
 
 """Crée le groupe de pellets et les place à leur position de base selon la grille de jeu.
 Le groupe sert à intéragir avec Pac-Man"""
-def pastille():
-
 def pastilles():
     groupe = pygame.sprite.Group()
     for ligne in range(len(GRILLE_DE_JEU)):
@@ -141,8 +140,3 @@ class GrossePastille(pygame.sprite.Sprite):
         self.isVisible = True
 
 """Classe représentant un fantôme. (À remplacer) Est un enfant de pygame.Sprite"""
-class Fantome(pygame.sprite.Sprite):
-    def __init__(self, pos, nom):
-        pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.image.load(os.path.join('ressource', 'images', '{0}Left0.png'.format(nom)))
-        self.rect = self.image.get_rect(center=pos)
