@@ -14,6 +14,7 @@ class Jeu:
         self.pastilles_mangees = 0
         self.partie_terminee = False
         self.nouvelle_partie()
+        self.nbr_vie = 5
 
     # débute une nouvelle partie
     def nouvelle_partie(self):
@@ -23,6 +24,7 @@ class Jeu:
         self.pacman = board.pac_init_pos()
         self.fantomes = board.fantomes_init_pos()
         self.partie_terminee = False
+
     """Anime les Power-pellets(Clignotent)"""
     def pellets_animation(self):
         if self.pellet_anim > 6:
@@ -32,6 +34,7 @@ class Jeu:
                 sprite.image = sprite.images[sprite.frame]
         else:
             self.pellet_anim += 1
+
     """Vérifies les collisions entre les groupes de Sprites(voir board.py)"""
     def collision(self):
         if pygame.sprite.groupcollide(groupa=self.pacman, groupb=self.pastilles, dokilla=False, dokillb=True):
@@ -66,5 +69,7 @@ class Jeu:
         if self.partie_terminee:
             #Créé un nouveau Pac-Man.
             # self.partie_terminee devient vrai seulement à la fin de l'animation de mort.
-            pass
+            self.partie_terminee = False
+            self.pacman.sprite.respawn()
+
         return background
