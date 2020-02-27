@@ -43,25 +43,12 @@ La vitesse acctuelle est un vecteur représentant la vitesse x et y. Tentative d
         """Vérifies la présence d'un mur"""
         if direction != Direction.AUCUNE and not board.collision_mur(self.rect, direction) and not board.collision_portail(self.rect, direction):
             self.direction = direction
-            """Change la vitesse selon la direction (ecteur)"""
-            if direction == Direction.GAUCHE:
-                self.vitesse = self.GoLeft
-            elif direction == Direction.HAUT:
-                self.vitesse = self.GoUp
-            elif direction == Direction.DROITE:
-                self.vitesse = self.GoRight
-            elif direction == Direction.BAS:
-                self.vitesse = self.GoDown
-            """Si un mur est présent, stop Pac-Man"""
+            self.vitesse = [PacMan.CNSTE_VITESSE * i for i in direction.get_vecteur()]
+
         elif board.collision_mur(self.rect, self.direction):
             self.vitesse = [0, 0]
-            """Si un portail est trouvé, teleporte de l'autre côté (Gros BS fait par nul autre que NikkyBee)"""
-        elif board.collision_portail(self.rect, self.direction):
-            if direction == Direction.GAUCHE:
-                self.rect.move_ip((200, 0))
-            elif direction == Direction.DROITE:
-                self.rect.move_ip((-200, 0))
-        """Change la position de Pac-Man"""
+
+        board.tunnel(self.rect)
         self.rect = self.rect.move(self.vitesse)
 
     """ Méthode qui anime la mort de Pac-Man. 12 images."""
