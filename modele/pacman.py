@@ -54,7 +54,7 @@ La vitesse acctuelle est un vecteur représentant la vitesse x et y. Tentative d
         if self.count_anim <= 11:
             self.image = pygame.image.load(
                 os.path.join(os.path.join('ressource', 'images', 'PacDead' + str(self.count_anim) + '.png')))
-
+            pygame.mixer.Sound('ressource/sons/Death.mp3').play()
         return self.count_anim == 34
 
     """Méthode qui anime le mouvement de Pac-Man"""
