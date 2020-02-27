@@ -2,6 +2,7 @@ import pygame
 import os
 from modele.direction import Direction
 from modele.pacman import PacMan
+from modele.fantome import Fantome
 
 # 28i x 30j
 GRILLE_DE_JEU = [
@@ -51,7 +52,7 @@ BLINKYSPAWN = (14 * SCALING, 11 * SCALING + DECALAGE)
 FANTOMES_SPAWN = {BLINKYSPAWN: 'Blinky', PINKYSPAWN: 'Pinky', INKYSPAWN: 'Inky', CLYDESPAWN: 'Clyde'}
 
 
-def pastille():
+def pastilles():
     groupe = pygame.sprite.Group()
     for ligne in range(len(GRILLE_DE_JEU)):
         for col in range(len(GRILLE_DE_JEU[ligne])):
@@ -83,34 +84,39 @@ def fantomes_init_pos():
 
 
 def est_un_mur(position):
-    return GRILLE_DE_JEU[position[1]][position[0]] == MUR
+    try:
+        return GRILLE_DE_JEU[position[1]][position[0]] == MUR
+    except IndexError:
+        return False
 
-    ''' rect = self.rect
-     pos_grille = ((rect.left) // SCALING, (rect.centery - DECALAGE) // SCALING)
-     if pos_grille == [0, 15]:
-         self.pos = (20 + (self.vitesse[0]), self.pos[1] + (self.vitesse[1]))
 
-     elif pos_grille == [28, 15]:
-         self.pos = (650 + (self.vitesse[0]), self.pos[1] + (self.vitesse[1]))'''
+def tunnel(rect):
+    if rect.x < -42:
+        rect.y = 400
+        rect.x = 681
+    elif rect.x > 681:
+        rect.y = 400
+        rect.x = -42
 
 
 def collision_mur(rect, direction):
     if direction == Direction.GAUCHE:
         # Regarder si la position (rect.left,rect.y) **un coup ajusté a la grille** est un mur. on set la vitesse de pacman à 0.
-        pos_grille = (rect.left // SCALING, (rect.centery - DECALAGE) // SCALING)
-        return est_un_mur(pos_grille)
+        pos_grille = ((rect.left + 4) // SCALING, (rect.centery - DECALAGE) // SCALING)
+        return est_un_mur(pos_grille) or not pos_grille[1] * SCALING == rect.centery - DECALAGE
 
     elif direction == Direction.DROITE:
-        pos_grille = (rect.right // SCALING, (rect.centery - DECALAGE) // SCALING)
-        return est_un_mur(pos_grille)
+        pos_grille = ((rect.right - 4) // SCALING, (rect.centery - DECALAGE) // SCALING)
+        return est_un_mur(pos_grille) or not pos_grille[1] * SCALING == rect.centery - DECALAGE
 
     elif direction == Direction.HAUT:
         pos_grille = ((rect.centerx // SCALING), (rect.top - DECALAGE - 4) // SCALING + 1)
-        return est_un_mur(pos_grille)
+        print(est_un_mur(pos_grille),pos_grille[0] * SCALING,rect.centerx - DECALAGEX)
+        return est_un_mur(pos_grille) or not pos_grille[0] * SCALING == rect.centerx - DECALAGEX
 
     elif direction == Direction.BAS:
-        pos_grille = (rect.centerx // SCALING, (rect.bottom - DECALAGE - 4) // SCALING)
-        return est_un_mur(pos_grille)
+        pos_grille = (rect.centerx // SCALING, (rect.bottom - DECALAGE + 4) // SCALING)
+        return est_un_mur(pos_grille) or not pos_grille[0] * SCALING == rect.centerx - DECALAGEX
 
 
 class Pastille(pygame.sprite.Sprite):
@@ -129,10 +135,3 @@ class GrossePastille(pygame.sprite.Sprite):
         self.image = self.images[self.frame]
         self.rect = self.image.get_rect(center=pos)
         self.isVisible = True
-
-
-class Fantome(pygame.sprite.Sprite):
-    def __init__(self, pos, nom):
-        pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.image.load(os.path.join('ressource', 'images', '{0}Left0.png'.format(nom)))
-        self.rect = self.image.get_rect(center=pos)
