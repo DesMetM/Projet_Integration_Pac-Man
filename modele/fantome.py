@@ -36,3 +36,9 @@ class Fantome(pygame.sprite.Sprite):
         else:
             self.compteur+=1
 
+    #Cette phase est activé lorsque le Pac-Man mange un power pellet
+    def phase_apeuree(self):
+        #Doit faire changer la couleur des fantômes
+        #Doit durer un temps prédéterminé (20 sec - moins 'niveau')
+        #Doit changer la collision avec pacman, au lieu de tuer PacMan, le fantôme meurt
+        pass
