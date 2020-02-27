@@ -87,21 +87,20 @@ def est_un_mur(position):
     try:
         return GRILLE_DE_JEU[position[1]][position[0]] == MUR
     except IndexError:
-        return False
+        return position[1] != 14
 
 
 def tunnel(rect):
-    if rect.x < -42:
+    if rect.x < -39:
         rect.y = 400
         rect.x = 681
     elif rect.x > 681:
         rect.y = 400
-        rect.x = -42
+        rect.x = -39
 
 
 def collision_mur(rect, direction):
     if direction == Direction.GAUCHE:
-        # Regarder si la position (rect.left,rect.y) **un coup ajusté a la grille** est un mur. on set la vitesse de pacman à 0.
         pos_grille = ((rect.left + 4) // SCALING, (rect.centery - DECALAGE) // SCALING)
         return est_un_mur(pos_grille) or not pos_grille[1] * SCALING == rect.centery - DECALAGE
 
@@ -111,7 +110,6 @@ def collision_mur(rect, direction):
 
     elif direction == Direction.HAUT:
         pos_grille = ((rect.centerx // SCALING), (rect.top - DECALAGE - 4) // SCALING + 1)
-        print(est_un_mur(pos_grille),pos_grille[0] * SCALING,rect.centerx - DECALAGEX)
         return est_un_mur(pos_grille) or not pos_grille[0] * SCALING == rect.centerx - DECALAGEX
 
     elif direction == Direction.BAS:
