@@ -33,6 +33,7 @@ class PacMan(pygame.sprite.Sprite):
         elif board.collision_mur(self.rect, self.direction):
             self.vitesse = [0, 0]
 
+        board.tunnel(self.rect)
         self.rect = self.rect.move(self.vitesse)
 
     def kill_animation(self):

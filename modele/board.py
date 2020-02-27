@@ -84,7 +84,19 @@ def fantomes_init_pos():
 
 
 def est_un_mur(position):
-    return GRILLE_DE_JEU[position[1]][position[0]] == MUR
+    try:
+        return GRILLE_DE_JEU[position[1]][position[0]] == MUR
+    except IndexError:
+        return False
+
+
+def tunnel(rect):
+    if rect.x < -42:
+        rect.y = 400
+        rect.x = 680
+    elif rect.x > 680:
+        rect.y = 400
+        rect.x = -42
 
 
 def collision_mur(rect, direction):
