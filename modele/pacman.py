@@ -79,7 +79,7 @@ La vitesse acctuelle est un vecteur représentant la vitesse x et y. Tentative d
         self.count_anim = 0
         self.vitesse = [0,0]
         self.rect.center = board.PACSPAWN
-        self.image = pygame.image.load(os.path.join('ressource', 'images', 'PacManLeft1.png'))
+        self.image = self.left_images[1]
         self.is_alive = True
 
 
