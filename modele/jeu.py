@@ -59,7 +59,6 @@ class Jeu:
         self.pellets_animation()
         self.pastilles.draw(background)
         self.power_pellets.draw(background)
-        # self.ready.draw(background)
 
         for life in range(self.pacman.sprite.nbr_vie):
             background.blit(self.pacman.sprite.left_images[1], (60 + life * 60, 815))
@@ -69,7 +68,7 @@ class Jeu:
             self.pacman.update(direction)
             self.pacman.sprite.move_animation()
             board.detecte_noeud(self.pacman.sprite.rect)
-            self.fantomes.update(self.pacman.sprite.rect)
+            self.fantomes.update(self.pacman.sprite.rect, self.pastilles_mangees)
             self.fantomes.draw(background)
 
         else:

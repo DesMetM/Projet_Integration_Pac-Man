@@ -10,7 +10,7 @@ class Fantome(pygame.sprite.Sprite):
 
     def __init__(self, pos, nom, target):
         self.target = target
-        self.actif = False
+        self.nbr_activation = -1
         self.direction = Direction.GAUCHE
         self.vitesse = [0, 0]
         self.count_anim = 0
@@ -38,18 +38,14 @@ class Fantome(pygame.sprite.Sprite):
         self.image = self.left_images[0]
         self.rect = self.image.get_rect(center=pos)
 
-    def update(self, pac_rect):
-        self.target = pac_rect.center
-        if self.actif:
+    def update(self, pac_rect, pastille_mangees):
+        if self.nbr_activation < pastille_mangees:
             if board.detecte_noeud(self.rect):
                 self.choose_direction()
             self.rect = self.rect.move(self.vitesse)
             board.tunnel(self.rect)
         else:
-            if not board.collision_mur(self.rect, self.direction):
-                self.rect = self.rect.move(self.vitesse)
-            else:
-                self.direction = self.direction.opposee()
+            pass
         self.normal_animation()
 
     def respawn(self):
@@ -135,7 +131,9 @@ class Pinky(Fantome):
 
     def __init__(self):
         Fantome.__init__(self, Pinky.SPAWN, "Pinky", Pinky.SCATTER_TARGET)
-        self.direction = Direction.BAS
+        self.direction = Direction.HAUT
+        self.actif = True
+        self.nbr_activation = 5
         self.vitesse = [x * Fantome.CSTNE_VITESSE for x in self.direction.get_vecteur()]
 
     def respawn(self):
@@ -151,6 +149,7 @@ class Inky(Fantome):
     def __init__(self):
         Fantome.__init__(self, Inky.SPAWN, "Inky", Inky.SCATTER_TARGET)
         self.direction = Direction.BAS
+        self.nbr_activation = 30
         self.vitesse = [x * Fantome.CSTNE_VITESSE for x in self.direction.get_vecteur()]
 
     def respawn(self):
@@ -166,6 +165,7 @@ class Clyde(Fantome):
     def __init__(self):
         Fantome.__init__(self, Clyde.SPAWN, "Clyde", Clyde.SCATTER_TARGET)
         self.direction = Direction.BAS
+        self.nbr_activation = 60
         self.vitesse = [x * Fantome.CSTNE_VITESSE for x in self.direction.get_vecteur()]
 
     def respawn(self):
