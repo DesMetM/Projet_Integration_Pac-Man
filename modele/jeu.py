@@ -2,6 +2,7 @@ import pygame
 import os
 import modele.board as board
 
+
 # permet de partir une nouvelle partie avec les éléments
 class Jeu:
 
@@ -27,9 +28,9 @@ class Jeu:
         self.fantomes = board.fantomes_init_pos()
         self.tests = board.tests()
         self.partie_terminee = False
-        self.ready = board.ready()
 
     """Anime les Power-pellets(Clignotent)"""
+
     def pellets_animation(self):
         if self.pellet_anim > 6:
             self.pellet_anim = 0
@@ -40,12 +41,14 @@ class Jeu:
             self.pellet_anim += 1
 
     """Vérifies les collisions entre les groupes de Sprites(voir board.py)"""
+
     def collision(self):
         if pygame.sprite.groupcollide(groupa=self.pacman, groupb=self.pastilles, dokilla=False, dokillb=True):
             self.pastilles_mangees += 1
 
         if pygame.sprite.groupcollide(groupa=self.pacman, groupb=self.power_pellets, dokilla=False, dokillb=True):
-            self.fantomes.sprite.phase_apeuree()
+            print('La nourriture c\'est la vie --- ' * 3)
+            #self.fantomes.sprite.phase_apeuree()
 
         if pygame.sprite.groupcollide(groupa=self.pacman, groupb=self.fantomes, dokilla=False, dokillb=False):
             self.pacman.sprite.is_alive = False
@@ -58,7 +61,9 @@ class Jeu:
         self.pastilles.draw(background)
         self.power_pellets.draw(background)
         self.tests.draw(background)
-        self.ready.draw(background)
+
+        for life in range(self.pacman.sprite.nbr_vie):
+            background.blit(self.pacman.sprite.left_images[1], (60 + life * 60, 815))
 
         if self.pacman.sprite.is_alive:
             self.collision()
@@ -66,7 +71,6 @@ class Jeu:
             self.pacman.sprite.move_animation()
             board.detecte_noeud(self.pacman.sprite.rect)
             self.fantomes.update()
-            #self.fantomes.normal_animation()
             self.fantomes.draw(background)
 
         else:
@@ -74,9 +78,6 @@ class Jeu:
         self.pacman.draw(background)
 
         if self.partie_terminee:
-            #Créé un nouveau Pac-Man.
-            # self.partie_terminee devient vrai seulement à la fin de l'animation de mort.
             self.partie_terminee = False
             self.pacman.sprite.respawn()
-
         return background
