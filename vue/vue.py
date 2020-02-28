@@ -36,8 +36,8 @@ class Vue:
                     quitter = True
 
                 elif event.type == pygame.KEYDOWN:
-                    if self.ctrl.jeu.ready.alive():
-                        self.ctrl.jeu.ready.kill()
+                    #if self.ctrl.jeu.ready.alive():
+                        #self.ctrl.jeu.ready.kill()
                     if event.key == pygame.K_LEFT:
                         key_pressed[Direction.GAUCHE.value] = True
                     if event.key == pygame.K_UP:
