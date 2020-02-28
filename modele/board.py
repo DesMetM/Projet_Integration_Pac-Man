@@ -74,7 +74,6 @@ SCALING = 24
 DECALAGE = 85
 DECALAGEX = 12
 PACSPAWN = (14 * SCALING, 23 * SCALING + DECALAGE)
-READYSPAWN = (14 * SCALING, 17 * SCALING + DECALAGE)
 INKYSPAWN = (12 * SCALING, 14 * SCALING + DECALAGE)
 PINKYSPAWN = (14 * SCALING, 14 * SCALING + DECALAGE)
 CLYDESPAWN = (16 * SCALING, 14 * SCALING + DECALAGE)
@@ -161,11 +160,6 @@ def collision_mur(rect, direction):
         pos_grille = (rect.centerx // SCALING, (rect.bottom - DECALAGE + 4) // SCALING)
         return est_un_mur(pos_grille) or not pos_grille[0] * SCALING == rect.centerx - DECALAGEX
 
-def ready():
-    groupe = pygame.sprite.GroupSingle()
-    groupe.add(Ready(READYSPAWN))
-    return groupe
-
 class Pastille(pygame.sprite.Sprite):
     def __init__(self, pos):
         pygame.sprite.Sprite.__init__(self)
@@ -176,12 +170,6 @@ class Test(pygame.sprite.Sprite):
     def __init__(self, pos):
         pygame.sprite.Sprite.__init__(self)
         self.image = pygame.image.load(os.path.join('ressource', 'images', 'Key.png'))
-        self.rect = self.image.get_rect(center=pos)
-
-class Ready(pygame.sprite.Sprite):
-    def __init__(self, pos):
-        pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.image.load(os.path.join('ressource', 'images', 'Ready!.png'))
         self.rect = self.image.get_rect(center=pos)
 
 
