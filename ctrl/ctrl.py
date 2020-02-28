@@ -22,3 +22,6 @@ class Ctrl:
 
     def get_surface(self, direction):
         return self.jeu.get_surface(direction)
+
+    def kill_ready(self):
+        self.jeu.ready.kill()

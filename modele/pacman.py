@@ -29,12 +29,9 @@ class PacMan(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(center=pos)
         self.direction = Direction.GAUCHE
 
-        self.GoLeft = [-self.CNSTE_VITESSE, 0]
-        self.GoUp = [0, -self.CNSTE_VITESSE]
-        self.GoRight = [self.CNSTE_VITESSE, 0]
-        self.GoDown = [0, self.CNSTE_VITESSE]
         self.vitesse = [0, 0]
         self.count_anim = 0
+        self.nbr_vie = 5
         self.is_alive = True
 
     """Méthode appelée à chaque update de position du Pac-Man. Dépendement de la direction donnée en paramètre (Enum), set la vitesse actuelle. 
@@ -53,11 +50,12 @@ La vitesse acctuelle est un vecteur représentant la vitesse x et y. Tentative d
 
     """ Méthode qui anime la mort de Pac-Man. 12 images."""
     def kill_animation(self):
+        self.count_anim = self.count_anim + 1
         if self.count_anim <= 11:
             self.image = pygame.image.load(
                 os.path.join(os.path.join('ressource', 'images', 'PacDead' + str(self.count_anim) + '.png')))
-            self.count_anim = self.count_anim + 1
-        return self.count_anim == 12
+            
+        return self.count_anim == 34
 
     """Méthode qui anime le mouvement de Pac-Man"""
     def move_animation(self):
@@ -76,3 +74,12 @@ La vitesse acctuelle est un vecteur représentant la vitesse x et y. Tentative d
                     self.image = self.down_images[self.frame]
         else:
             self.count_anim += 1
+    def respawn(self):
+        self.nbr_vie -= 1
+        self.count_anim = 0
+        self.vitesse = [0,0]
+        self.rect.center = board.PACSPAWN
+        self.image = self.left_images[1]
+        self.is_alive = True
+
+

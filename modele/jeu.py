@@ -12,8 +12,11 @@ class Jeu:
         self.fantomes = None
         self.pellet_anim = 0
         self.pastilles_mangees = 0
+        self.tests = None
+        self.ready = None
         self.partie_terminee = False
         self.nouvelle_partie()
+        self.nbr_vie = 5
 
     # débute une nouvelle partie
     def nouvelle_partie(self):
@@ -22,7 +25,10 @@ class Jeu:
         self.power_pellets = board.grosses_pastilles()
         self.pacman = board.pac_init_pos()
         self.fantomes = board.fantomes_init_pos()
+        self.tests = board.tests()
         self.partie_terminee = False
+        self.ready = board.ready()
+
     """Anime les Power-pellets(Clignotent)"""
     def pellets_animation(self):
         if self.pellet_anim > 6:
@@ -32,13 +38,14 @@ class Jeu:
                 sprite.image = sprite.images[sprite.frame]
         else:
             self.pellet_anim += 1
+
     """Vérifies les collisions entre les groupes de Sprites(voir board.py)"""
     def collision(self):
         if pygame.sprite.groupcollide(groupa=self.pacman, groupb=self.pastilles, dokilla=False, dokillb=True):
             self.pastilles_mangees += 1
 
         if pygame.sprite.groupcollide(groupa=self.pacman, groupb=self.power_pellets, dokilla=False, dokillb=True):
-            print("manger manger manger")
+            self.fantomes.sprite.phase_apeuree()
 
         if pygame.sprite.groupcollide(groupa=self.pacman, groupb=self.fantomes, dokilla=False, dokillb=False):
             self.pacman.sprite.is_alive = False
@@ -50,11 +57,14 @@ class Jeu:
         self.pellets_animation()
         self.pastilles.draw(background)
         self.power_pellets.draw(background)
+        self.tests.draw(background)
+        self.ready.draw(background)
 
         if self.pacman.sprite.is_alive:
             self.collision()
             self.pacman.update(direction)
             self.pacman.sprite.move_animation()
+            board.detecte_noeud(self.pacman.sprite.rect)
             self.fantomes.update()
             #self.fantomes.normal_animation()
             self.fantomes.draw(background)
@@ -66,5 +76,7 @@ class Jeu:
         if self.partie_terminee:
             #Créé un nouveau Pac-Man.
             # self.partie_terminee devient vrai seulement à la fin de l'animation de mort.
-            pass
+            self.partie_terminee = False
+            self.pacman.sprite.respawn()
+
         return background
