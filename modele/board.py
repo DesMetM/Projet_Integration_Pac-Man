@@ -2,7 +2,7 @@ import pygame
 import os
 from modele.direction import Direction
 from modele.pacman import PacMan
-from modele.fantome import Fantome
+from modele.fantome import Blinky, Pinky, Inky, Clyde
 
 # 28i x 30j
 GRILLE_DE_JEU = [
@@ -42,53 +42,42 @@ VIDE = 6
 MUR = 1
 POWER_PELLET = 8
 POINT = 0
-
-NOEUDS = set()
-nbr = 0
-for x in range(len(GRILLE_DE_JEU)):
-    for y in range(len(GRILLE_DE_JEU[0])):
-        currentPos = GRILLE_DE_JEU[x][y]
-        trueCounter = 0
-        if(currentPos == VIDE or currentPos == POINT or currentPos == POWER_PELLET):
-            for d in range(2):
-                for c in {-1,1}:
-                    try:
-                        if d==0:
-                            tempPos = GRILLE_DE_JEU[x+c][y]
-                        else:
-                            tempPos = GRILLE_DE_JEU[x][y+c]
-                        if (trueCounter == d) and (tempPos == VIDE or tempPos == POINT or tempPos == POWER_PELLET):
-                            trueCounter+=1
-                    except IndexError:
-                        pass
-            if trueCounter==2:
-                NOEUDS.add((x,y))
-                nbr+=1
-                print('Succes{}'.format(nbr))
-
-
-
-
-
 SCALING = 24
 DECALAGE = 85
 DECALAGEX = 12
 PACSPAWN = (14 * SCALING, 23 * SCALING + DECALAGE)
-INKYSPAWN = (12 * SCALING, 14 * SCALING + DECALAGE)
-PINKYSPAWN = (14 * SCALING, 14 * SCALING + DECALAGE)
-CLYDESPAWN = (16 * SCALING, 14 * SCALING + DECALAGE)
-BLINKYSPAWN = (14 * SCALING, 11 * SCALING + DECALAGE)
-FANTOMES_SPAWN = {BLINKYSPAWN: 'Blinky', PINKYSPAWN: 'Pinky', INKYSPAWN: 'Inky', CLYDESPAWN: 'Clyde'}
+READYSPAWN = (14 * SCALING, 17 * SCALING + DECALAGE)
+NOEUDS = set()
 
 
+def is_node(x, y):
+    pas_un_mur = 0
+    for dx in [-1, 1]:
+        try:
+            if GRILLE_DE_JEU[x + dx][y] != MUR:
+                pas_un_mur += 1
+                break
+        except IndexError:
+            pass
+
+    for dy in [-1, 1]:
+        try:
+            if GRILLE_DE_JEU[x][y + dy] != MUR:
+                pas_un_mur += 1
+                break
+        except IndexError:
+            pass
+    return pas_un_mur >= 2
+
+
+for x in range(len(GRILLE_DE_JEU)):
+    for y in range(len(GRILLE_DE_JEU[x])):
+        if GRILLE_DE_JEU[x][y] != MUR and is_node(x, y):
+            NOEUDS.add((y * SCALING + DECALAGEX, x * SCALING + DECALAGE))
 
 """Crée le groupe de pellets et les place à leur position de base selon la grille de jeu.
 Le groupe sert à intéragir avec Pac-Man"""
-def tests():
-    groupe = pygame.sprite.Group()
-    for pos in NOEUDS:
-        groupe.add(Test((pos[1]*SCALING + DECALAGEX, pos[0]*SCALING+DECALAGE)))
-    return groupe
+
 
 def pastilles():
     groupe = pygame.sprite.Group()
@@ -98,8 +87,11 @@ def pastilles():
                 groupe.add(Pastille((col * SCALING + DECALAGEX, ligne * SCALING + DECALAGE)))
     return groupe
 
+
 """Crée le groupe de Power-pellets et les place à leur position de base selon la grille ed jeu
 Le groupe sert à intéragir avec Pac-Man"""
+
+
 def grosses_pastilles():
     groupe = pygame.sprite.Group()
     for ligne in range(len(GRILLE_DE_JEU)):
@@ -108,7 +100,10 @@ def grosses_pastilles():
                 groupe.add(GrossePastille((col * SCALING + DECALAGEX, ligne * SCALING + DECALAGE)))
     return groupe
 
+
 """Crée une instance de Pac-Man et lui fait un groupe personnel pour le controller à partir des autres classes."""
+
+
 def pac_init_pos():
     groupe = pygame.sprite.GroupSingle()
     groupe.add(PacMan(PACSPAWN))
@@ -117,11 +112,13 @@ def pac_init_pos():
 
 def fantomes_init_pos():
     groupe = pygame.sprite.Group()
-    for spawn in FANTOMES_SPAWN.keys():
-        groupe.add(Fantome(spawn, FANTOMES_SPAWN[spawn]))
+    groupe.add(Blinky(), Pinky(), Inky(), Clyde())
     return groupe
 
+
 """Vérifies si la position donnée est une entité donnée"""
+
+
 def est_un_mur(position):
     try:
         return GRILLE_DE_JEU[position[1]][position[0]] == MUR
@@ -137,12 +134,14 @@ def tunnel(rect):
         rect.y = 400
         rect.x = -39
 
+
 def detecte_noeud(rect):
-    a = ((rect.centerx - DECALAGEX)//SCALING, (rect.centery - DECALAGE)//SCALING)
-    if a in NOEUDS:
-        print(a)
+    return rect.center in NOEUDS
+
 
 """Vérifies si le prochain pixel dans la trajectoire d'une entité dynamique est un mur"""
+
+
 def collision_mur(rect, direction):
     if direction == Direction.GAUCHE:
         pos_grille = ((rect.left + 4) // SCALING, (rect.centery - DECALAGE) // SCALING)
@@ -165,12 +164,6 @@ class Pastille(pygame.sprite.Sprite):
     def __init__(self, pos):
         pygame.sprite.Sprite.__init__(self)
         self.image = pygame.image.load(os.path.join('ressource', 'images', 'Pellet.png'))
-        self.rect = self.image.get_rect(center=pos)
-
-class Test(pygame.sprite.Sprite):
-    def __init__(self, pos):
-        pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.image.load(os.path.join('ressource', 'images', 'Key.png'))
         self.rect = self.image.get_rect(center=pos)
 
 
