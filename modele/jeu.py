@@ -68,7 +68,7 @@ class Jeu:
             self.pacman.update(direction)
             self.pacman.sprite.move_animation()
             board.detecte_noeud(self.pacman.sprite.rect)
-            self.fantomes.update(self.pacman.sprite.rect, self.pastilles_mangees)
+            self.fantomes.update(self.pacman.sprite.rect, self.pastilles_mangees, self.pacman.sprite.direction)
             self.fantomes.draw(background)
 
         else:

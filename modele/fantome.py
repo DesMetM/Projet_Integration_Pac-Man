@@ -38,7 +38,7 @@ class Fantome(pygame.sprite.Sprite):
         self.image = self.left_images[0]
         self.rect = self.image.get_rect(center=pos)
 
-    def update(self, pac_rect, pastille_mangees):
+    def update(self, pac_rect, pastille_mangees, pac_direction):
         if self.nbr_activation < pastille_mangees:
             if board.detecte_noeud(self.rect):
                 self.choose_direction()
@@ -55,8 +55,13 @@ class Fantome(pygame.sprite.Sprite):
         """
         pass
 
-    def select_target(self):
-        pass
+    def select_target(self, new_target):
+        """
+        Cette méthode donne une nouvelle target au fantôme
+        :param new_target: la nouvelle target du fantôme
+        :return: void
+        """
+        self.target = new_target
 
     def move_to_target(self):
         pass
@@ -109,6 +114,28 @@ class Fantome(pygame.sprite.Sprite):
         # Doit changer la collision avec pacman, au lieu de tuer PacMan, le fantôme meurt
         pass
 
+    def calculer_avance(self, pos_pacman, pac_direction):
+        """
+        Permet de savoir la position plus 4 cases du pacman, s'adapte aussi au tunnel pour donner l'autre bout
+        :param pos_pacman: la position du pac man
+        :param pac_direction: la direction du pac man
+        :return: la position en avance du pac man
+        """
+        if pac_direction == Direction.GAUCHE:
+            if pos_pacman.centerx - 4 * board.SCALING < 0 and pos_pacman.y == 400:
+                return (672 - 4 * board.SCALING, pos_pacman.centery)  # environ 4 cases à la sorite du tunnel
+            else:
+                return (pos_pacman.centerx - 4 * board.SCALING, pos_pacman.centery)
+        elif pac_direction == Direction.DROITE:
+            if pos_pacman.centerx + 4 * board.SCALING > 672 and pos_pacman.y == 400:  # revoir pour les cases
+                return (0 + 4 * board.SCALING, pos_pacman.centery)  # environ 4 cases à la sorite du tunnel
+            else:
+                return (pos_pacman.centerx + 4 * board.SCALING, pos_pacman.centery)
+        elif pac_direction == Direction.HAUT:
+            return (pos_pacman.centerx, pos_pacman.centery - 4 * board.SCALING)
+        elif pac_direction == Direction.BAS:
+            return (pos_pacman.centerx, pos_pacman.centery + 4 * board.SCALING)
+
 
 class Blinky(Fantome):
     SCATTER_TARGET = (670, 1)
@@ -124,6 +151,9 @@ class Blinky(Fantome):
         self.direction = Direction.GAUCHE
         self.vitesse = [x * Fantome.CSTNE_VITESSE for x in self.direction.get_vecteur()]
 
+    def phase_chasse(self, pos_pacman):
+        self.target = (pos_pacman)
+
 
 class Pinky(Fantome):
     SCATTER_TARGET = (1, 1)
@@ -131,7 +161,7 @@ class Pinky(Fantome):
 
     def __init__(self):
         Fantome.__init__(self, Pinky.SPAWN, "Pinky", Pinky.SCATTER_TARGET)
-        self.direction = Direction.HAUT
+        self.direction = Direction.GAUCHE
         self.actif = True
         self.nbr_activation = 5
         self.vitesse = [x * Fantome.CSTNE_VITESSE for x in self.direction.get_vecteur()]
@@ -140,6 +170,9 @@ class Pinky(Fantome):
         self.rect.center = Pinky.SPAWN
         self.direction = Direction.BAS
         self.vitesse = [x * Fantome.CSTNE_VITESSE for x in self.direction.get_vecteur()]
+
+    def phase_chasse(self, pos_avance):
+        self.target = pos_avance
 
 
 class Inky(Fantome):
@@ -157,6 +190,11 @@ class Inky(Fantome):
         self.direction = Direction.BAS
         self.vitesse = [x * Fantome.CSTNE_VITESSE for x in self.direction.get_vecteur()]
 
+    def phase_chasse(self, pos_blinky, pos_avance):
+        difx = pos_avance[0] - pos_blinky[0]
+        dify = pos_avance[1] - pos_blinky[1]
+        self.target = (pos_avance[0] + difx, pos_avance[1] + dify)
+
 
 class Clyde(Fantome):
     SCATTER_TARGET = (1, 860)
@@ -172,3 +210,7 @@ class Clyde(Fantome):
         self.rect.center = Clyde.SPAWN
         self.direction = Direction.BAS
         self.vitesse = [x * Fantome.CSTNE_VITESSE for x in self.direction.get_vecteur()]
+
+    def phase_chasse(self, pos_pacman):
+        # la différence de 8 cases c tu en diagonale?
+        pass
