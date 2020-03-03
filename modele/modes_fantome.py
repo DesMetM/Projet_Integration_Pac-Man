@@ -12,14 +12,5 @@ class Mode(Enum):
     @staticmethod
     def inactif(fantome, jeu):
         if fantome.nbr_activation < jeu.pastilles_mangees:
-            fantome.mode = Mode.DISPERSION
+            fantome.mode = Mode.SORTIR
 
-
-"""
-class Mode(Enum):
-    CHASSE = 0
-    DISPERSION = 1
-    EFFRAYE = 2
-    RETOUR = 3
-    INACTIF = 4
-    SORTIR = 5"""

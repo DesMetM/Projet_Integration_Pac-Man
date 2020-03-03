@@ -9,8 +9,9 @@ from modele.modes_fantome import Mode
 class Fantome(pygame.sprite.Sprite):
     CSTNE_VITESSE = 6
 
-    def __init__(self, pos, nom, target):
-        self.target = target
+    def __init__(self, pos, nom, scatter):
+        self.scatter = scatter
+        self.target = None
         self.mode = Mode.INACTIF
         self.nbr_activation = -1
         self.direction = Direction.GAUCHE
@@ -41,19 +42,6 @@ class Fantome(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(center=pos)
 
     def update(self, jeu):
-        """if self.mode == Mode.INACTIF and self.nbr_activation < jeu.pastilles_mangees:
-            self.mode = Mode.DISPERSION
-        elif self.mode == Mode.CHASSE:
-            self.mode_chasse(jeu)
-        elif self.mode == Mode.DISPERSION:
-            self.avancer()
-        elif self.mode == Mode.EFFRAYE:
-            self.mode_effraye()
-        elif self.mode == Mode.RETOUR:
-            self.retour_au_bercail()
-        elif self.mode == Mode.SORTIR:
-            self.sortir()"""
-
         self.mode(self, jeu)
 
         self.animation()
@@ -65,14 +53,16 @@ class Fantome(pygame.sprite.Sprite):
             self.target = Blinky.SPAWN
 
         if self.rect.center != Blinky.SPAWN:
-            self.choose_direction()
+            self.choose_direction(False)
             self.rect = self.rect.move(self.vitesse)
         else:
             self.set_mode(Mode.DISPERSION)
             self.avancer()
 
     def set_mode(self, mode):
-        pass
+        if mode == Mode.DISPERSION:
+            self.target = self.scatter
+            self.mode = Mode.DISPERSION
 
     def retour_au_bercail(self):
         """
@@ -94,7 +84,7 @@ class Fantome(pygame.sprite.Sprite):
         :return: void
         """
         if board.detecte_noeud(self.rect):
-            self.choose_direction()
+            self.choose_direction(True)
         self.rect = self.rect.move(self.vitesse)
         board.tunnel(self.rect)
 
@@ -105,7 +95,7 @@ class Fantome(pygame.sprite.Sprite):
         """
         pass
 
-    def choose_direction(self):
+    def choose_direction(self, mur):
         """
         Choisi la meilleure direction à prendre vers le target. Prend en compte les murs.
         :return: void
@@ -115,7 +105,8 @@ class Fantome(pygame.sprite.Sprite):
         for d in Direction.__iter__():
             if d == Direction.AUCUNE:
                 break
-            if d != self.direction.opposee() and not board.collision_mur(self.rect, d):
+            if d!= self.direction.opposee and (not mur or (mur and not board.collision_mur(self.rect, d))):
+                #d!= self.direction.opposee and (mur or (not mur and not board.collision_mur(self.rect, d))))
                 v = [x * Fantome.CSTNE_VITESSE for x in Direction.get_vecteur(d)]
                 temp = self.distance(self.rect.move(v))
                 if temp < distance:
@@ -185,6 +176,7 @@ class Blinky(Fantome):
         Fantome.__init__(self, Blinky.SPAWN, "Blinky", Blinky.SCATTER_TARGET)
         self.actif = True
         self.vitesse = [x * Fantome.CSTNE_VITESSE for x in self.direction.get_vecteur()]
+        self.target = self.scatter
 
     def respawn(self):
         self.rect.center = Blinky.SPAWN
@@ -203,9 +195,9 @@ class Pinky(Fantome):
     def __init__(self):
         Fantome.__init__(self, Pinky.SPAWN, "Pinky", Pinky.SCATTER_TARGET)
         self.direction = Direction.GAUCHE
-        self.actif = True
         self.nbr_activation = 5
         self.vitesse = [x * Fantome.CSTNE_VITESSE for x in self.direction.get_vecteur()]
+        self.mode = Mode.INACTIF
 
     def respawn(self):
         self.rect.center = Pinky.SPAWN
@@ -227,6 +219,7 @@ class Inky(Fantome):
         self.direction = Direction.BAS
         self.nbr_activation = 30
         self.vitesse = [x * Fantome.CSTNE_VITESSE for x in self.direction.get_vecteur()]
+        self.mode = Mode.INACTIF
 
     def respawn(self):
         self.rect.center = Inky.SPAWN
@@ -252,6 +245,7 @@ class Clyde(Fantome):
         self.direction = Direction.BAS
         self.nbr_activation = 60
         self.vitesse = [x * Fantome.CSTNE_VITESSE for x in self.direction.get_vecteur()]
+        self.mode = Mode.INACTIF
 
     def respawn(self):
         self.rect.center = Clyde.SPAWN
