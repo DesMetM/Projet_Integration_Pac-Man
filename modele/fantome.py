@@ -40,19 +40,37 @@ class Fantome(pygame.sprite.Sprite):
         self.image = self.left_images[0]
         self.rect = self.image.get_rect(center=pos)
 
-    def update(self, pacman, blinky, pastilles_mangees):
-        if self.mode == Mode.INACTIF and self.nbr_activation < pastilles_mangees:
+    def update(self, jeu):
+        if self.mode == Mode.INACTIF and self.nbr_activation < jeu.pastilles_mangees:
             self.mode = Mode.DISPERSION
         elif self.mode == Mode.CHASSE:
-            self.mode_chasse(pacman=pacman, blinky=blinky)
+            self.mode_chasse(jeu)
         elif self.mode == Mode.DISPERSION:
             self.avancer()
         elif self.mode == Mode.EFFRAYE:
             self.mode_effraye()
         elif self.mode == Mode.RETOUR:
             self.retour_au_bercail()
+        elif self.mode == Mode.SORTIR:
+            self.sortir()
 
         self.animation()
+
+    def sortir(self):
+        if self.rect.centerx != 336:
+            self.target = (336, 421)
+        else:
+            self.target = Blinky.SPAWN
+
+        if self.rect.center != Blinky.SPAWN:
+            self.choose_direction()
+            self.rect = self.rect.move(self.vitesse)
+        else:
+            self.set_mode(Mode.DISPERSION)
+            self.avancer()
+
+    def set_mode(self, mode):
+        pass
 
     def retour_au_bercail(self):
         """
@@ -78,7 +96,7 @@ class Fantome(pygame.sprite.Sprite):
         self.rect = self.rect.move(self.vitesse)
         board.tunnel(self.rect)
 
-    def mode_chasse(self, pacman=None, blinky=None):
+    def mode_chasse(self, jeu):
         """
         Cette méthode doit être redéfinie par chaque enfant. Elle redéfinie le target du fantôme selon son comportement.
         :return:
@@ -171,8 +189,8 @@ class Blinky(Fantome):
         self.direction = Direction.GAUCHE
         self.vitesse = [x * Fantome.CSTNE_VITESSE for x in self.direction.get_vecteur()]
 
-    def mode_chasse(self, pacman=None, blinky=None):
-        self.target = pacman.rect.center
+    def mode_chasse(self, jeu):
+        self.target = jeu.pacman.sprite.rect.center
         self.avancer()
 
 
@@ -192,7 +210,8 @@ class Pinky(Fantome):
         self.direction = Direction.BAS
         self.vitesse = [x * Fantome.CSTNE_VITESSE for x in self.direction.get_vecteur()]
 
-    def mode_chasse(self, pacman=None, blinky=None):
+    def mode_chasse(self, jeu):
+        pacman = jeu.pacman.sprite
         self.target = self.calculer_avance(pacman.rect, pacman.direction, 4)
         self.avancer()
 
@@ -212,7 +231,9 @@ class Inky(Fantome):
         self.direction = Direction.BAS
         self.vitesse = [x * Fantome.CSTNE_VITESSE for x in self.direction.get_vecteur()]
 
-    def mode_chasse(self, pacman=None, blinky=None):
+    def mode_chasse(self, jeu):
+        pacman = jeu.pacman.sprite
+        blinky = jeu.blinky
         pos_avance = self.calculer_avance(pacman.rect, pacman.direction, 2)
         difx = pos_avance[0] - blinky.rect.centerx
         dify = pos_avance[1] - blinky.rect.centery
