@@ -49,6 +49,7 @@ PACSPAWN = (14 * SCALING, 23 * SCALING + DECALAGE)
 READYSPAWN = (14 * SCALING, 17 * SCALING + DECALAGE)
 NOEUDS = set()
 
+
 def is_node(x, y):
     pas_un_mur = 0
     for dx in [-1, 1]:
@@ -111,8 +112,9 @@ def pac_init_pos():
 
 def fantomes_init_pos():
     groupe = pygame.sprite.Group()
-    groupe.add(Blinky(), Pinky(), Inky(), Clyde())
-    return groupe
+    blinky = Blinky()
+    groupe.add(blinky, Pinky(), Inky(), Clyde())
+    return groupe, blinky
 
 
 """Vérifies si la position donnée est une entité donnée"""
