@@ -105,8 +105,7 @@ class Fantome(pygame.sprite.Sprite):
         for d in Direction.__iter__():
             if d == Direction.AUCUNE:
                 break
-            if d!= self.direction.opposee and (not mur or (mur and not board.collision_mur(self.rect, d))):
-                #d!= self.direction.opposee and (mur or (not mur and not board.collision_mur(self.rect, d))))
+            if d != self.direction.opposee() and (not mur or not board.collision_mur(self.rect, d)):
                 v = [x * Fantome.CSTNE_VITESSE for x in Direction.get_vecteur(d)]
                 temp = self.distance(self.rect.move(v))
                 if temp < distance:
@@ -174,14 +173,13 @@ class Blinky(Fantome):
 
     def __init__(self):
         Fantome.__init__(self, Blinky.SPAWN, "Blinky", Blinky.SCATTER_TARGET)
-        self.actif = True
         self.vitesse = [x * Fantome.CSTNE_VITESSE for x in self.direction.get_vecteur()]
         self.target = self.scatter
+        self.mode = Mode.DISPERSION
 
     def respawn(self):
         self.rect.center = Blinky.SPAWN
-        self.direction = Direction.GAUCHE
-        self.vitesse = [x * Fantome.CSTNE_VITESSE for x in self.direction.get_vecteur()]
+        self.mode = Mode.DISPERSION
 
     def mode_chasse(self, jeu):
         self.target = jeu.pacman.sprite.rect.center
@@ -197,12 +195,10 @@ class Pinky(Fantome):
         self.direction = Direction.GAUCHE
         self.nbr_activation = 5
         self.vitesse = [x * Fantome.CSTNE_VITESSE for x in self.direction.get_vecteur()]
-        self.mode = Mode.INACTIF
 
     def respawn(self):
         self.rect.center = Pinky.SPAWN
-        self.direction = Direction.BAS
-        self.vitesse = [x * Fantome.CSTNE_VITESSE for x in self.direction.get_vecteur()]
+        self.mode = Mode.INACTIF
 
     def mode_chasse(self, jeu):
         pacman = jeu.pacman.sprite
@@ -219,12 +215,10 @@ class Inky(Fantome):
         self.direction = Direction.BAS
         self.nbr_activation = 30
         self.vitesse = [x * Fantome.CSTNE_VITESSE for x in self.direction.get_vecteur()]
-        self.mode = Mode.INACTIF
 
     def respawn(self):
         self.rect.center = Inky.SPAWN
-        self.direction = Direction.BAS
-        self.vitesse = [x * Fantome.CSTNE_VITESSE for x in self.direction.get_vecteur()]
+        self.mode = Mode.INACTIF
 
     def mode_chasse(self, jeu):
         pacman = jeu.pacman.sprite
@@ -245,12 +239,10 @@ class Clyde(Fantome):
         self.direction = Direction.BAS
         self.nbr_activation = 60
         self.vitesse = [x * Fantome.CSTNE_VITESSE for x in self.direction.get_vecteur()]
-        self.mode = Mode.INACTIF
 
     def respawn(self):
         self.rect.center = Clyde.SPAWN
-        self.direction = Direction.BAS
-        self.vitesse = [x * Fantome.CSTNE_VITESSE for x in self.direction.get_vecteur()]
+        self.mode = Mode.INACTIF
 
     def mode_chasse(self, pacman=None, blinky=None):
         self.target = pacman.rect.center
