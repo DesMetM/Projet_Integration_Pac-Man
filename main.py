@@ -1,6 +1,7 @@
 import pygame
 import ctrl.ctrl as ctrl
 import os
+from random import randint
 #from modele.direction import Direction
 
 # Initialiser pygame.

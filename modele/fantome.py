@@ -4,6 +4,7 @@ from modele.direction import Direction
 import modele.board as board
 from math import hypot
 from modele.modes_fantome import Mode
+from random import randint
 
 
 class Fantome(pygame.sprite.Sprite):
@@ -16,9 +17,14 @@ class Fantome(pygame.sprite.Sprite):
         self.direction = Direction.GAUCHE
         self.vitesse = [0, 0]
         self.count_anim = 0
+        self.count_effraye = 0
         self.frame = 0
         self.nom = nom
         self.scatter = scatter
+        self.acheve = False
+        self.compteur_peur = 0
+        self.compteur_ini = 0
+        self.niveau = 0
         pygame.sprite.Sprite.__init__(self)
 
         self.up_images = [pygame.image.load(os.path.join('ressource', 'images', '{0}Up0.png'.format(self.nom))),
@@ -63,13 +69,32 @@ class Fantome(pygame.sprite.Sprite):
         if mode == Mode.DISPERSION:
             self.target = self.scatter
             self.mode = Mode.DISPERSION
+        elif mode == Mode.RETOUR:
+            self.retour_au_bercail()
+        elif mode == Mode.EFFRAYE:
+            self.mode_effraye()
+            self.mode = Mode.EFFRAYE
 
     def retour_au_bercail(self):
         """
         Le fantôme retourne dans la cage. self.image est affectée comme étant des yeux seulement.
         :return: void
         """
-        pass
+        #CHANGEMENT D'ANIMATION
+        if self.rect.centerx != Blinky.SPAWN[0] and self.rect.centery != Blinky.SPAWN[1] and self.target!=(336, 421):
+            self.target = Blinky.SPAWN
+        elif self.center == (336, 421):
+            #CHANGEMENT D'ANIMATION
+            self.set_mode(Mode.SORTIR)
+            return 0
+        else:
+            self.target = (336, 421)
+
+        if self.rect.center != Blinky.SPAWN:
+            self.avancer()
+        else:
+            self.choose_direction(False)
+            self.rect = self.rect.move(self.vitesse)
 
     def respawn(self):
         """
@@ -123,22 +148,66 @@ class Fantome(pygame.sprite.Sprite):
         return hypot(rect.centerx - self.target[0], rect.centery - self.target[1])
 
     def animation(self):
-        if self.count_anim > 2:
-            self.count_anim = 0
-            self.frame = not self.frame
-            if self.direction == Direction.GAUCHE:
-                self.image = self.left_images[self.frame]
-            elif self.direction == Direction.HAUT:
-                self.image = self.up_images[self.frame]
-            elif self.direction == Direction.DROITE:
-                self.image = self.right_images[self.frame]
-            elif self.direction == Direction.BAS:
-                self.image = self.down_images[self.frame]
+        if self.mode != Mode.EFFRAYE:
+            if self.count_anim > 2:
+                self.count_anim = 0
+                self.frame = not self.frame
+                if self.direction == Direction.GAUCHE:
+                    self.image = self.left_images[self.frame]
+                elif self.direction == Direction.HAUT:
+                    self.image = self.up_images[self.frame]
+                elif self.direction == Direction.DROITE:
+                    self.image = self.right_images[self.frame]
+                elif self.direction == Direction.BAS:
+                    self.image = self.down_images[self.frame]
+            else:
+                self.count_anim += 1
         else:
-            self.count_anim += 1
+            if self.count_anim > 2 and not self.acheve:
+                self.count_anim = 0
+                if not(self.frame == 0 or self.frame==1):
+                    self.frame = 0
+                self.frame = not self.frame
+                self.image = self.images_scared[self.frame+1]
+            elif self.count_anim >2:
+                self.count_anim=0
+                self.frame = (self.frame+1)%4
+                self.image=self.images_scared[self.frame+1]
+            else:
+                self.count_anim += 1
 
     # Cette phase est activé lorsque le Pac-Man mange un power pellet
     def mode_effraye(self):
+        #DO SOMETHING
+        if self.compteur_peur == 0:
+            self.compteur_ini = pygame.time.get_ticks()
+            self.compteur_peur = self.compteur_ini
+            self.direction = self.direction.opposee()
+        if self.compteur_peur > self.compteur_ini + ((20000-self.niveau)/2):
+            self.acheve = True
+            self.compteur_peur = pygame.time.get_ticks()
+        elif self.compteur_peur == self.compteur_ini + (20000-self.niveau):
+            self.set_mode(Mode.CHASSE)
+            self.compteur_peur = 0
+            self.acheve = False
+        else:
+            self.compteur_peur = pygame.time.get_ticks()
+
+        print(self.compteur_peur)
+        if board.detecte_noeud(self.rect):
+            groupe = []
+            groupe2 = {}
+            for d in Direction.__iter__():
+                if d != self.direction.opposee() and d != self.direction.AUCUNE and not board.collision_mur(self.rect, d):
+                    groupe.append(d)
+            for d in groupe:
+                groupe2[d]=[x * (Fantome.CSTNE_VITESSE*4/5) for x in Direction.get_vecteur(d)]
+            self.direction = groupe[randint(0, len(groupe)-1)]
+            self.vitesse = groupe2[self.direction]
+
+        self.rect = self.rect.move(self.vitesse)
+        board.tunnel(self.rect)
+
         # Doit faire changer la couleur des fantômes
         # Doit durer un temps prédéterminé (20 sec - moins 'niveau')
         # Doit changer la collision avec pacman, au lieu de tuer PacMan, le fantôme meurt
