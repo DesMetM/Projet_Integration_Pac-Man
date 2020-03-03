@@ -11,6 +11,7 @@ class Jeu:
         self.power_pellets = None
         self.pacman = None
         self.fantomes = None
+        self.blinky = None
         self.pellet_anim = 0
         self.pastilles_mangees = 0
         self.ready = None
@@ -24,7 +25,7 @@ class Jeu:
         self.pastilles = board.pastilles()
         self.power_pellets = board.grosses_pastilles()
         self.pacman = board.pac_init_pos()
-        self.fantomes = board.fantomes_init_pos()
+        self.fantomes, self.blinky = board.fantomes_init_pos()
         self.partie_terminee = False
         # self.ready = board.ready()
 
@@ -68,7 +69,7 @@ class Jeu:
             self.pacman.update(direction)
             self.pacman.sprite.move_animation()
             board.detecte_noeud(self.pacman.sprite.rect)
-            self.fantomes.update(self.pacman.sprite.rect, self.pastilles_mangees, self.pacman.sprite.direction)
+            self.fantomes.update(self.pacman.sprite, self.blinky, self.pastilles_mangees)
             self.fantomes.draw(background)
 
         else:
