@@ -1,5 +1,6 @@
 import pygame
 from modele.direction import Direction
+import os
 
 window = pygame.display.set_mode((672, 864))
 
@@ -30,6 +31,7 @@ class Vue:
         key_pressed = [False] * 4
 
         while not quitter:
+
             for event in pygame.event.get():
 
                 if event.type == pygame.QUIT:
@@ -64,6 +66,8 @@ class Vue:
                         break
             else:
                 pac_direction = Direction.AUCUNE
+
+
 
             window.blit(self.ctrl.get_surface(pac_direction), (0, 0))
             pygame.display.update()

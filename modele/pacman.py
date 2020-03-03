@@ -4,12 +4,9 @@ from modele.direction import Direction
 import modele.board as board
 
 """Classe représentant le Pac-Man. Est un enfant de Sprite et redéfinie la méthode Update"""
-
-
 class PacMan(pygame.sprite.Sprite):
     CNSTE_VITESSE = 6
     """Constructeur. Load les images d'animation, set l'image de base, crée le rect et instantie les frames pour l'animation."""
-
     def __init__(self, pos):
         self.frame = 0
         pygame.sprite.Sprite.__init__(self)
@@ -38,7 +35,6 @@ class PacMan(pygame.sprite.Sprite):
 
     """Méthode appelée à chaque update de position du Pac-Man. Dépendement de la direction donnée en paramètre (Enum), set la vitesse actuelle. 
 La vitesse acctuelle est un vecteur représentant la vitesse x et y. Tentative de portail Haha"""
-
     def update(self, direction):
         """Vérifies la présence d'un mur"""
         if direction != Direction.AUCUNE and not board.collision_mur(self.rect, direction):
@@ -52,7 +48,6 @@ La vitesse acctuelle est un vecteur représentant la vitesse x et y. Tentative d
         self.rect = self.rect.move(self.vitesse)
 
     """ Méthode qui anime la mort de Pac-Man. 12 images."""
-
     def kill_animation(self):
         self.count_anim = self.count_anim + 1
         if self.count_anim <= 33:
@@ -61,7 +56,6 @@ La vitesse acctuelle est un vecteur représentant la vitesse x et y. Tentative d
         return self.count_anim == 50
 
     """Méthode qui anime le mouvement de Pac-Man"""
-
     def move_animation(self):
         if self.count_anim > 1:
             self.count_anim = 0
@@ -78,11 +72,12 @@ La vitesse acctuelle est un vecteur représentant la vitesse x et y. Tentative d
                     self.image = self.down_images[self.frame]
         else:
             self.count_anim += 1
-
     def respawn(self):
         self.nbr_vie -= 1
         self.count_anim = 0
-        self.vitesse = [0, 0]
+        self.vitesse = [0,0]
         self.rect.center = board.PACSPAWN
         self.image = self.left_images[1]
         self.is_alive = True
+
+
