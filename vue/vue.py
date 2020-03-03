@@ -1,5 +1,3 @@
-import os
-
 import pygame
 from modele.direction import Direction
 
@@ -25,8 +23,6 @@ class Vue:
         :return:
         """
 
-        partie_commencer = False
-        ready = pygame.image.load(os.path.join('ressource', 'images', 'Ready!.png'))
         quitter = False
         clock = pygame.time.Clock()
         clock.tick(40)
@@ -36,12 +32,12 @@ class Vue:
         while not quitter:
             for event in pygame.event.get():
 
-
-
                 if event.type == pygame.QUIT:
                     quitter = True
+
                 elif event.type == pygame.KEYDOWN:
-                    partie_commencer = True
+                    #if self.ctrl.jeu.ready.alive():
+                        #self.ctrl.jeu.ready.kill()
                     if event.key == pygame.K_LEFT:
                         key_pressed[Direction.GAUCHE.value] = True
                     if event.key == pygame.K_UP:
@@ -70,6 +66,4 @@ class Vue:
                 pac_direction = Direction.AUCUNE
 
             window.blit(self.ctrl.get_surface(pac_direction), (0, 0))
-            if not partie_commencer:
-                window.blit(ready, (270, 485))
             pygame.display.update()
