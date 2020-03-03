@@ -24,7 +24,6 @@ class Vue:
         Crée les events pour que le joueur puisse puisse jouer
         :return:
         """
-
         partie_commencer = False
         ready = pygame.image.load(os.path.join('ressource', 'images', 'Ready!.png'))
         quitter = False
@@ -36,10 +35,9 @@ class Vue:
         while not quitter:
             for event in pygame.event.get():
 
-
-
                 if event.type == pygame.QUIT:
                     quitter = True
+
                 elif event.type == pygame.KEYDOWN:
                     partie_commencer = True
                     if event.key == pygame.K_LEFT:
