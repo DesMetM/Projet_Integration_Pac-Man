@@ -9,8 +9,8 @@ from modele.modes_fantome import Mode
 class Fantome(pygame.sprite.Sprite):
     CSTNE_VITESSE = 6
 
-    def __init__(self, pos, nom, target):
-        self.target = target
+    def __init__(self, pos, nom, scatter):
+        self.target = None
         self.mode = Mode.INACTIF
         self.nbr_activation = -1
         self.direction = Direction.GAUCHE
@@ -18,6 +18,7 @@ class Fantome(pygame.sprite.Sprite):
         self.count_anim = 0
         self.frame = 0
         self.nom = nom
+        self.scatter = scatter
         pygame.sprite.Sprite.__init__(self)
 
         self.up_images = [pygame.image.load(os.path.join('ressource', 'images', '{0}Up0.png'.format(self.nom))),
@@ -181,6 +182,7 @@ class Blinky(Fantome):
 
     def __init__(self):
         Fantome.__init__(self, Blinky.SPAWN, "Blinky", Blinky.SCATTER_TARGET)
+        self.target = Blinky.SCATTER_TARGET
         self.actif = True
         self.vitesse = [x * Fantome.CSTNE_VITESSE for x in self.direction.get_vecteur()]
 
@@ -201,7 +203,6 @@ class Pinky(Fantome):
     def __init__(self):
         Fantome.__init__(self, Pinky.SPAWN, "Pinky", Pinky.SCATTER_TARGET)
         self.direction = Direction.GAUCHE
-        self.actif = True
         self.nbr_activation = 5
         self.vitesse = [x * Fantome.CSTNE_VITESSE for x in self.direction.get_vecteur()]
 
@@ -221,7 +222,7 @@ class Inky(Fantome):
     SPAWN = (288, 421)
 
     def __init__(self):
-        Fantome.__init__(self, Inky.SPAWN, "Inky", Inky.SCATTER_TARGET)
+        Fantome.__init__(self, Inky.SPAWN, "Inky",Inky.SCATTER_TARGET)
         self.direction = Direction.BAS
         self.nbr_activation = 30
         self.vitesse = [x * Fantome.CSTNE_VITESSE for x in self.direction.get_vecteur()]
@@ -261,3 +262,32 @@ class Clyde(Fantome):
         if self.distance(self.rect) < 192:
             self.target = Clyde.SCATTER_TARGET
         self.avancer()
+
+
+"""
+Concept de l'idée de Nic.
+def Move_Bypass
+    déplace le fantôme dans le vecteur le plus petit(horizontal ou vertical) vers la target actuelle. Ne se soucit pas des noeuds ou des murs.
+def targets_sortie
+    fait une séries de targets (peut-etre 2? 1 au milieu de la boite et l'autre en dehors)
+def combinier
+    Combine les deux pour faire une sortie fluide
+    
+Concept de la 2e idée de Nic.
+    def conduire_voiture
+        conduire une voiture
+    def choisir_destination
+        choisis une destination(defaut = Canac)
+    def magasiner
+        magasiner(defaut = corde)
+    def payer
+        paye ce qu'on a magasiné(gardé en mémoire)
+    def utiliser
+        utilise ce qu'ont a acheté(defaut = auto-pendaison)
+    def suicide
+        conduire_voiture(choisir_destination())
+        obj = magasiner()
+        payer()
+        conduire_voiture(choisir_destination(maison))
+        utiliser()
+"""

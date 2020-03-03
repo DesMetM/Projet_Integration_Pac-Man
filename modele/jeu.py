@@ -4,11 +4,11 @@ import modele.board as board
 
 
 # permet de partir une nouvelle partie avec les éléments
-APP_FOLDER = os.path.dirname(os.path.realpath(sys.argv[0]))
+#APP_FOLDER = os.path.dirname(os.path.realpath(sys.argv[0]))
 
 class Jeu:
     def __init__(self):
-        self.chomp = pygame.mixer.Sound(os.path.join('ressource', 'sons', 'Chomp.wav'))
+        #self.chomp = pygame.mixer.Sound(os.path.join('ressource', 'sons', 'Chomp.wav'))
         self.pastilles = None
         self.power_pellets = None
         self.pacman = None
@@ -20,8 +20,8 @@ class Jeu:
         self.partie_terminee = False
         self.nouvelle_partie()
         self.nbr_vie = 5
-        self.bool_chomp = False;
-        #pygame.mixer.Sound(os.path.join('ressource','sons','Death.wav')).play(-1)
+        #self.bool_chomp = False;
+        pygame.mixer.Sound(os.path.join('ressource','sons','Chomp.wav')).play(-1)
     # débute une nouvelle partie
     def nouvelle_partie(self):
         '''Reset tout pour une nouvelle partie.'''
