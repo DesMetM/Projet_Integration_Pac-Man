@@ -41,7 +41,7 @@ class Fantome(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(center=pos)
 
     def update(self, jeu):
-        if self.mode == Mode.INACTIF and self.nbr_activation < jeu.pastilles_mangees:
+        """if self.mode == Mode.INACTIF and self.nbr_activation < jeu.pastilles_mangees:
             self.mode = Mode.DISPERSION
         elif self.mode == Mode.CHASSE:
             self.mode_chasse(jeu)
@@ -52,7 +52,9 @@ class Fantome(pygame.sprite.Sprite):
         elif self.mode == Mode.RETOUR:
             self.retour_au_bercail()
         elif self.mode == Mode.SORTIR:
-            self.sortir()
+            self.sortir()"""
+
+        self.mode(self, jeu)
 
         self.animation()
 
