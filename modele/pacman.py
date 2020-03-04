@@ -30,7 +30,7 @@ class PacMan(pygame.sprite.Sprite):
 
         self.rect = self.image.get_rect(center=pos)
         self.direction = Direction.GAUCHE
-
+        self.radius = 21
         self.vitesse = [0, 0]
         self.count_anim = 0
         self.nbr_vie = 4

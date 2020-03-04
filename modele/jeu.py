@@ -49,7 +49,11 @@ class Jeu:
             # self.fantomes.sprite.phase_apeuree()
             pass
 
-        if pygame.sprite.groupcollide(groupa=self.pacman, groupb=self.fantomes, dokilla=False, dokillb=False):
+        # if pygame.sprite.groupcollide(groupa=self.pacman, groupb=self.fantomes, dokilla=False, dokillb=False):
+        # self.pacman.sprite.is_alive = False
+        # self.pacman.sprite.count_anim = 0
+
+        if pygame.sprite.spritecollide(self.pacman.sprite, self.fantomes, False, pygame.sprite.collide_circle):
             self.pacman.sprite.is_alive = False
             self.pacman.sprite.count_anim = 0
 

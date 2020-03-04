@@ -16,6 +16,7 @@ class Fantome(pygame.sprite.Sprite):
         self.count_anim = 0
         self.frame = 0
         self.nom = nom
+        self.radius = 21
         pygame.sprite.Sprite.__init__(self)
 
         self.up_images = [pygame.image.load(os.path.join('ressource', 'images', '{0}Up0.png'.format(self.nom))),
