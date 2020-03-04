@@ -55,8 +55,9 @@ class Jeu:
         if pygame.sprite.groupcollide(groupa=self.pacman, groupb=self.power_pellets, dokilla=False, dokillb=True):
             for x in self.fantomes.__iter__():
                 x.set_mode(Mode.EFFRAYE)
-                self.phase_effraye= True
+                self.phase_effraye = True
         if pygame.sprite.groupcollide(groupa=self.pacman, groupb=self.fantomes, dokilla=False, dokillb=False):
+            self.encore_effraye()
             if not self.phase_effraye:
                 self.pacman.sprite.is_alive = False
                 self.pacman.sprite.count_anim = 0
@@ -65,6 +66,11 @@ class Jeu:
                 #AJOUTER POINTS
                 #SET_MODE
                 pass
+    def encore_effraye(self):
+        self.phase_effraye = False
+        for f in self.fantomes:
+            if f.mode == Mode.EFFRAYE:
+                self.phase_effraye = True
 
 
     def get_surface(self, direction) -> pygame.Surface:

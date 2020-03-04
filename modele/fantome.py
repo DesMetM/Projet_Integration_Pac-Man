@@ -83,14 +83,15 @@ class Fantome(pygame.sprite.Sprite):
         #CHANGEMENT D'ANIMATION
         if self.rect.centerx != Blinky.SPAWN[0] and self.rect.centery != Blinky.SPAWN[1] and self.target!=(336, 421):
             self.target = Blinky.SPAWN
-        elif self.center == (336, 421):
-            #CHANGEMENT D'ANIMATION
-            self.set_mode(Mode.SORTIR)
-            return 0
         else:
             self.target = (336, 421)
 
-        if self.rect.center != Blinky.SPAWN:
+        if self.center == (336, 421):
+            #CHANGEMENT D'ANIMATION
+            self.set_mode(Mode.SORTIR)
+            return 0
+
+        if self.target != (336, 421):
             self.avancer()
         else:
             self.choose_direction(False)
@@ -183,17 +184,16 @@ class Fantome(pygame.sprite.Sprite):
             self.compteur_ini = pygame.time.get_ticks()
             self.compteur_peur = self.compteur_ini
             self.direction = self.direction.opposee()
-        if self.compteur_peur > self.compteur_ini + ((20000-self.niveau)/2):
+        if self.compteur_peur > self.compteur_ini + ((20000-self.niveau*500)/2) and self.compteur_peur<self.compteur_ini + (20000-self.niveau*500):
             self.acheve = True
             self.compteur_peur = pygame.time.get_ticks()
-        elif self.compteur_peur == self.compteur_ini + (20000-self.niveau):
-            self.set_mode(Mode.CHASSE)
+        elif pygame.time.get_ticks() >= self.compteur_ini + (20000-self.niveau*500):
+            self.set_mode(Mode.DISPERSION)
             self.compteur_peur = 0
             self.acheve = False
         else:
             self.compteur_peur = pygame.time.get_ticks()
 
-        print(self.compteur_peur)
         if board.detecte_noeud(self.rect):
             groupe = []
             groupe2 = {}
@@ -201,7 +201,7 @@ class Fantome(pygame.sprite.Sprite):
                 if d != self.direction.opposee() and d != self.direction.AUCUNE and not board.collision_mur(self.rect, d):
                     groupe.append(d)
             for d in groupe:
-                groupe2[d]=[x * (Fantome.CSTNE_VITESSE*4/5) for x in Direction.get_vecteur(d)]
+                groupe2[d]=[x * (Fantome.CSTNE_VITESSE*3/5) for x in Direction.get_vecteur(d)]
             self.direction = groupe[randint(0, len(groupe)-1)]
             self.vitesse = groupe2[self.direction]
 
