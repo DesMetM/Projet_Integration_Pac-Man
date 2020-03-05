@@ -5,11 +5,11 @@ from modele.modes_fantome import Mode
 
 
 # permet de partir une nouvelle partie avec les éléments
-#APP_FOLDER = os.path.dirname(os.path.realpath(sys.argv[0]))
+# APP_FOLDER = os.path.dirname(os.path.realpath(sys.argv[0]))
 
 class Jeu:
     def __init__(self):
-        #self.chomp = pygame.mixer.Sound(os.path.join('ressource', 'sons', 'Chomp.wav'))
+        # self.chomp = pygame.mixer.Sound(os.path.join('ressource', 'sons', 'Chomp.wav'))
         self.pastilles = None
         self.power_pellets = None
         self.pacman = None
@@ -22,8 +22,9 @@ class Jeu:
         self.nouvelle_partie()
         self.nbr_vie = 5
         self.phase_effraye = False
-        #self.bool_chomp = False;
-        #pygame.mixer.Sound(os.path.join('ressource','sons','Chomp.wav')).play(-1)
+        # self.bool_chomp = False;
+        # pygame.mixer.Sound(os.path.join('ressource','sons','Chomp.wav')).play(-1)
+
     # débute une nouvelle partie
     def nouvelle_partie(self):
         '''Reset tout pour une nouvelle partie.'''
@@ -48,31 +49,34 @@ class Jeu:
     """Vérifies les collisions entre les groupes de Sprites(voir board.py)"""
 
     def collision(self):
-
-        if pygame.sprite.groupcollide(groupa=self.pacman, groupb=self.pastilles, dokilla=False, dokillb=True):
+        if pygame.sprite.groupcollide(groupa=self.pacman, groupb=self.pastilles, dokilla=False,
+                                      dokillb=True):  # collision avec une pastille
             self.pastilles_mangees += 1
 
         if pygame.sprite.groupcollide(groupa=self.pacman, groupb=self.power_pellets, dokilla=False, dokillb=True):
-            for x in self.fantomes:
-                if x.mode != Mode.INACTIF:
-                    x.set_mode(Mode.EFFRAYE)
-                    self.phase_effraye = True
-        if pygame.sprite.groupcollide(groupa=self.pacman, groupb=self.fantomes, dokilla=False, dokillb=False):
-            self.encore_effraye()
-            if not self.phase_effraye:
-                self.pacman.sprite.is_alive = False
-                self.pacman.sprite.count_anim = 0
-            else:
-                #DÉTECTER QUEL FANTOME A ÉTÉ MANGÉ
-                #AJOUTER POINTS
-                #SET_MODE
-                pass
+
+            for x in self.fantomes.__iter__():  # collision avec Power pellet
+                x.set_mode(Mode.EFFRAYE)
+                self.phase_effraye = True
+
+        fantome_list = pygame.sprite.spritecollide(self.pacman.sprite, self.fantomes, False,
+                                                   pygame.sprite.collide_circle)
+
+        if fantome_list:  # collision avec un fantome
+            for ghost in fantome_list:
+                if (ghost.mode is not Mode.EFFRAYE) and (ghost.mode is not Mode.RETOUR):
+                    self.pacman.sprite.is_alive = False
+                    self.pacman.sprite.count_anim = 0
+                    print(self.pacman.sprite.rect.center)
+                elif ghost.mode is Mode.EFFRAYE:
+                    ghost.set_mode(Mode.RETOUR)
+
+
     def encore_effraye(self):
         self.phase_effraye = False
         for f in self.fantomes:
             if f.mode == Mode.EFFRAYE:
                 self.phase_effraye = True
-
 
     def get_surface(self, direction) -> pygame.Surface:
         '''Point d'entrée du ctrl.'''

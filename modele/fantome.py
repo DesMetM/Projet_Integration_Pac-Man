@@ -20,6 +20,7 @@ class Fantome(pygame.sprite.Sprite):
         self.count_effraye = 0
         self.frame = 0
         self.nom = nom
+        self.radius = 21
         self.scatter = scatter
         self.acheve = False
         self.compteur_peur = 0
@@ -260,6 +261,7 @@ class Pinky(Fantome):
     def __init__(self):
         Fantome.__init__(self, Pinky.SPAWN, "Pinky", Pinky.SCATTER_TARGET)
         self.direction = Direction.GAUCHE
+        self.actif = True
         self.nbr_activation = 5
         self.vitesse = [x * Fantome.CSTNE_VITESSE for x in self.direction.get_vecteur()]
 
