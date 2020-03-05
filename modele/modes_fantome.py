@@ -13,4 +13,3 @@ class Mode(Enum):
     def inactif(fantome, jeu):
         if fantome.nbr_activation < jeu.pastilles_mangees:
             fantome.mode = Mode.SORTIR
-

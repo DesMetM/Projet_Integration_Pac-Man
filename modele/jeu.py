@@ -6,11 +6,11 @@ from modele.fantome import Fantome
 
 
 # permet de partir une nouvelle partie avec les éléments
-#APP_FOLDER = os.path.dirname(os.path.realpath(sys.argv[0]))
+# APP_FOLDER = os.path.dirname(os.path.realpath(sys.argv[0]))
 
 class Jeu:
     def __init__(self):
-        #self.chomp = pygame.mixer.Sound(os.path.join('ressource', 'sons', 'Chomp.wav'))
+        # self.chomp = pygame.mixer.Sound(os.path.join('ressource', 'sons', 'Chomp.wav'))
         self.pastilles = None
         self.power_pellets = None
         self.pacman = None
@@ -24,8 +24,9 @@ class Jeu:
         self.nbr_vie = 5
         self.phase_effraye = False
         self._CURRENT_MODE = Mode.CHASSE
-        #self.bool_chomp = False;
-        #pygame.mixer.Sound(os.path.join('ressource','sons','Chomp.wav')).play(-1)
+        # self.bool_chomp = False;
+        # pygame.mixer.Sound(os.path.join('ressource','sons','Chomp.wav')).play(-1)
+
     # débute une nouvelle partie
     def nouvelle_partie(self):
         '''Reset tout pour une nouvelle partie.'''
@@ -34,7 +35,6 @@ class Jeu:
         self.pacman = board.pac_init_pos()
         self.fantomes, self.blinky = board.fantomes_init_pos()
         self.partie_terminee = False
-        # self.ready = board.ready()
 
     """Anime les Power-pellets(Clignotent)"""
 
@@ -58,7 +58,7 @@ class Jeu:
             for x in self.fantomes:
                 Fantome.compteur_peur = 0
                 Fantome.acheve = False
-                if x.mode != Mode.INACTIF and x.mode!=Mode.RETOUR:
+                if x.mode != Mode.INACTIF and x.mode != Mode.RETOUR:
                     x.set_mode(Mode.EFFRAYE)
                     self.phase_effraye = True
 
@@ -70,7 +70,6 @@ class Jeu:
                 if (ghost.mode is not Mode.EFFRAYE) and (ghost.mode is not Mode.RETOUR):
                     self.pacman.sprite.is_alive = False
                     self.pacman.sprite.count_anim = 0
-                    print(self.pacman.sprite.rect.center)
                 elif ghost.mode is Mode.EFFRAYE:
                     ghost.set_mode(Mode.RETOUR)
 
@@ -79,7 +78,6 @@ class Jeu:
         for f in self.fantomes:
             if f.mode == Mode.EFFRAYE:
                 self.phase_effraye = True
-
 
     def get_surface(self, direction) -> pygame.Surface:
         '''Point d'entrée du ctrl.'''
@@ -96,7 +94,7 @@ class Jeu:
                 if f.mode != Mode.INACTIF:
                     f.set_mode(self._CURRENT_MODE)
             Fantome.acheve = False
-            Fantome.compteur_peur=0
+            Fantome.compteur_peur = 0
 
         if self.pacman.sprite.is_alive:
             self.collision()

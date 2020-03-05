@@ -104,7 +104,7 @@ class Fantome(pygame.sprite.Sprite):
 
         self.rect = self.rect.move(self.vitesse)
 
-    def respawn(self):
+    def respawn(self, jeu):
         """
         Cette méthode doit être redéfinie par chaque enfant. Elle affecte la vitesse, la direction et la position du spawn du fantôme.
         :return: void
@@ -163,11 +163,11 @@ class Fantome(pygame.sprite.Sprite):
                 if self.direction == Direction.GAUCHE:
                     self.image = self.left_images[self.frame if self.mode != Mode.RETOUR else 2]
                 elif self.direction == Direction.HAUT:
-                    self.image = self.up_images[self.frame if self.mode!=Mode.RETOUR else 2]
+                    self.image = self.up_images[self.frame if self.mode != Mode.RETOUR else 2]
                 elif self.direction == Direction.DROITE:
-                    self.image = self.right_images[self.frame if self.mode!=Mode.RETOUR else 2]
+                    self.image = self.right_images[self.frame if self.mode != Mode.RETOUR else 2]
                 elif self.direction == Direction.BAS:
-                    self.image = self.down_images[self.frame if self.mode!=Mode.RETOUR else 2]
+                    self.image = self.down_images[self.frame if self.mode != Mode.RETOUR else 2]
             else:
                 self.count_anim += 1
         else:
@@ -187,27 +187,25 @@ class Fantome(pygame.sprite.Sprite):
     # Cette phase est activé lorsque le Pac-Man mange un power pellet
     def mode_effraye(self):
 
-
         if Fantome.compteur_peur == 0:
             Fantome.compteur_ini = pygame.time.get_ticks()  # Temps au moment du premier appel de la méthode
-            Fantome.compteur_peur = Fantome.compteur_ini    # Set le compteur de base à sa position de base, c'est-à-dire le compteur initial
+            Fantome.compteur_peur = Fantome.compteur_ini  # Set le compteur de base à sa position de base, c'est-à-dire le compteur initial
         Fantome.compteur_peur = pygame.time.get_ticks()  # Update le compteur
 
-        if Fantome.compteur_ini + Fantome.temps_half < Fantome.compteur_peur < Fantome.compteur_ini + Fantome.temps_max:   # Check si passé moité temps et avant fin temps
-            Fantome.acheve = True   # Variable pour savoir si les fantômes devraient clignoter (True = oui, False = non)
+        if Fantome.compteur_ini + Fantome.temps_half < Fantome.compteur_peur < Fantome.compteur_ini + Fantome.temps_max:  # Check si passé moité temps et avant fin temps
+            Fantome.acheve = True  # Variable pour savoir si les fantômes devraient clignoter (True = oui, False = non)
 
         """elif Fantome.compteur_peur >= Fantome.compteur_ini + Fantome.temps_max:    # Si phase terminée(temps écoulé)
             Fantome.acheve = False  # Reset les attributes reliés à la peur
             #self.set_mode(Mode.DISPERSION)
             return"""
 
-
         if board.detecte_noeud(self.rect):
             groupe = {}
             for d in Direction.__iter__():
                 if d != self.direction.opposee() and d != self.direction.AUCUNE \
                         and not board.collision_mur(self.rect, d):
-                    v = [x*(Fantome.CSTNE_VITESSE * 3 / 5) for x in Direction.get_vecteur(d)]
+                    v = [x * (Fantome.CSTNE_VITESSE * 3 / 5) for x in Direction.get_vecteur(d)]
                     groupe[d] = v
 
             self.direction = random.choice(list(groupe.keys()))
@@ -269,7 +267,7 @@ class Pinky(Fantome):
         self.nbr_activation = 5
         self.vitesse = [x * Fantome.CSTNE_VITESSE for x in self.direction.get_vecteur()]
 
-    def respawn(self):
+    def respawn(self, jeu):
         self.rect.center = Pinky.SPAWN
         self.mode = Mode.INACTIF
 
@@ -289,7 +287,7 @@ class Inky(Fantome):
         self.nbr_activation = 30
         self.vitesse = [x * Fantome.CSTNE_VITESSE for x in self.direction.get_vecteur()]
 
-    def respawn(self):
+    def respawn(self, jeu):
         self.rect.center = Inky.SPAWN
         self.mode = Mode.INACTIF
 
@@ -313,7 +311,7 @@ class Clyde(Fantome):
         self.nbr_activation = 60
         self.vitesse = [x * Fantome.CSTNE_VITESSE for x in self.direction.get_vecteur()]
 
-    def respawn(self):
+    def respawn(self, jeu):
         self.rect.center = Clyde.SPAWN
         self.mode = Mode.INACTIF
 
