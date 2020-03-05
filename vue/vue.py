@@ -31,8 +31,11 @@ class Vue:
         clock = pygame.time.Clock()
         clock.tick(40)
         pac_direction = Direction.AUCUNE
-        key_pressed = [False] * 4
+
+        key_pressed = []
+
         window.blit(self.ctrl.get_surface(Direction.AUCUNE), (0, 0))
+
 
         while not quitter:
 
@@ -42,37 +45,41 @@ class Vue:
                     quitter = True
 
                 elif event.type == pygame.KEYDOWN:
+
                     partie_commencer = True
+
                     if event.key == pygame.K_LEFT:
-                        key_pressed[Direction.GAUCHE.value] = True
+                        key_pressed.append(Direction.GAUCHE)
                     if event.key == pygame.K_UP:
-                        key_pressed[Direction.HAUT.value] = True
+                        key_pressed.append(Direction.HAUT)
                     if event.key == pygame.K_RIGHT:
-                        key_pressed[Direction.DROITE.value] = True
+                        key_pressed.append(Direction.DROITE)
                     if event.key == pygame.K_DOWN:
-                        key_pressed[Direction.BAS.value] = True
+
+                        key_pressed.append(Direction.BAS)
                     if event.key == pygame.K_ESCAPE:
                         quitter = True
+
 
                 elif event.type == pygame.KEYUP:
                     if event.key == pygame.K_LEFT:
-                        key_pressed[Direction.GAUCHE.value] = False
+                        key_pressed.remove(Direction.GAUCHE)
                     if event.key == pygame.K_UP:
-                        key_pressed[Direction.HAUT.value] = False
+                        key_pressed.remove(Direction.HAUT)
                     if event.key == pygame.K_RIGHT:
-                        key_pressed[Direction.DROITE.value] = False
+                        key_pressed.remove(Direction.DROITE)
                     if event.key == pygame.K_DOWN:
-                        key_pressed[Direction.BAS.value] = False
+
+                        key_pressed.remove(Direction.BAS)
                     if event.key == pygame.K_ESCAPE:
                         quitter = True
 
-            if any(key_pressed):
-                for direction in Direction.__iter__():
-                    if key_pressed[direction.value]:
-                        pac_direction = direction
-                        break
+
+            if key_pressed:
+                pac_direction = key_pressed[-1]
             else:
                 pac_direction = Direction.AUCUNE
+
 
             if not partie_commencer:
                 window.blit(ready, (270, 485))
