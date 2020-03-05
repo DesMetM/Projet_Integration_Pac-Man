@@ -23,7 +23,7 @@ class Jeu:
         self.nouvelle_partie()
         self.nbr_vie = 5
         self.phase_effraye = False
-        self._CURRENT_MODE = Mode.DISPERSION
+        self._CURRENT_MODE = Mode.CHASSE
         #self.bool_chomp = False;
         #pygame.mixer.Sound(os.path.join('ressource','sons','Chomp.wav')).play(-1)
     # débute une nouvelle partie

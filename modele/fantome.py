@@ -62,7 +62,7 @@ class Fantome(pygame.sprite.Sprite):
 
         self.animation()
 
-    def sortir(self):
+    def sortir(self, jeu):
         if self.rect.centerx != 336:
             self.target = (336, 421)
         else:
@@ -72,7 +72,7 @@ class Fantome(pygame.sprite.Sprite):
             self.choose_direction(False)
             self.rect = self.rect.move(self.vitesse)
         else:
-            self.set_mode(Mode.DISPERSION)
+            self.set_mode(jeu._CURRENT_MODE)
             self.avancer()
 
     def set_mode(self, mode):
@@ -248,7 +248,6 @@ class Blinky(Fantome):
         self.actif = True
         self.vitesse = [x * Fantome.CSTNE_VITESSE for x in self.direction.get_vecteur()]
         self.target = self.scatter
-        self.mode = Mode.DISPERSION
 
     def respawn(self):
         self.rect.center = Blinky.SPAWN
@@ -318,8 +317,8 @@ class Clyde(Fantome):
         self.rect.center = Clyde.SPAWN
         self.mode = Mode.INACTIF
 
-    def mode_chasse(self, pacman=None, blinky=None):
-        self.target = pacman.rect.center
+    def mode_chasse(self, jeu):
+        self.target = jeu.pacman.sprite.rect.center
         if self.distance(self.rect) < 192:
             self.target = Clyde.SCATTER_TARGET
         self.avancer()
