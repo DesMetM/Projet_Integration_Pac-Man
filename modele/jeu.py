@@ -54,6 +54,7 @@ class Jeu:
             self.pastilles_mangees += 1
 
         if pygame.sprite.groupcollide(groupa=self.pacman, groupb=self.power_pellets, dokilla=False, dokillb=True):
+
             for x in self.fantomes.__iter__():  # collision avec Power pellet
                 x.set_mode(Mode.EFFRAYE)
                 self.phase_effraye = True
@@ -70,11 +71,6 @@ class Jeu:
                 elif ghost.mode is Mode.EFFRAYE:
                     ghost.set_mode(Mode.RETOUR)
 
-        """
-                #DÉTECTER QUEL FANTOME A ÉTÉ MANGÉ
-                #AJOUTER POINTS
-                #SET_MODE
-                pass"""
 
     def encore_effraye(self):
         self.phase_effraye = False

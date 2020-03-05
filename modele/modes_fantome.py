@@ -5,7 +5,7 @@ class Mode(Enum):
     CHASSE = lambda fantome, jeu: fantome.mode_chasse(jeu)
     DISPERSION = lambda fantome, jeu: fantome.avancer()
     EFFRAYE = lambda fantome, jeu: fantome.mode_effraye()
-    RETOUR = 3
+    RETOUR = lambda fantome, jeu: fantome.retour_au_bercail()
     INACTIF = lambda fantome, jeu: Mode.inactif(fantome, jeu)
     SORTIR = lambda fantome, jeu: fantome.sortir()
 
