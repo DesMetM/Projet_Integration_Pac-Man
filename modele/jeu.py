@@ -2,14 +2,15 @@ import pygame
 import os, sys
 import modele.board as board
 from modele.modes_fantome import Mode
+from modele.fantome import Fantome
 
 
 # permet de partir une nouvelle partie avec les éléments
-# APP_FOLDER = os.path.dirname(os.path.realpath(sys.argv[0]))
+#APP_FOLDER = os.path.dirname(os.path.realpath(sys.argv[0]))
 
 class Jeu:
     def __init__(self):
-        # self.chomp = pygame.mixer.Sound(os.path.join('ressource', 'sons', 'Chomp.wav'))
+        #self.chomp = pygame.mixer.Sound(os.path.join('ressource', 'sons', 'Chomp.wav'))
         self.pastilles = None
         self.power_pellets = None
         self.pacman = None
@@ -22,9 +23,9 @@ class Jeu:
         self.nouvelle_partie()
         self.nbr_vie = 5
         self.phase_effraye = False
-        # self.bool_chomp = False;
-        # pygame.mixer.Sound(os.path.join('ressource','sons','Chomp.wav')).play(-1)
-
+        self._CURRENT_MODE = Mode.DISPERSION
+        #self.bool_chomp = False;
+        #pygame.mixer.Sound(os.path.join('ressource','sons','Chomp.wav')).play(-1)
     # débute une nouvelle partie
     def nouvelle_partie(self):
         '''Reset tout pour une nouvelle partie.'''
@@ -54,9 +55,10 @@ class Jeu:
             self.pastilles_mangees += 1
 
         if pygame.sprite.groupcollide(groupa=self.pacman, groupb=self.power_pellets, dokilla=False, dokillb=True):
-
-            for x in self.fantomes.__iter__():  # collision avec Power pellet
-                if x.mode != Mode.RETOUR and x.mode != Mode.INACTIF:
+            for x in self.fantomes:
+                Fantome.compteur_peur = 0
+                Fantome.acheve = False
+                if x.mode != Mode.INACTIF and x.mode!=Mode.RETOUR:
                     x.set_mode(Mode.EFFRAYE)
                     self.phase_effraye = True
 
@@ -78,6 +80,7 @@ class Jeu:
             if f.mode == Mode.EFFRAYE:
                 self.phase_effraye = True
 
+
     def get_surface(self, direction) -> pygame.Surface:
         '''Point d'entrée du ctrl.'''
         background = pygame.image.load(os.path.join('ressource', 'images', 'Board.png'))
@@ -87,6 +90,13 @@ class Jeu:
 
         for life in range(self.pacman.sprite.nbr_vie):
             background.blit(self.pacman.sprite.left_images[1], (60 + life * 60, 815))
+
+        if Fantome.compteur_peur >= Fantome.compteur_ini + Fantome.temps_max:
+            for f in self.fantomes:
+                if f.mode != Mode.INACTIF:
+                    f.set_mode(self._CURRENT_MODE)
+            Fantome.acheve = False
+            Fantome.compteur_peur=0
 
         if self.pacman.sprite.is_alive:
             self.collision()
