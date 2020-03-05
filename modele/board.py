@@ -51,6 +51,7 @@ NOEUDS = set()
 
 NOEUDS.add(Blinky.SPAWN)
 
+
 def is_node(x, y):
     pas_un_mur = 0
     for dx in [-1, 1]:

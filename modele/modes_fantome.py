@@ -7,10 +7,9 @@ class Mode(Enum):
     EFFRAYE = lambda fantome, jeu: fantome.mode_effraye()
     RETOUR = lambda fantome, jeu: fantome.retour_au_bercail()
     INACTIF = lambda fantome, jeu: Mode.inactif(fantome, jeu)
-    SORTIR = lambda fantome, jeu: fantome.sortir()
+    SORTIR = lambda fantome, jeu: fantome.sortir(jeu)
 
     @staticmethod
     def inactif(fantome, jeu):
         if fantome.nbr_activation < jeu.pastilles_mangees:
             fantome.mode = Mode.SORTIR
-
