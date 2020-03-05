@@ -1,3 +1,5 @@
+import os
+
 import pygame
 from modele.direction import Direction
 import os
@@ -23,12 +25,17 @@ class Vue:
         Crée les events pour que le joueur puisse puisse jouer
         :return:
         """
-
+        partie_commencer = False
+        ready = pygame.image.load(os.path.join('ressource', 'images', 'Ready!.png'))
         quitter = False
         clock = pygame.time.Clock()
         clock.tick(40)
         pac_direction = Direction.AUCUNE
+
         key_pressed = []
+
+        window.blit(self.ctrl.get_surface(Direction.AUCUNE), (0, 0))
+
 
         while not quitter:
 
@@ -38,6 +45,9 @@ class Vue:
                     quitter = True
 
                 elif event.type == pygame.KEYDOWN:
+
+                    partie_commencer = True
+
                     if event.key == pygame.K_LEFT:
                         key_pressed.append(Direction.GAUCHE)
                     if event.key == pygame.K_UP:
@@ -45,7 +55,11 @@ class Vue:
                     if event.key == pygame.K_RIGHT:
                         key_pressed.append(Direction.DROITE)
                     if event.key == pygame.K_DOWN:
+
                         key_pressed.append(Direction.BAS)
+                    if event.key == pygame.K_ESCAPE:
+                        quitter = True
+
 
                 elif event.type == pygame.KEYUP:
                     if event.key == pygame.K_LEFT:
@@ -55,12 +69,21 @@ class Vue:
                     if event.key == pygame.K_RIGHT:
                         key_pressed.remove(Direction.DROITE)
                     if event.key == pygame.K_DOWN:
+
                         key_pressed.remove(Direction.BAS)
+                    if event.key == pygame.K_ESCAPE:
+                        quitter = True
+
 
             if key_pressed:
                 pac_direction = key_pressed[-1]
             else:
                 pac_direction = Direction.AUCUNE
 
-            window.blit(self.ctrl.get_surface(pac_direction), (0, 0))
+
+            if not partie_commencer:
+                window.blit(ready, (270, 485))
+            else:
+                window.blit(self.ctrl.get_surface(pac_direction), (0, 0))
+
             pygame.display.update()
