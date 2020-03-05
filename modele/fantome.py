@@ -76,7 +76,7 @@ class Fantome(pygame.sprite.Sprite):
         """
         if board.detecte_noeud(self.rect):
             self.choose_direction()
-        self.rect = self.rect.move(self.vitesse)
+        #self.rect = self.rect.move(self.vitesse)
         board.tunnel(self.rect)
 
     def mode_chasse(self, pacman=None, blinky=None):

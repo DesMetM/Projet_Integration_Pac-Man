@@ -43,20 +43,13 @@ class Jeu:
     """Vérifies les collisions entre les groupes de Sprites(voir board.py)"""
 
     def collision(self):
-        if pygame.sprite.groupcollide(groupa=self.pacman, groupb=self.pastilles, dokilla=False, dokillb=True):
+        if pygame.sprite.groupcollide(groupa=self.pacman, groupb=self.pastilles, dokilla=False, dokillb=True): # collision avec une pastille
             self.pastilles_mangees += 1
 
-        if pygame.sprite.groupcollide(groupa=self.pacman, groupb=self.power_pellets, dokilla=False, dokillb=True):
-            # self.fantomes.sprite.phase_apeuree()
-            pass
-
-        # if pygame.sprite.groupcollide(groupa=self.pacman, groupb=self.fantomes, dokilla=False, dokillb=False):
-        # self.pacman.sprite.is_alive = False
-        # self.pacman.sprite.count_anim = 0
-
-        if pygame.sprite.spritecollide(self.pacman.sprite, self.fantomes, False, pygame.sprite.collide_circle):
+        if pygame.sprite.spritecollide(self.pacman.sprite, self.fantomes, False, pygame.sprite.collide_circle): # collision avec un fantome
             self.pacman.sprite.is_alive = False
             self.pacman.sprite.count_anim = 0
+            print(self.pacman.sprite.rect.center)
 
     def get_surface(self, direction) -> pygame.Surface:
         '''Point d'entrée du ctrl.'''

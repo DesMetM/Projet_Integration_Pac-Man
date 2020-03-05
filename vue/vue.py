@@ -46,6 +46,8 @@ class Vue:
                         key_pressed[Direction.DROITE.value] = True
                     if event.key == pygame.K_DOWN:
                         key_pressed[Direction.BAS.value] = True
+                    if event.key == pygame.K_ESCAPE:
+                        quitter = True
 
                 elif event.type == pygame.KEYUP:
                     if event.key == pygame.K_LEFT:
