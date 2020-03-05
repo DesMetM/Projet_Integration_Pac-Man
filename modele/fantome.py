@@ -248,9 +248,9 @@ class Blinky(Fantome):
         self.vitesse = [x * Fantome.CSTNE_VITESSE for x in self.direction.get_vecteur()]
         self.target = self.scatter
 
-    def respawn(self):
+    def respawn(self, jeu):
         self.rect.center = Blinky.SPAWN
-        self.mode = Mode.DISPERSION
+        self.mode = jeu._CURRENT_MODE
 
     def mode_chasse(self, jeu):
         self.target = jeu.pacman.sprite.rect.center

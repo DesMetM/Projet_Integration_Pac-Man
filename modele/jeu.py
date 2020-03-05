@@ -111,5 +111,5 @@ class Jeu:
             self.partie_terminee = False
             self.pacman.sprite.respawn()
             for fantome in self.fantomes:
-                fantome.respawn()
+                fantome.respawn(self)
         return background
