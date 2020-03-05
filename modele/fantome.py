@@ -4,21 +4,28 @@ from modele.direction import Direction
 import modele.board as board
 from math import hypot
 from modele.modes_fantome import Mode
+from random import randint
 
 
 class Fantome(pygame.sprite.Sprite):
     CSTNE_VITESSE = 6
 
-    def __init__(self, pos, nom, target):
-        self.target = target
+    def __init__(self, pos, nom, scatter):
+        self.target = None
         self.mode = Mode.INACTIF
         self.nbr_activation = -1
         self.direction = Direction.GAUCHE
         self.vitesse = [0, 0]
         self.count_anim = 0
+        self.count_effraye = 0
         self.frame = 0
         self.nom = nom
         self.radius = 21
+        self.scatter = scatter
+        self.acheve = False
+        self.compteur_peur = 0
+        self.compteur_ini = 0
+        self.niveau = 0
         pygame.sprite.Sprite.__init__(self)
 
         self.up_images = [pygame.image.load(os.path.join('ressource', 'images', '{0}Up0.png'.format(self.nom))),
@@ -41,26 +48,55 @@ class Fantome(pygame.sprite.Sprite):
         self.image = self.left_images[0]
         self.rect = self.image.get_rect(center=pos)
 
-    def update(self, pacman, blinky, pastilles_mangees):
-        if self.mode == Mode.INACTIF and self.nbr_activation < pastilles_mangees:
-            self.mode = Mode.DISPERSION
-        elif self.mode == Mode.CHASSE:
-            self.mode_chasse(pacman=pacman, blinky=blinky)
-        elif self.mode == Mode.DISPERSION:
-            self.avancer()
-        elif self.mode == Mode.EFFRAYE:
-            self.mode_effraye()
-        elif self.mode == Mode.RETOUR:
-            self.retour_au_bercail()
+    def update(self, jeu):
+        self.mode(self, jeu)
 
         self.animation()
+
+    def sortir(self):
+        if self.rect.centerx != 336:
+            self.target = (336, 421)
+        else:
+            self.target = Blinky.SPAWN
+
+        if self.rect.center != Blinky.SPAWN:
+            self.choose_direction(False)
+            self.rect = self.rect.move(self.vitesse)
+        else:
+            self.set_mode(Mode.DISPERSION)
+            self.avancer()
+
+    def set_mode(self, mode):
+        if mode == Mode.DISPERSION:
+            self.target = self.scatter
+            self.mode = Mode.DISPERSION
+        elif mode == Mode.RETOUR:
+            self.retour_au_bercail()
+        elif mode == Mode.EFFRAYE:
+            self.mode_effraye()
+            self.mode = Mode.EFFRAYE
 
     def retour_au_bercail(self):
         """
         Le fantôme retourne dans la cage. self.image est affectée comme étant des yeux seulement.
         :return: void
         """
-        pass
+        #CHANGEMENT D'ANIMATION
+        if self.rect.centerx != Blinky.SPAWN[0] and self.rect.centery != Blinky.SPAWN[1] and self.target!=(336, 421):
+            self.target = Blinky.SPAWN
+        else:
+            self.target = (336, 421)
+
+        if self.center == (336, 421):
+            #CHANGEMENT D'ANIMATION
+            self.set_mode(Mode.SORTIR)
+            return 0
+
+        if self.target != (336, 421):
+            self.avancer()
+        else:
+            self.choose_direction(False)
+            self.rect = self.rect.move(self.vitesse)
 
     def respawn(self):
         """
@@ -75,18 +111,18 @@ class Fantome(pygame.sprite.Sprite):
         :return: void
         """
         if board.detecte_noeud(self.rect):
-            self.choose_direction()
-        #self.rect = self.rect.move(self.vitesse)
+            self.choose_direction(True)
+        self.rect = self.rect.move(self.vitesse)
         board.tunnel(self.rect)
 
-    def mode_chasse(self, pacman=None, blinky=None):
+    def mode_chasse(self, jeu):
         """
         Cette méthode doit être redéfinie par chaque enfant. Elle redéfinie le target du fantôme selon son comportement.
         :return:
         """
         pass
 
-    def choose_direction(self):
+    def choose_direction(self, mur):
         """
         Choisi la meilleure direction à prendre vers le target. Prend en compte les murs.
         :return: void
@@ -96,7 +132,7 @@ class Fantome(pygame.sprite.Sprite):
         for d in Direction.__iter__():
             if d == Direction.AUCUNE:
                 break
-            if d != self.direction.opposee() and not board.collision_mur(self.rect, d):
+            if d != self.direction.opposee() and (not mur or not board.collision_mur(self.rect, d)):
                 v = [x * Fantome.CSTNE_VITESSE for x in Direction.get_vecteur(d)]
                 temp = self.distance(self.rect.move(v))
                 if temp < distance:
@@ -114,22 +150,65 @@ class Fantome(pygame.sprite.Sprite):
         return hypot(rect.centerx - self.target[0], rect.centery - self.target[1])
 
     def animation(self):
-        if self.count_anim > 2:
-            self.count_anim = 0
-            self.frame = not self.frame
-            if self.direction == Direction.GAUCHE:
-                self.image = self.left_images[self.frame]
-            elif self.direction == Direction.HAUT:
-                self.image = self.up_images[self.frame]
-            elif self.direction == Direction.DROITE:
-                self.image = self.right_images[self.frame]
-            elif self.direction == Direction.BAS:
-                self.image = self.down_images[self.frame]
+        if self.mode != Mode.EFFRAYE:
+            if self.count_anim > 2:
+                self.count_anim = 0
+                self.frame = not self.frame
+                if self.direction == Direction.GAUCHE:
+                    self.image = self.left_images[self.frame]
+                elif self.direction == Direction.HAUT:
+                    self.image = self.up_images[self.frame]
+                elif self.direction == Direction.DROITE:
+                    self.image = self.right_images[self.frame]
+                elif self.direction == Direction.BAS:
+                    self.image = self.down_images[self.frame]
+            else:
+                self.count_anim += 1
         else:
-            self.count_anim += 1
+            if self.count_anim > 2 and not self.acheve:
+                self.count_anim = 0
+                if not(self.frame == 0 or self.frame==1):
+                    self.frame = 0
+                self.frame = not self.frame
+                self.image = self.images_scared[self.frame+1]
+            elif self.count_anim >2:
+                self.count_anim=0
+                self.frame = (self.frame+1)%4
+                self.image=self.images_scared[self.frame+1]
+            else:
+                self.count_anim += 1
 
     # Cette phase est activé lorsque le Pac-Man mange un power pellet
     def mode_effraye(self):
+        #DO SOMETHING
+        if self.compteur_peur == 0:
+            self.compteur_ini = pygame.time.get_ticks()
+            self.compteur_peur = self.compteur_ini
+            self.direction = self.direction.opposee()
+        if self.compteur_peur > self.compteur_ini + ((20000-self.niveau*500)/2) and self.compteur_peur<self.compteur_ini + (20000-self.niveau*500):
+            self.acheve = True
+            self.compteur_peur = pygame.time.get_ticks()
+        elif pygame.time.get_ticks() >= self.compteur_ini + (20000-self.niveau*500):
+            self.set_mode(Mode.DISPERSION)
+            self.compteur_peur = 0
+            self.acheve = False
+        else:
+            self.compteur_peur = pygame.time.get_ticks()
+
+        if board.detecte_noeud(self.rect):
+            groupe = []
+            groupe2 = {}
+            for d in Direction.__iter__():
+                if d != self.direction.opposee() and d != self.direction.AUCUNE and not board.collision_mur(self.rect, d):
+                    groupe.append(d)
+            for d in groupe:
+                groupe2[d]=[x * (Fantome.CSTNE_VITESSE*3/5) for x in Direction.get_vecteur(d)]
+            self.direction = groupe[randint(0, len(groupe)-1)]
+            self.vitesse = groupe2[self.direction]
+
+        self.rect = self.rect.move(self.vitesse)
+        board.tunnel(self.rect)
+
         # Doit faire changer la couleur des fantômes
         # Doit durer un temps prédéterminé (20 sec - moins 'niveau')
         # Doit changer la collision avec pacman, au lieu de tuer PacMan, le fantôme meurt
@@ -166,14 +245,15 @@ class Blinky(Fantome):
         Fantome.__init__(self, Blinky.SPAWN, "Blinky", Blinky.SCATTER_TARGET)
         self.actif = True
         self.vitesse = [x * Fantome.CSTNE_VITESSE for x in self.direction.get_vecteur()]
+        self.target = self.scatter
+        self.mode = Mode.DISPERSION
 
     def respawn(self):
         self.rect.center = Blinky.SPAWN
-        self.direction = Direction.GAUCHE
-        self.vitesse = [x * Fantome.CSTNE_VITESSE for x in self.direction.get_vecteur()]
+        self.mode = Mode.DISPERSION
 
-    def mode_chasse(self, pacman=None, blinky=None):
-        self.target = pacman.rect.center
+    def mode_chasse(self, jeu):
+        self.target = jeu.pacman.sprite.rect.center
         self.avancer()
 
 
@@ -190,10 +270,10 @@ class Pinky(Fantome):
 
     def respawn(self):
         self.rect.center = Pinky.SPAWN
-        self.direction = Direction.BAS
-        self.vitesse = [x * Fantome.CSTNE_VITESSE for x in self.direction.get_vecteur()]
+        self.mode = Mode.INACTIF
 
-    def mode_chasse(self, pacman=None, blinky=None):
+    def mode_chasse(self, jeu):
+        pacman = jeu.pacman.sprite
         self.target = self.calculer_avance(pacman.rect, pacman.direction, 4)
         self.avancer()
 
@@ -210,10 +290,11 @@ class Inky(Fantome):
 
     def respawn(self):
         self.rect.center = Inky.SPAWN
-        self.direction = Direction.BAS
-        self.vitesse = [x * Fantome.CSTNE_VITESSE for x in self.direction.get_vecteur()]
+        self.mode = Mode.INACTIF
 
-    def mode_chasse(self, pacman=None, blinky=None):
+    def mode_chasse(self, jeu):
+        pacman = jeu.pacman.sprite
+        blinky = jeu.blinky
         pos_avance = self.calculer_avance(pacman.rect, pacman.direction, 2)
         difx = pos_avance[0] - blinky.rect.centerx
         dify = pos_avance[1] - blinky.rect.centery
@@ -233,8 +314,7 @@ class Clyde(Fantome):
 
     def respawn(self):
         self.rect.center = Clyde.SPAWN
-        self.direction = Direction.BAS
-        self.vitesse = [x * Fantome.CSTNE_VITESSE for x in self.direction.get_vecteur()]
+        self.mode = Mode.INACTIF
 
     def mode_chasse(self, pacman=None, blinky=None):
         self.target = pacman.rect.center
