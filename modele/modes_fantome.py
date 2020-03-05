@@ -1,8 +1,16 @@
 from enum import Enum
 
+
 class Mode(Enum):
-    CHASSE = 0
-    DISPERSION = 1
-    EFFRAYE = 2
-    RETOUR = 3
-    INACTIF = 4
+    CHASSE = lambda fantome, jeu: fantome.mode_chasse(jeu)
+    DISPERSION = lambda fantome, jeu: fantome.avancer()
+    EFFRAYE = lambda fantome, jeu: fantome.mode_effraye()
+    RETOUR = lambda fantome, jeu: fantome.retour_au_bercail()
+    INACTIF = lambda fantome, jeu: Mode.inactif(fantome, jeu)
+    SORTIR = lambda fantome, jeu: fantome.sortir()
+
+    @staticmethod
+    def inactif(fantome, jeu):
+        if fantome.nbr_activation < jeu.pastilles_mangees:
+            fantome.mode = Mode.SORTIR
+

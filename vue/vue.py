@@ -2,6 +2,7 @@ import os
 
 import pygame
 from modele.direction import Direction
+import os
 
 window = pygame.display.set_mode((672, 864))
 
@@ -34,6 +35,7 @@ class Vue:
         window.blit(self.ctrl.get_surface(Direction.AUCUNE), (0, 0))
 
         while not quitter:
+
             for event in pygame.event.get():
 
                 if event.type == pygame.QUIT:
@@ -72,4 +74,5 @@ class Vue:
                 window.blit(ready, (270, 485))
             else:
                 window.blit(self.ctrl.get_surface(pac_direction), (0, 0))
+
             pygame.display.update()

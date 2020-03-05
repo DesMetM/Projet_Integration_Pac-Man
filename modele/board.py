@@ -49,6 +49,7 @@ PACSPAWN = (14 * SCALING, 23 * SCALING + DECALAGE)
 READYSPAWN = (14 * SCALING, 17 * SCALING + DECALAGE)
 NOEUDS = set()
 
+NOEUDS.add(Blinky.SPAWN)
 
 def is_node(x, y):
     pas_un_mur = 0
