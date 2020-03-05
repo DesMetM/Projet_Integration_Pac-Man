@@ -2,6 +2,7 @@ import pygame
 import os, sys
 import modele.board as board
 from modele.modes_fantome import Mode
+from modele.fantome import Fantome
 
 
 # permet de partir une nouvelle partie avec les éléments
@@ -22,6 +23,7 @@ class Jeu:
         self.nouvelle_partie()
         self.nbr_vie = 5
         self.phase_effraye = False
+        self._CURRENT_MODE = Mode.DISPERSION
         #self.bool_chomp = False;
         #pygame.mixer.Sound(os.path.join('ressource','sons','Chomp.wav')).play(-1)
     # débute une nouvelle partie
@@ -54,6 +56,8 @@ class Jeu:
 
         if pygame.sprite.groupcollide(groupa=self.pacman, groupb=self.power_pellets, dokilla=False, dokillb=True):
             for x in self.fantomes:
+                Fantome.compteur_peur = 0
+                Fantome.acheve = False
                 if x.mode != Mode.INACTIF:
                     x.set_mode(Mode.EFFRAYE)
                     self.phase_effraye = True
@@ -83,6 +87,13 @@ class Jeu:
 
         for life in range(self.pacman.sprite.nbr_vie):
             background.blit(self.pacman.sprite.left_images[1], (60 + life * 60, 815))
+
+        if Fantome.compteur_peur >= Fantome.compteur_ini + Fantome.temps_max:
+            for f in self.fantomes:
+                if f.mode != Mode.INACTIF:
+                    f.set_mode(self._CURRENT_MODE)
+            Fantome.acheve = False
+            Fantome.compteur_peur=0
 
         if self.pacman.sprite.is_alive:
             self.collision()
