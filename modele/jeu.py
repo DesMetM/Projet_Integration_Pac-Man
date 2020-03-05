@@ -56,8 +56,9 @@ class Jeu:
         if pygame.sprite.groupcollide(groupa=self.pacman, groupb=self.power_pellets, dokilla=False, dokillb=True):
 
             for x in self.fantomes.__iter__():  # collision avec Power pellet
-                x.set_mode(Mode.EFFRAYE)
-                self.phase_effraye = True
+                if x.mode != Mode.RETOUR and x.mode != Mode.INACTIF:
+                    x.set_mode(Mode.EFFRAYE)
+                    self.phase_effraye = True
 
         fantome_list = pygame.sprite.spritecollide(self.pacman.sprite, self.fantomes, False,
                                                    pygame.sprite.collide_circle)
@@ -70,7 +71,6 @@ class Jeu:
                     print(self.pacman.sprite.rect.center)
                 elif ghost.mode is Mode.EFFRAYE:
                     ghost.set_mode(Mode.RETOUR)
-
 
     def encore_effraye(self):
         self.phase_effraye = False
