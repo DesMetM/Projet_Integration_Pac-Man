@@ -53,9 +53,10 @@ class Jeu:
             self.pastilles_mangees += 1
 
         if pygame.sprite.groupcollide(groupa=self.pacman, groupb=self.power_pellets, dokilla=False, dokillb=True):
-            for x in self.fantomes.__iter__():
-                x.set_mode(Mode.EFFRAYE)
-                self.phase_effraye = True
+            for x in self.fantomes:
+                if x.mode != Mode.INACTIF:
+                    x.set_mode(Mode.EFFRAYE)
+                    self.phase_effraye = True
         if pygame.sprite.groupcollide(groupa=self.pacman, groupb=self.fantomes, dokilla=False, dokillb=False):
             self.encore_effraye()
             if not self.phase_effraye:

@@ -68,34 +68,28 @@ class Fantome(pygame.sprite.Sprite):
     def set_mode(self, mode):
         if mode == Mode.DISPERSION:
             self.target = self.scatter
-            self.mode = Mode.DISPERSION
         elif mode == Mode.RETOUR:
-            self.retour_au_bercail()
-        elif mode == Mode.EFFRAYE:
-            self.mode_effraye()
-            self.mode = Mode.EFFRAYE
+            self.target = Blinky.SPAWN
+        self.mode = mode
 
     def retour_au_bercail(self):
         """
         Le fantôme retourne dans la cage. self.image est affectée comme étant des yeux seulement.
         :return: void
         """
-        #CHANGEMENT D'ANIMATION
-        if self.rect.centerx != Blinky.SPAWN[0] and self.rect.centery != Blinky.SPAWN[1] and self.target!=(336, 421):
-            self.target = Blinky.SPAWN
-        else:
-            self.target = (336, 421)
-
-        if self.center == (336, 421):
-            #CHANGEMENT D'ANIMATION
+        if self.rect.center == Blinky.SPAWN:
+            self.target = Pinky.SPAWN
+        elif self.rect.center == Pinky.SPAWN:
+            self.direction = self.direction.opposee()
             self.set_mode(Mode.SORTIR)
-            return 0
 
-        if self.target != (336, 421):
-            self.avancer()
+        if self.target == Blinky.SPAWN:
+            if board.detecte_noeud(self.rect):
+                self.choose_direction(True)
         else:
             self.choose_direction(False)
-            self.rect = self.rect.move(self.vitesse)
+
+        self.rect = self.rect.move(self.vitesse)
 
     def respawn(self):
         """
@@ -166,28 +160,30 @@ class Fantome(pygame.sprite.Sprite):
         else:
             if self.count_anim > 2 and not self.acheve:
                 self.count_anim = 0
-                if not(self.frame == 0 or self.frame==1):
+                if not (self.frame == 0 or self.frame == 1):
                     self.frame = 0
                 self.frame = not self.frame
-                self.image = self.images_scared[self.frame+1]
-            elif self.count_anim >2:
-                self.count_anim=0
-                self.frame = (self.frame+1)%4
-                self.image=self.images_scared[self.frame+1]
+                self.image = self.images_scared[self.frame + 1]
+            elif self.count_anim > 2:
+                self.count_anim = 0
+                self.frame = (self.frame + 1) % 4
+                self.image = self.images_scared[self.frame + 1]
             else:
                 self.count_anim += 1
 
     # Cette phase est activé lorsque le Pac-Man mange un power pellet
     def mode_effraye(self):
-        #DO SOMETHING
+        # DO SOMETHING
         if self.compteur_peur == 0:
             self.compteur_ini = pygame.time.get_ticks()
             self.compteur_peur = self.compteur_ini
             self.direction = self.direction.opposee()
-        if self.compteur_peur > self.compteur_ini + ((20000-self.niveau*500)/2) and self.compteur_peur<self.compteur_ini + (20000-self.niveau*500):
+        if self.compteur_peur > self.compteur_ini + (
+                (20000 - self.niveau * 500) / 2) and self.compteur_peur < self.compteur_ini + (
+                20000 - self.niveau * 500):
             self.acheve = True
             self.compteur_peur = pygame.time.get_ticks()
-        elif pygame.time.get_ticks() >= self.compteur_ini + (20000-self.niveau*500):
+        elif pygame.time.get_ticks() >= self.compteur_ini + (20000 - self.niveau * 500):
             self.set_mode(Mode.DISPERSION)
             self.compteur_peur = 0
             self.acheve = False
@@ -198,11 +194,12 @@ class Fantome(pygame.sprite.Sprite):
             groupe = []
             groupe2 = {}
             for d in Direction.__iter__():
-                if d != self.direction.opposee() and d != self.direction.AUCUNE and not board.collision_mur(self.rect, d):
+                if d != self.direction.opposee() and d != self.direction.AUCUNE and not board.collision_mur(self.rect,
+                                                                                                            d):
                     groupe.append(d)
             for d in groupe:
-                groupe2[d]=[x * (Fantome.CSTNE_VITESSE*3/5) for x in Direction.get_vecteur(d)]
-            self.direction = groupe[randint(0, len(groupe)-1)]
+                groupe2[d] = [x * (Fantome.CSTNE_VITESSE * 3 / 5) for x in Direction.get_vecteur(d)]
+            self.direction = groupe[randint(0, len(groupe) - 1)]
             self.vitesse = groupe2[self.direction]
 
         self.rect = self.rect.move(self.vitesse)
