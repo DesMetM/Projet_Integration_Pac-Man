@@ -31,6 +31,7 @@ class Vue:
         clock.tick(40)
         pac_direction = Direction.AUCUNE
         key_pressed = [False] * 4
+        window.blit(self.ctrl.get_surface(Direction.AUCUNE), (0, 0))
 
         while not quitter:
             for event in pygame.event.get():
@@ -67,7 +68,8 @@ class Vue:
             else:
                 pac_direction = Direction.AUCUNE
 
-            window.blit(self.ctrl.get_surface(pac_direction), (0, 0))
             if not partie_commencer:
                 window.blit(ready, (270, 485))
+            else:
+                window.blit(self.ctrl.get_surface(pac_direction), (0, 0))
             pygame.display.update()
