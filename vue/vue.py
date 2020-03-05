@@ -35,6 +35,8 @@ class Vue:
         key_pressed = []
 
         window.blit(self.ctrl.get_surface(Direction.AUCUNE), (0, 0))
+        pygame.mixer.music.load(os.path.join('ressource', 'sons', 'Theme.wav'))
+        pygame.mixer.music.play(-1)
 
 
         while not quitter:
@@ -85,5 +87,6 @@ class Vue:
                 window.blit(ready, (270, 485))
             else:
                 window.blit(self.ctrl.get_surface(pac_direction), (0, 0))
+                pygame.mixer.music.stop()
 
             pygame.display.update()

@@ -9,14 +9,14 @@ import random
 
 class Fantome(pygame.sprite.Sprite):
     CSTNE_VITESSE = 6
-    _TEMPS_BASE = 20000
+    _TEMPS_BASE = 10000
     _MULT_NIVEAU = 500
     compteur_peur = 0
     compteur_ini = 0
     acheve = False
     niveau = 0
     temps_max = _TEMPS_BASE - niveau * _MULT_NIVEAU
-    temps_half = temps_max / 2
+    temps_half = temps_max *8 / 10
 
     def __init__(self, pos, nom, scatter):
         self.target = None
