@@ -72,16 +72,19 @@ class Fantome(pygame.sprite.Sprite):
             self.choose_direction(False)
             self.rect = self.rect.move(self.vitesse)
         else:
-            self.set_mode(jeu._CURRENT_MODE)
+            if self.peur:
+                self.set_mode(Mode.EFFRAYE)
+            else:
+                self.set_mode(jeu._CURRENT_MODE)
             self.avancer()
 
     def set_mode(self, mode):
         if mode == Mode.DISPERSION:
             self.target = self.scatter
         elif mode == Mode.RETOUR:
+            self.peur = False
             self.target = Blinky.SPAWN
         elif mode == Mode.EFFRAYE:
-            self.peur = True
             self.direction = self.direction.opposee()
         self.mode = mode
 
@@ -109,7 +112,8 @@ class Fantome(pygame.sprite.Sprite):
         Cette méthode doit être redéfinie par chaque enfant. Elle affecte la vitesse, la direction et la position du spawn du fantôme.
         :return: void
         """
-        pass
+        self.set_mode(Mode.INACTIF)
+        self.peur = False
 
     def avancer(self):
         """
@@ -156,7 +160,7 @@ class Fantome(pygame.sprite.Sprite):
         return hypot(rect.centerx - self.target[0], rect.centery - self.target[1])
 
     def animation(self):
-        if self.mode != Mode.EFFRAYE or not self.peur:
+        if self.mode != Mode.EFFRAYE and not self.peur:
             if self.count_anim > 2:
                 self.count_anim = 0
                 self.frame = not self.frame
@@ -228,7 +232,7 @@ class Fantome(pygame.sprite.Sprite):
                 return (pos_pacman.centerx - n_cases * board.SCALING, pos_pacman.centery)
         elif pac_direction == Direction.DROITE:
             if pos_pacman.centerx + n_cases * board.SCALING > 672 and pos_pacman.y == 400:  # revoir pour les cases
-                return (0 + n_cases * board.SCALING, pos_pacman.centery)  # environ 4 cases à la sorite du tunnel
+                return (n_cases * board.SCALING, pos_pacman.centery)  # environ 4 cases à la sorite du tunnel
             else:
                 return (pos_pacman.centerx + n_cases * board.SCALING, pos_pacman.centery)
         elif pac_direction == Direction.HAUT:
@@ -248,6 +252,7 @@ class Blinky(Fantome):
         self.target = self.scatter
 
     def respawn(self, jeu):
+        super().respawn(jeu)
         self.rect.center = Blinky.SPAWN
         self.mode = jeu._CURRENT_MODE
 
@@ -268,8 +273,8 @@ class Pinky(Fantome):
         self.vitesse = [x * Fantome.CSTNE_VITESSE for x in self.direction.get_vecteur()]
 
     def respawn(self, jeu):
+        super().respawn(jeu)
         self.rect.center = Pinky.SPAWN
-        self.mode = Mode.INACTIF
 
     def mode_chasse(self, jeu):
         pacman = jeu.pacman.sprite
@@ -288,8 +293,8 @@ class Inky(Fantome):
         self.vitesse = [x * Fantome.CSTNE_VITESSE for x in self.direction.get_vecteur()]
 
     def respawn(self, jeu):
+        super().respawn(jeu)
         self.rect.center = Inky.SPAWN
-        self.mode = Mode.INACTIF
 
     def mode_chasse(self, jeu):
         pacman = jeu.pacman.sprite
@@ -312,8 +317,8 @@ class Clyde(Fantome):
         self.vitesse = [x * Fantome.CSTNE_VITESSE for x in self.direction.get_vecteur()]
 
     def respawn(self, jeu):
+        super().respawn(jeu)
         self.rect.center = Clyde.SPAWN
-        self.mode = Mode.INACTIF
 
     def mode_chasse(self, jeu):
         self.target = jeu.pacman.sprite.rect.center
