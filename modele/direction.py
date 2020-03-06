@@ -9,15 +9,6 @@ class Direction(Enum):
     BAS = 3
     AUCUNE = 4
 
-    """def get_vecteur(self):
-        if self == Direction.GAUCHE:
-            return np.array((-1,0))
-        elif self == Direction.HAUT:
-            return np.array((0,-1))
-        elif self == Direction.DROITE:
-            return np.array((1,0))
-        elif self == Direction.BAS:
-            return np.array((0,1))"""
     def get_vecteur(self):
         if self == Direction.GAUCHE:
             return [-1, 0]
@@ -28,8 +19,6 @@ class Direction(Enum):
         elif self == Direction.BAS:
             return [0, 1]
 
-    """def opposee(self):
-        return -1*self.get_vecteur()"""
     def opposee(self):
         if self == Direction.GAUCHE:
             return Direction.DROITE

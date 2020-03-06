@@ -58,6 +58,7 @@ class Jeu:
             for x in self.fantomes:
                 Fantome.compteur_peur = 0
                 Fantome.acheve = False
+                x.peur = True
                 if x.mode != Mode.INACTIF and x.mode != Mode.RETOUR:
                     x.set_mode(Mode.EFFRAYE)
                     self.phase_effraye = True
@@ -78,6 +79,7 @@ class Jeu:
         for f in self.fantomes:
             if f.mode == Mode.EFFRAYE:
                 self.phase_effraye = True
+                break
 
     def get_surface(self, direction) -> pygame.Surface:
         '''Point d'entrée du ctrl.'''
@@ -91,6 +93,7 @@ class Jeu:
 
         if Fantome.compteur_peur >= Fantome.compteur_ini + Fantome.temps_max:
             for f in self.fantomes:
+                f.peur = False
                 if f.mode != Mode.INACTIF:
                     f.set_mode(self._CURRENT_MODE)
             Fantome.acheve = False
