@@ -55,13 +55,13 @@ class Jeu:
             self.pastilles_mangees += 1
 
         if pygame.sprite.groupcollide(groupa=self.pacman, groupb=self.power_pellets, dokilla=False, dokillb=True):
+            Fantome.compteur_peur = 0
+            Fantome.acheve = False
+            self.phase_effraye = True
             for x in self.fantomes:
-                Fantome.compteur_peur = 0
-                Fantome.acheve = False
                 x.peur = True
-                if x.mode != Mode.INACTIF and x.mode != Mode.RETOUR:
+                if x.mode == Mode.CHASSE or x.mode == Mode.DISPERSION:
                     x.set_mode(Mode.EFFRAYE)
-                    self.phase_effraye = True
 
         fantome_list = pygame.sprite.spritecollide(self.pacman.sprite, self.fantomes, False,
                                                    pygame.sprite.collide_circle)
