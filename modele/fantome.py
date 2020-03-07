@@ -16,7 +16,7 @@ class Fantome(pygame.sprite.Sprite):
     acheve = False
     niveau = 0
     temps_max = _TEMPS_BASE - niveau * _MULT_NIVEAU
-    temps_half = temps_max *8 / 10
+    temps_half = temps_max * 8 / 10
 
     def __init__(self, pos, nom, scatter):
         self.target = None
@@ -70,13 +70,13 @@ class Fantome(pygame.sprite.Sprite):
 
         if self.rect.center != Blinky.SPAWN:
             self.choose_direction(False)
+            self.vitesse = [x * 3 / 5 for x in self.vitesse]
             self.rect = self.rect.move(self.vitesse)
         else:
             if self.peur:
                 self.set_mode(Mode.EFFRAYE)
             else:
                 self.set_mode(jeu._CURRENT_MODE)
-            self.avancer()
 
     def set_mode(self, mode):
         if mode == Mode.DISPERSION:
@@ -86,6 +86,7 @@ class Fantome(pygame.sprite.Sprite):
             self.target = Blinky.SPAWN
         elif mode == Mode.EFFRAYE:
             self.direction = self.direction.opposee()
+            self.vitesse = [x*Fantome.CSTNE_VITESSE*3/5 for x in self.direction.get_vecteur()]
         self.mode = mode
 
     def retour_au_bercail(self):
@@ -106,6 +107,7 @@ class Fantome(pygame.sprite.Sprite):
             self.choose_direction(False)
 
         self.rect = self.rect.move(self.vitesse)
+        board.tunnel(self.rect)
 
     def respawn(self, jeu):
         """
@@ -288,7 +290,7 @@ class Inky(Fantome):
 
     def __init__(self):
         Fantome.__init__(self, Inky.SPAWN, "Inky", Inky.SCATTER_TARGET)
-        self.direction = Direction.BAS
+        self.direction = Direction.GAUCHE
         self.nbr_activation = 30
         self.vitesse = [x * Fantome.CSTNE_VITESSE for x in self.direction.get_vecteur()]
 
@@ -312,7 +314,7 @@ class Clyde(Fantome):
 
     def __init__(self):
         Fantome.__init__(self, Clyde.SPAWN, "Clyde", Clyde.SCATTER_TARGET)
-        self.direction = Direction.BAS
+        self.direction = Direction.GAUCHE
         self.nbr_activation = 60
         self.vitesse = [x * Fantome.CSTNE_VITESSE for x in self.direction.get_vecteur()]
 

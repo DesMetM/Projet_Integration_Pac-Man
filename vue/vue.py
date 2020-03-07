@@ -36,11 +36,25 @@ class Vue:
                     running = False
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if player1_rect.collidepoint(pygame.mouse.get_pos()):
-                        print(pygame.mouse.get_pos())
                         return True
                     elif IA_rect.collidepoint(pygame.mouse.get_pos()):
                         print('Ça lance le joueur 1 puisque l\'IA n\'est pas encore prêt :)')
                         return True
+
+    def ready(self):
+        ready = pygame.image.load(os.path.join('ressource', 'images', 'Ready!.png'))
+        window.blit(self.ctrl.get_surface(Direction.AUCUNE), (0, 0))
+        window.blit(ready, (270, 485))
+        pygame.display.update()
+        pygame.mixer.music.load(os.path.join('ressource', 'sons', 'Theme.wav'))
+        pygame.mixer_music.play(loops=0)
+
+        pygame.time.delay(4700)
+
+        pygame.mixer_music.stop()
+
+
+
 
     def mode_IA(self):
         '''Lance une partie avec l'IA.'''
@@ -51,28 +65,21 @@ class Vue:
         Crée les events pour que le joueur puisse puisse jouer
         :return:
         """
-        partie_commencer = False
-        ready = pygame.image.load(os.path.join('ressource', 'images', 'Ready!.png'))
         quitter = False
         clock = pygame.time.Clock()
         clock.tick(40)
         pac_direction = Direction.AUCUNE
         key_pressed = []
-        window.blit(self.ctrl.get_surface(Direction.AUCUNE), (0, 0))
-        pygame.mixer.music.load(os.path.join('ressource', 'sons', 'Theme.wav'))
-        pygame.mixer.music.play(-1)
 
+        self.ready()
 
         while not quitter:
 
             for event in pygame.event.get():
-
                 if event.type == pygame.QUIT:
                     quitter = True
 
                 elif event.type == pygame.KEYDOWN:
-
-                    partie_commencer = True
 
                     if event.key == pygame.K_LEFT:
                         key_pressed.append(Direction.GAUCHE)
@@ -106,10 +113,5 @@ class Vue:
             else:
                 pac_direction = Direction.AUCUNE
 
-            if not partie_commencer:
-                window.blit(ready, (270, 485))
-            else:
-                window.blit(self.ctrl.get_surface(pac_direction), (0, 0))
-                pygame.mixer.music.stop()
-
+            window.blit(self.ctrl.get_surface(pac_direction), (0, 0))
             pygame.display.update()
