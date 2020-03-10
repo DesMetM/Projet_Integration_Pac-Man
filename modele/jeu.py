@@ -24,6 +24,7 @@ class Jeu:
         self.nbr_vie = 5
         self.phase_effraye = False
         self._CURRENT_MODE = Mode.CHASSE
+        self.score = 0
         # self.bool_chomp = False;
         # pygame.mixer.Sound(os.path.join('ressource','sons','Chomp.wav')).play(-1)
 
@@ -53,8 +54,11 @@ class Jeu:
         if pygame.sprite.groupcollide(groupa=self.pacman, groupb=self.pastilles, dokilla=False,
                                       dokillb=True):  # collision avec une pastille
             self.pastilles_mangees += 1
+            self.ajouter_points_pellet()
 
         if pygame.sprite.groupcollide(groupa=self.pacman, groupb=self.power_pellets, dokilla=False, dokillb=True):
+            self.ajouter_points_powerpellet()
+
             for x in self.fantomes:
                 Fantome.compteur_peur = 0
                 Fantome.acheve = False
@@ -113,4 +117,18 @@ class Jeu:
             self.pacman.sprite.respawn()
             for fantome in self.fantomes:
                 fantome.respawn(self)
+
+        font = pygame.font.SysFont(None, 30)
+        text_score = font.render(str(self.score), 1, (255, 255, 255))
+        text_1up = font.render('1UP', 1, (255, 255, 255))
+
+        background.blit(text_score, (70, 40))
+        background.blit(text_1up, (70, 0))
+
         return background
+
+    def ajouter_points_pellet(self):
+        self.score += 10
+
+    def ajouter_points_powerpellet(self):
+        self.score += 50
