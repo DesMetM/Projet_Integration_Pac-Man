@@ -9,14 +9,6 @@ import random
 
 class Fantome(pygame.sprite.Sprite):
     CSTNE_VITESSE = 6
-    _TEMPS_BASE = 10000
-    _MULT_NIVEAU = 500
-    compteur_peur = 0
-    compteur_ini = 0
-    acheve = False
-    niveau = 0
-    temps_max = _TEMPS_BASE - niveau * _MULT_NIVEAU
-    temps_half = temps_max * 8 / 10
 
     def __init__(self, pos, nom, scatter):
         self.target = None
@@ -60,7 +52,7 @@ class Fantome(pygame.sprite.Sprite):
     def update(self, jeu):
         self.mode(self, jeu)
 
-        self.animation()
+        self.animation(jeu.timer_jeu.timer_fantome.acheve)
 
     def sortir(self, jeu):
         if self.rect.centerx != 336:
@@ -76,7 +68,7 @@ class Fantome(pygame.sprite.Sprite):
             if self.peur:
                 self.set_mode(Mode.EFFRAYE)
             else:
-                self.set_mode(jeu._CURRENT_MODE)
+                self.set_mode(jeu.timer_jeu.current_mode)
 
     def set_mode(self, mode):
         if mode == Mode.DISPERSION:
@@ -86,7 +78,7 @@ class Fantome(pygame.sprite.Sprite):
             self.target = Blinky.SPAWN
         elif mode == Mode.EFFRAYE:
             self.direction = self.direction.opposee()
-            self.vitesse = [x*Fantome.CSTNE_VITESSE*3/5 for x in self.direction.get_vecteur()]
+            self.vitesse = [x * Fantome.CSTNE_VITESSE * 3 / 5 for x in self.direction.get_vecteur()]
         self.mode = mode
 
     def retour_au_bercail(self):
@@ -137,6 +129,7 @@ class Fantome(pygame.sprite.Sprite):
     def choose_direction(self, mur):
         """
         Choisi la meilleure direction à prendre vers le target. Prend en compte les murs.
+        :param mur: «True» pour prendre en compte les murs, «False» pour ne pas prendre en compte les murs.
         :return: void
         """
         distance = 100000000
@@ -161,8 +154,8 @@ class Fantome(pygame.sprite.Sprite):
         """
         return hypot(rect.centerx - self.target[0], rect.centery - self.target[1])
 
-    def animation(self):
-        if self.mode != Mode.EFFRAYE and not self.peur:
+    def animation(self, timer_acheve):
+        if self.mode != Mode.EFFRAYE and not self.peur or self.mode == Mode.RETOUR:
             if self.count_anim > 2:
                 self.count_anim = 0
                 self.frame = not self.frame
@@ -177,7 +170,7 @@ class Fantome(pygame.sprite.Sprite):
             else:
                 self.count_anim += 1
         else:
-            if self.count_anim > 2 and not Fantome.acheve:
+            if self.count_anim > 2 and not timer_acheve:
                 self.count_anim = 0
                 if not (self.frame == 0 or self.frame == 1):
                     self.frame = 0
@@ -192,20 +185,6 @@ class Fantome(pygame.sprite.Sprite):
 
     # Cette phase est activé lorsque le Pac-Man mange un power pellet
     def mode_effraye(self):
-
-        if Fantome.compteur_peur == 0:
-            Fantome.compteur_ini = pygame.time.get_ticks()  # Temps au moment du premier appel de la méthode
-            Fantome.compteur_peur = Fantome.compteur_ini  # Set le compteur de base à sa position de base, c'est-à-dire le compteur initial
-        Fantome.compteur_peur = pygame.time.get_ticks()  # Update le compteur
-
-        if Fantome.compteur_ini + Fantome.temps_half < Fantome.compteur_peur < Fantome.compteur_ini + Fantome.temps_max:  # Check si passé moité temps et avant fin temps
-            Fantome.acheve = True  # Variable pour savoir si les fantômes devraient clignoter (True = oui, False = non)
-
-        """elif Fantome.compteur_peur >= Fantome.compteur_ini + Fantome.temps_max:    # Si phase terminée(temps écoulé)
-            Fantome.acheve = False  # Reset les attributes reliés à la peur
-            #self.set_mode(Mode.DISPERSION)
-            return"""
-
         if board.detecte_noeud(self.rect):
             groupe = {}
             for d in Direction.__iter__():
@@ -256,7 +235,7 @@ class Blinky(Fantome):
     def respawn(self, jeu):
         super().respawn(jeu)
         self.rect.center = Blinky.SPAWN
-        self.mode = jeu._CURRENT_MODE
+        self.mode = jeu.timer_jeu.current_mode
 
     def mode_chasse(self, jeu):
         self.target = jeu.pacman.sprite.rect.center

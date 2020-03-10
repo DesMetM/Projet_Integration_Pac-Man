@@ -1,8 +1,8 @@
 import pygame
-import os, sys
+import os
 import modele.board as board
 from modele.modes_fantome import Mode
-from modele.fantome import Fantome
+from modele.timer import TimerJeu
 
 
 # permet de partir une nouvelle partie avec les éléments
@@ -18,16 +18,15 @@ class Jeu:
         self.blinky = None
         self.pellet_anim = 0
         self.pastilles_mangees = 0
-        self.ready = None
         self.partie_terminee = False
-        self.nouvelle_partie()
         self.nbr_vie = 5
-        self.phase_effraye = False
-        self._CURRENT_MODE = Mode.CHASSE
+        self.timer_jeu = TimerJeu(self)
+
+        self.nouvelle_partie()
         # self.bool_chomp = False;
         # pygame.mixer.Sound(os.path.join('ressource','sons','Chomp.wav')).play(-1)
 
-    # débute une nouvelle partie
+
     def nouvelle_partie(self):
         '''Reset tout pour une nouvelle partie.'''
         self.pastilles = board.pastilles()
@@ -55,9 +54,7 @@ class Jeu:
             self.pastilles_mangees += 1
 
         if pygame.sprite.groupcollide(groupa=self.pacman, groupb=self.power_pellets, dokilla=False, dokillb=True):
-            Fantome.compteur_peur = 0
-            Fantome.acheve = False
-            self.phase_effraye = True
+            self.timer_jeu.mode_effraye()
             for x in self.fantomes:
                 x.peur = True
                 if x.mode == Mode.CHASSE or x.mode == Mode.DISPERSION:
@@ -71,15 +68,9 @@ class Jeu:
                 if (ghost.mode is not Mode.EFFRAYE) and (ghost.mode is not Mode.RETOUR):
                     self.pacman.sprite.is_alive = False
                     self.pacman.sprite.count_anim = 0
+                    self.timer_jeu.pause()
                 elif ghost.mode is Mode.EFFRAYE:
                     ghost.set_mode(Mode.RETOUR)
-
-    def encore_effraye(self):
-        self.phase_effraye = False
-        for f in self.fantomes:
-            if f.mode == Mode.EFFRAYE:
-                self.phase_effraye = True
-                break
 
     def get_surface(self, direction) -> pygame.Surface:
         '''Point d'entrée du ctrl.'''
@@ -91,13 +82,7 @@ class Jeu:
         for life in range(self.pacman.sprite.nbr_vie):
             background.blit(self.pacman.sprite.left_images[1], (60 + life * 60, 815))
 
-        if Fantome.compteur_peur >= Fantome.compteur_ini + Fantome.temps_max:
-            for f in self.fantomes:
-                f.peur = False
-                if f.mode != Mode.INACTIF:
-                    f.set_mode(self._CURRENT_MODE)
-            Fantome.acheve = False
-            Fantome.compteur_peur = 0
+        self.timer_jeu.update()
 
         if self.pacman.sprite.is_alive:
             self.collision()
