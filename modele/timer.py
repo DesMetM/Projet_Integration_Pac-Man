@@ -18,7 +18,6 @@ class TimerAbstrait:
         if self.ended:
             return False
         self.current = get_ticks()
-        print(self.current-self.debut)
         self.ended = self.duree <= self.current - self.debut
         return not self.ended
 
@@ -56,9 +55,9 @@ class TimerAbstrait:
 
 
 class TimerJeu(TimerAbstrait):
-    TEMPS_DISPERSION = 7000
-    TEMPS_CHASSE = 20000
-    TEMPS_EFFRAYE = 10000
+    TEMPS_DISPERSION = 3500
+    TEMPS_CHASSE = 10000
+    TEMPS_EFFRAYE = 5000
 
     def __init__(self, jeu):
         TimerAbstrait.__init__(self)
