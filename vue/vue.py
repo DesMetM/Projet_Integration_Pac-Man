@@ -1,6 +1,8 @@
 import os
 
 import pygame
+
+from modele import jeu
 from modele.direction import Direction
 import os
 
