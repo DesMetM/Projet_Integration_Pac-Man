@@ -1,6 +1,8 @@
 import os
 
 import pygame
+
+from modele import jeu
 from modele.direction import Direction
 import os
 
@@ -70,8 +72,8 @@ class Vue:
         clock.tick(40)
         pac_direction = Direction.AUCUNE
         key_pressed = []
-
         self.ready()
+        self.ctrl.start_timer()
 
         while not quitter:
 
