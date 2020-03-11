@@ -70,8 +70,8 @@ class Vue:
         clock.tick(40)
         pac_direction = Direction.AUCUNE
         key_pressed = []
-
         self.ready()
+        self.ctrl.start_timer()
 
         while not quitter:
 

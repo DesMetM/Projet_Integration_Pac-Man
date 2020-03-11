@@ -18,6 +18,7 @@ class TimerAbstrait:
         if self.ended:
             return False
         self.current = get_ticks()
+        print(self.current-self.debut)
         self.ended = self.duree <= self.current - self.debut
         return not self.ended
 
@@ -33,9 +34,10 @@ class TimerAbstrait:
         else:
             self.paused = True
 
-    def set_timer(self, millis):
+    def set_timer(self, millis, is_paused=False):
         """
         Réinitialise le timer pour une certaine durée en milli-seconde.
+        :param is_paused: Pour setter un timer qui est sur pause, mettre le paramètre à «True».
         :param millis: Durée du timer en milli-seconde.
         :return: void
         """
@@ -43,7 +45,7 @@ class TimerAbstrait:
         self.current = self.debut
         self.duree = millis
         self.ended = False
-        self.paused = False
+        self.paused = is_paused
 
     def update(self):
         """
@@ -60,7 +62,8 @@ class TimerJeu(TimerAbstrait):
 
     def __init__(self, jeu):
         TimerAbstrait.__init__(self)
-        self.current_mode = Mode.CHASSE
+        self.current_mode = Mode.DISPERSION
+        self.set_timer(TimerJeu.TEMPS_DISPERSION, is_paused=True)
         self.timer_fantome = TimerFantome()
         self.jeu = jeu
 
