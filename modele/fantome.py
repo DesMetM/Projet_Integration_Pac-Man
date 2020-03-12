@@ -21,7 +21,7 @@ class Fantome(pygame.sprite.Sprite):
         self.count_effraye = 0
         self.frame = 0
         self.nom = nom
-        self.radius = 21
+        self.radius = 15
         self.scatter = scatter
         pygame.sprite.Sprite.__init__(self)
 

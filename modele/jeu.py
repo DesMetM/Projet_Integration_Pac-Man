@@ -21,6 +21,8 @@ class Jeu:
         self.partie_terminee = False
         self.nbr_vie = 5
         self.timer_jeu = TimerJeu(self)
+        self.nbr_fantomes_manges = 0
+        self.anim_1up = True
 
         self.nouvelle_partie()
         self.score = 0
@@ -41,6 +43,7 @@ class Jeu:
     def pellets_animation(self):
         if self.pellet_anim > 6:
             self.pellet_anim = 0
+            self.anim_1up = not self.anim_1up  # pour l'animation de 1up c'est sagat par contre
             for sprite in self.power_pellets:
                 sprite.frame = not sprite.frame
                 sprite.image = sprite.images[sprite.frame]
@@ -55,9 +58,11 @@ class Jeu:
             self.pastilles_mangees += 1
             self.ajouter_points_pellet()
 
-        if pygame.sprite.groupcollide(groupa=self.pacman, groupb=self.power_pellets, dokilla=False, dokillb=True):
+        if pygame.sprite.groupcollide(groupa=self.pacman, groupb=self.power_pellets, dokilla=False,
+                                      dokillb=True):  # collision avec une power pellet
             self.timer_jeu.mode_effraye()
             self.ajouter_points_powerpellet()
+            self.nbr_fantomes_manges = 0
 
             for x in self.fantomes:
                 x.peur = True
@@ -75,6 +80,8 @@ class Jeu:
                     self.pacman.sprite.count_anim = 0
                     self.timer_jeu.pause()
                 elif ghost.mode is Mode.EFFRAYE:
+                    self.nbr_fantomes_manges += 1
+                    self.ajouter_points_fantome()
                     ghost.set_mode(Mode.RETOUR)
 
     def get_surface(self, direction) -> pygame.Surface:
@@ -107,12 +114,14 @@ class Jeu:
             for fantome in self.fantomes:
                 fantome.respawn(self)
 
-        font = pygame.font.SysFont(None, 30)
+        path = os.path.abspath("ressource/font/emulogic.ttf")
+        font = pygame.font.Font(path, 20)
         text_score = font.render(str(self.score), 1, (255, 255, 255))
         text_1up = font.render('1UP', 1, (255, 255, 255))
 
-        background.blit(text_score, (70, 40))
-        background.blit(text_1up, (70, 0))
+        if self.anim_1up:
+            background.blit(text_1up, (70, 0))
+        background.blit(text_score, (130 - text_score.get_rect().right, 40))
 
         return background
 
@@ -121,3 +130,6 @@ class Jeu:
 
     def ajouter_points_powerpellet(self):
         self.score += 50
+
+    def ajouter_points_fantome(self):
+        self.score += 200 * self.nbr_fantomes_manges
