@@ -24,4 +24,4 @@ class Ctrl:
         return self.jeu.get_surface(direction)
 
     def start_timer(self):
-        self.jeu.timer_jeu.pause()
+        self.jeu.timer_jeu.pause(False)

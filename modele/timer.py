@@ -21,17 +21,18 @@ class TimerAbstrait:
         self.ended = self.duree <= self.current - self.debut
         return not self.ended
 
-    def pause(self):
+    def pause(self, is_paused):
         """
-        Met en pause le timer. Si on appelle la même méthode lorsque le timer est sur pause, le timer repart.
+        Met en pause le timer ou repart le timer.
+        :param is_paused: «True» si on veut mettre le timer sur pause, «False» si on veut repartir le timer.
         :return: void
         """
-        if self.paused:
+        if is_paused:
+            self.paused = True
+        else:
             self.debut = get_ticks() - (self.current - self.debut)
             self.current = get_ticks()
             self.paused = False
-        else:
-            self.paused = True
 
     def set_timer(self, millis, is_paused=False):
         """
@@ -55,9 +56,9 @@ class TimerAbstrait:
 
 
 class TimerJeu(TimerAbstrait):
-    TEMPS_DISPERSION = 3500
-    TEMPS_CHASSE = 10000
-    TEMPS_EFFRAYE = 5000
+    TEMPS_DISPERSION = 7000
+    TEMPS_CHASSE = 20000
+    TEMPS_EFFRAYE = 10000
 
     def __init__(self, jeu):
         TimerAbstrait.__init__(self)
@@ -80,11 +81,11 @@ class TimerJeu(TimerAbstrait):
         elif self.timer_fantome.is_running():
             self.timer_fantome.update()
         else:
-            self.pause()  # Repartir le timer.
+            self.pause(False)  # Repartir le timer.
             self.update_mode()
 
     def mode_effraye(self):
-        self.pause()
+        self.pause(True)
         self.timer_fantome.set_timer(TimerJeu.TEMPS_EFFRAYE)
         self.timer_fantome.acheve = False
 

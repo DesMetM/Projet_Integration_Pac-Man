@@ -19,7 +19,6 @@ class Jeu:
         self.pellet_anim = 0
         self.pastilles_mangees = 0
         self.partie_terminee = False
-        self.nbr_vie = 5
         self.timer_jeu = TimerJeu(self)
         self.nbr_fantomes_manges = 0
         self.anim_1up = True
@@ -78,7 +77,7 @@ class Jeu:
                 if (ghost.mode is not Mode.EFFRAYE) and (ghost.mode is not Mode.RETOUR):
                     self.pacman.sprite.is_alive = False
                     self.pacman.sprite.count_anim = 0
-                    self.timer_jeu.pause()
+                    self.timer_jeu.pause(True)
                 elif ghost.mode is Mode.EFFRAYE:
                     self.nbr_fantomes_manges += 1
                     self.ajouter_points_fantome()
