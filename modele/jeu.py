@@ -4,7 +4,7 @@ import modele.board as board
 from modele.modes_fantome import Mode
 from modele.timer import TimerJeu
 
-
+#lignes 109, 110 à enlever
 # permet de partir une nouvelle partie avec les éléments
 # APP_FOLDER = os.path.dirname(os.path.realpath(sys.argv[0]))
 
@@ -22,6 +22,7 @@ class Jeu:
         self.timer_jeu = TimerJeu(self)
         self.nbr_fantomes_manges = 0
         self.anim_1up = True
+        self.count_board_anim = 0
 
         self.nouvelle_partie()
         self.score = 0
@@ -86,6 +87,8 @@ class Jeu:
     def get_surface(self, direction) -> pygame.Surface:
         '''Point d'entrée du ctrl.'''
         background = pygame.image.load(os.path.join('ressource', 'images', 'Board.png'))
+        backgroundNoir = pygame.image.load(os.path.join('ressource', 'images', 'Board.png'))
+        backgroundBlanc = pygame.image.load(os.path.join('ressource', 'images', 'Board_Blanc.png'))
         self.pellets_animation()
         self.pastilles.draw(background)
         self.power_pellets.draw(background)
@@ -96,12 +99,36 @@ class Jeu:
         self.timer_jeu.update()
 
         if self.pacman.sprite.is_alive:
+
+            '''À enlever, seulement pour que les tests soit moins long'''
+            if self.pastilles_mangees == 5:
+                self.pastilles.empty()
+                self.power_pellets.empty()
+
+            if len(self.pastilles) == 0 & len(self.power_pellets) == 0:
+                self.timer_jeu.pause(True)
+                self.pacman.sprite.image = pygame.image.load(os.path.join('ressource', 'images', 'PacDead0.png'))
+                self.pacman.sprite.vitesse = [0, 0]
+
+                # Change la couleur du board
+                self.count_board_anim += 1
+                if self.count_board_anim < 16:
+                    if self.count_board_anim % 4 == 0:
+                        background = backgroundBlanc
+                    elif self.count_board_anim % 8 == 0:
+                        background = backgroundNoir
+                else:
+                    self.nouvelle_partie()
+
             self.collision()
             self.pacman.update(direction)
             self.pacman.sprite.move_animation()
             board.detecte_noeud(self.pacman.sprite.rect)
             self.fantomes.update(self)
-            self.fantomes.draw(background)
+            if not (len(self.pastilles) == 0 | len(self.power_pellets) ==  0):
+                self.fantomes.draw(background)
+
+
 
         else:
             self.partie_terminee = self.pacman.sprite.kill_animation()
@@ -132,3 +159,4 @@ class Jeu:
 
     def ajouter_points_fantome(self):
         self.score += 200 * self.nbr_fantomes_manges
+
