@@ -3,12 +3,16 @@ import os
 import modele.board as board
 from modele.modes_fantome import Mode
 from modele.timer import TimerJeu
+from modele.pacman import PacMan
+from modele.direction import Direction
 
 
 # permet de partir une nouvelle partie avec les éléments
 # APP_FOLDER = os.path.dirname(os.path.realpath(sys.argv[0]))
 
 class Jeu:
+    BACKGROUND = pygame.image.load(os.path.join('ressource', 'images', 'Board.png'))
+
     def __init__(self):
         # self.chomp = pygame.mixer.Sound(os.path.join('ressource', 'sons', 'Chomp.wav'))
         self.pastilles = None
@@ -19,23 +23,23 @@ class Jeu:
         self.pellet_anim = 0
         self.pastilles_mangees = 0
         self.partie_terminee = False
-        self.timer_jeu = TimerJeu(self)
+        self.timer_jeu = None
         self.nbr_fantomes_manges = 0
         self.anim_1up = True
-
-        self.nouvelle_partie()
+        self.font = pygame.font.Font(os.path.abspath("ressource/font/emulogic.ttf"), 20)
         self.score = 0
         # self.bool_chomp = False;
         # pygame.mixer.Sound(os.path.join('ressource','sons','Chomp.wav')).play(-1)
 
     # débute une nouvelle partie
-    def nouvelle_partie(self):
+    def nouvelle_partie(self, frame_rate):
         '''Reset tout pour une nouvelle partie.'''
         self.pastilles = board.pastilles()
         self.power_pellets = board.grosses_pastilles()
         self.pacman = board.pac_init_pos()
         self.fantomes, self.blinky = board.fantomes_init_pos()
         self.partie_terminee = False
+        self.timer_jeu = TimerJeu(self, frame_rate)
 
     """Anime les Power-pellets(Clignotent)"""
 
@@ -85,13 +89,14 @@ class Jeu:
 
     def get_surface(self, direction) -> pygame.Surface:
         '''Point d'entrée du ctrl.'''
-        background = pygame.image.load(os.path.join('ressource', 'images', 'Board.png'))
+        background = pygame.Surface(Jeu.BACKGROUND.get_size())
+        background.blit(Jeu.BACKGROUND, (0, 0))
         self.pellets_animation()
         self.pastilles.draw(background)
         self.power_pellets.draw(background)
 
         for life in range(self.pacman.sprite.nbr_vie):
-            background.blit(self.pacman.sprite.left_images[1], (60 + life * 60, 815))
+            background.blit(PacMan.IMAGES[Direction.GAUCHE][1], (60 + life * 60, 815))
 
         self.timer_jeu.update()
 
@@ -113,16 +118,17 @@ class Jeu:
             for fantome in self.fantomes:
                 fantome.respawn(self)
 
-        path = os.path.abspath("ressource/font/emulogic.ttf")
-        font = pygame.font.Font(path, 20)
-        text_score = font.render(str(self.score), 1, (255, 255, 255))
-        text_1up = font.render('1UP', 1, (255, 255, 255))
-
-        if self.anim_1up:
-            background.blit(text_1up, (70, 0))
-        background.blit(text_score, (130 - text_score.get_rect().right, 40))
+        self.draw_score(background)
 
         return background
+
+    def draw_score(self, background):
+        text_score = self.font.render(str(self.score), 1, (255, 255, 255))
+
+        if self.anim_1up:
+            text_1up = self.font.render('1UP', 1, (255, 255, 255))
+            background.blit(text_1up, (70, 0))
+        background.blit(text_score, (130 - text_score.get_rect().right, 40))
 
     def ajouter_points_pellet(self):
         self.score += 10

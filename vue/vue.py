@@ -1,8 +1,4 @@
-import os
-
 import pygame
-
-from modele import jeu
 from modele.direction import Direction
 import os
 
@@ -10,6 +6,8 @@ window = pygame.display.set_mode((672, 864))
 
 
 class Vue:
+    FRAME_RATE = 30
+
     def __init__(self, p_ctrl):
         self.ctrl = p_ctrl
 
@@ -20,13 +18,13 @@ class Vue:
 
         player1 = pygame.image.load(os.path.join('ressource', 'images', 'PlayerOne.png'))
         player1_rect = player1.get_rect()
-        player1_rect.topleft = (217,332)
+        player1_rect.topleft = (217, 332)
 
         IA = pygame.image.load(os.path.join('ressource', 'images', 'Player_IA.png'))
-        IA_rect= IA.get_rect()
+        IA_rect = IA.get_rect()
         IA_rect.topleft = (285, 532)
 
-        window.blit(board, (0,0))
+        window.blit(board, (0, 0))
         window.blit(player1, (217, 332))
         window.blit(IA, (285, 532))
         pygame.display.flip()
@@ -55,9 +53,6 @@ class Vue:
 
         pygame.mixer_music.stop()
 
-
-
-
     def mode_IA(self):
         '''Lance une partie avec l'IA.'''
         return 0
@@ -69,7 +64,6 @@ class Vue:
         """
         quitter = False
         clock = pygame.time.Clock()
-        clock.tick(40)
         pac_direction = Direction.AUCUNE
         key_pressed = []
         self.ready()
@@ -82,7 +76,6 @@ class Vue:
                     quitter = True
 
                 elif event.type == pygame.KEYDOWN:
-
                     if event.key == pygame.K_LEFT:
                         key_pressed.append(Direction.GAUCHE)
                     if event.key == pygame.K_UP:
@@ -90,11 +83,9 @@ class Vue:
                     if event.key == pygame.K_RIGHT:
                         key_pressed.append(Direction.DROITE)
                     if event.key == pygame.K_DOWN:
-
                         key_pressed.append(Direction.BAS)
                     if event.key == pygame.K_ESCAPE:
                         quitter = True
-
 
                 elif event.type == pygame.KEYUP:
                     if event.key == pygame.K_LEFT:
@@ -104,11 +95,9 @@ class Vue:
                     if event.key == pygame.K_RIGHT:
                         key_pressed.remove(Direction.DROITE)
                     if event.key == pygame.K_DOWN:
-
                         key_pressed.remove(Direction.BAS)
                     if event.key == pygame.K_ESCAPE:
                         quitter = True
-
 
             if key_pressed:
                 pac_direction = key_pressed[-1]
@@ -116,4 +105,5 @@ class Vue:
                 pac_direction = Direction.AUCUNE
 
             window.blit(self.ctrl.get_surface(pac_direction), (0, 0))
+            clock.tick(Vue.FRAME_RATE)
             pygame.display.update()

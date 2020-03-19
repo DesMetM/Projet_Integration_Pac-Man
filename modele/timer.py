@@ -3,12 +3,13 @@ from modele.modes_fantome import Mode
 
 
 class TimerAbstrait:
-    def __init__(self):
+    def __init__(self, frame_rate):
         self.debut = 0
         self.current = 0
         self.duree = 0
         self.ended = True
         self.paused = False
+        self.frame_rate = frame_rate
 
     def is_running(self):
         """
@@ -60,11 +61,11 @@ class TimerJeu(TimerAbstrait):
     TEMPS_CHASSE = 20000
     TEMPS_EFFRAYE = 10000
 
-    def __init__(self, jeu):
-        TimerAbstrait.__init__(self)
+    def __init__(self, jeu, frame_rate):
+        TimerAbstrait.__init__(self, frame_rate)
         self.current_mode = Mode.DISPERSION
         self.set_timer(TimerJeu.TEMPS_DISPERSION, is_paused=True)
-        self.timer_fantome = TimerFantome()
+        self.timer_fantome = TimerFantome(frame_rate)
         self.jeu = jeu
 
     def update(self):
@@ -97,8 +98,8 @@ class TimerJeu(TimerAbstrait):
 
 
 class TimerFantome(TimerAbstrait):
-    def __init__(self):
-        TimerAbstrait.__init__(self)
+    def __init__(self, frame_rate):
+        TimerAbstrait.__init__(self, frame_rate)
         self.acheve = False
 
     def update(self):

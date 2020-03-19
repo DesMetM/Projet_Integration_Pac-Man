@@ -14,7 +14,7 @@ class Ctrl:
         mode_de_jeu = self.vue.interface_debut()
 
         # Si mode_de_jeu est vrai, alors on lance la partie en mode joueur. Sinon, on lance la partie en mode IA.
-        self.jeu.nouvelle_partie()
+        self.jeu.nouvelle_partie(Vue.FRAME_RATE)
         if mode_de_jeu:
             self.vue.mode_joueur()
         else:

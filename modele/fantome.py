@@ -9,6 +9,16 @@ import random
 
 class Fantome(pygame.sprite.Sprite):
     CSTNE_VITESSE = 6
+    IMAGES_EFFRAYE = [
+        pygame.image.load(os.path.join('ressource', 'images', 'Scared00.png')),
+        pygame.image.load(os.path.join('ressource', 'images', 'Scared01.png')),
+        pygame.image.load(os.path.join('ressource', 'images', 'Scared10.png')),
+        pygame.image.load(os.path.join('ressource', 'images', 'Scared11.png'))]
+
+    IMAGES_RETOUR = {Direction.HAUT: pygame.image.load(os.path.join('ressource', 'images', 'EatenUp.png')),
+                     Direction.DROITE: pygame.image.load(os.path.join('ressource', 'images', 'EatenRight.png')),
+                     Direction.BAS: pygame.image.load(os.path.join('ressource', 'images', 'EatenDown.png')),
+                     Direction.GAUCHE: pygame.image.load(os.path.join('ressource', 'images', 'EatenLeft.png'))}
 
     def __init__(self, pos, nom, scatter):
         self.target = None
@@ -20,33 +30,21 @@ class Fantome(pygame.sprite.Sprite):
         self.count_anim = 0
         self.count_effraye = 0
         self.frame = 0
-        self.nom = nom
         self.radius = 15
         self.scatter = scatter
         pygame.sprite.Sprite.__init__(self)
 
-        self.up_images = [pygame.image.load(os.path.join('ressource', 'images', '{0}Up0.png'.format(self.nom))),
-                          pygame.image.load(os.path.join('ressource', 'images', '{0}Up1.png'.format(self.nom))),
-                          pygame.image.load(os.path.join('ressource', 'images', 'EatenUp.png'))]
+        self.images = {
+            Direction.HAUT: [pygame.image.load(os.path.join('ressource', 'images', '{0}Up0.png'.format(nom))),
+                             pygame.image.load(os.path.join('ressource', 'images', '{0}Up1.png'.format(nom)))],
+            Direction.DROITE: [pygame.image.load(os.path.join('ressource', 'images', '{0}Right0.png'.format(nom))),
+                               pygame.image.load(os.path.join('ressource', 'images', '{0}Right1.png'.format(nom)))],
+            Direction.BAS: [pygame.image.load(os.path.join('ressource', 'images', '{0}Down0.png'.format(nom))),
+                            pygame.image.load(os.path.join('ressource', 'images', '{0}Down1.png'.format(nom)))],
+            Direction.GAUCHE: [pygame.image.load(os.path.join('ressource', 'images', '{0}Left0.png'.format(nom))),
+                               pygame.image.load(os.path.join('ressource', 'images', '{0}Left1.png'.format(nom)))]}
 
-        self.down_images = [pygame.image.load(os.path.join('ressource', 'images', '{0}Down0.png'.format(self.nom))),
-                            pygame.image.load(os.path.join('ressource', 'images', '{0}Down1.png'.format(self.nom))),
-                            pygame.image.load(os.path.join('ressource', 'images', 'EatenDown.png'))]
-
-        self.left_images = [pygame.image.load(os.path.join('ressource', 'images', '{0}Left0.png'.format(self.nom))),
-                            pygame.image.load(os.path.join('ressource', 'images', '{0}Left1.png'.format(self.nom))),
-                            pygame.image.load(os.path.join('ressource', 'images', 'EatenLeft.png'))]
-
-        self.right_images = [pygame.image.load(os.path.join('ressource', 'images', '{0}Right0.png'.format(self.nom))),
-                             pygame.image.load(os.path.join('ressource', 'images', '{0}Right1.png'.format(self.nom))),
-                             pygame.image.load(os.path.join('ressource', 'images', 'EatenRight.png'))]
-
-        self.images_scared = {
-            1: pygame.image.load(os.path.join('ressource', 'images', 'Scared00.png'.format(self.nom))),
-            2: pygame.image.load(os.path.join('ressource', 'images', 'Scared01.png'.format(self.nom))),
-            3: pygame.image.load(os.path.join('ressource', 'images', 'Scared10.png'.format(self.nom))),
-            4: pygame.image.load(os.path.join('ressource', 'images', 'Scared11.png'.format(self.nom)))}
-        self.image = self.left_images[0]
+        self.image = self.images[Direction.GAUCHE][1]
         self.rect = self.image.get_rect(center=pos)
 
     def update(self, jeu):
@@ -108,6 +106,7 @@ class Fantome(pygame.sprite.Sprite):
         """
         self.set_mode(Mode.INACTIF)
         self.peur = False
+        self.image = self.images[Direction.GAUCHE][1]
 
     def avancer(self):
         """
@@ -155,31 +154,27 @@ class Fantome(pygame.sprite.Sprite):
         return hypot(rect.centerx - self.target[0], rect.centery - self.target[1])
 
     def animation(self, timer_acheve):
-        if self.mode != Mode.EFFRAYE and not self.peur or self.mode == Mode.RETOUR:
+        if self.mode == Mode.EFFRAYE or self.peur:
+            if self.count_anim > 2:
+                if not timer_acheve:
+                    self.count_anim = 0
+                    self.frame = not self.frame
+                    self.image = Fantome.IMAGES_EFFRAYE[self.frame]
+                else:
+                    self.count_anim = 0
+                    self.frame = (self.frame + 1) % 4
+                    self.image = Fantome.IMAGES_EFFRAYE[self.frame]
+            else:
+                self.count_anim += 1
+
+        elif self.mode == Mode.RETOUR:
+            self.image = Fantome.IMAGES_RETOUR[self.direction]
+
+        else:
             if self.count_anim > 2:
                 self.count_anim = 0
                 self.frame = not self.frame
-                if self.direction == Direction.GAUCHE:
-                    self.image = self.left_images[self.frame if self.mode != Mode.RETOUR else 2]
-                elif self.direction == Direction.HAUT:
-                    self.image = self.up_images[self.frame if self.mode != Mode.RETOUR else 2]
-                elif self.direction == Direction.DROITE:
-                    self.image = self.right_images[self.frame if self.mode != Mode.RETOUR else 2]
-                elif self.direction == Direction.BAS:
-                    self.image = self.down_images[self.frame if self.mode != Mode.RETOUR else 2]
-            else:
-                self.count_anim += 1
-        else:
-            if self.count_anim > 2 and not timer_acheve:
-                self.count_anim = 0
-                if not (self.frame == 0 or self.frame == 1):
-                    self.frame = 0
-                self.frame = not self.frame
-                self.image = self.images_scared[self.frame + 1]
-            elif self.count_anim > 2:
-                self.count_anim = 0
-                self.frame = (self.frame + 1) % 4
-                self.image = self.images_scared[self.frame + 1]
+                self.image = self.images[self.direction][self.frame]
             else:
                 self.count_anim += 1
 
@@ -228,9 +223,7 @@ class Blinky(Fantome):
 
     def __init__(self):
         Fantome.__init__(self, Blinky.SPAWN, "Blinky", Blinky.SCATTER_TARGET)
-        self.actif = True
-        self.vitesse = [x * Fantome.CSTNE_VITESSE for x in self.direction.get_vecteur()]
-        self.target = self.scatter
+        self.set_mode(Mode.DISPERSION)
 
     def respawn(self, jeu):
         super().respawn(jeu)
@@ -248,10 +241,7 @@ class Pinky(Fantome):
 
     def __init__(self):
         Fantome.__init__(self, Pinky.SPAWN, "Pinky", Pinky.SCATTER_TARGET)
-        self.direction = Direction.GAUCHE
-        self.actif = True
         self.nbr_activation = 5
-        self.vitesse = [x * Fantome.CSTNE_VITESSE for x in self.direction.get_vecteur()]
 
     def respawn(self, jeu):
         super().respawn(jeu)
@@ -269,9 +259,7 @@ class Inky(Fantome):
 
     def __init__(self):
         Fantome.__init__(self, Inky.SPAWN, "Inky", Inky.SCATTER_TARGET)
-        self.direction = Direction.GAUCHE
         self.nbr_activation = 30
-        self.vitesse = [x * Fantome.CSTNE_VITESSE for x in self.direction.get_vecteur()]
 
     def respawn(self, jeu):
         super().respawn(jeu)
@@ -293,9 +281,7 @@ class Clyde(Fantome):
 
     def __init__(self):
         Fantome.__init__(self, Clyde.SPAWN, "Clyde", Clyde.SCATTER_TARGET)
-        self.direction = Direction.GAUCHE
         self.nbr_activation = 60
-        self.vitesse = [x * Fantome.CSTNE_VITESSE for x in self.direction.get_vecteur()]
 
     def respawn(self, jeu):
         super().respawn(jeu)

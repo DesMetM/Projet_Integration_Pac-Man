@@ -9,7 +9,7 @@ pygame.mixer.init()
 pygame.font.init()
 pygame.display.set_caption('Pac-Man')
 pygame.display.set_icon(pygame.image.load(os.path.join('ressource', 'images', 'Icon.png')))
-pygame.display.set_mode((0, 0), pygame.FULLSCREEN)  # pour mettre en plenine écran
+#pygame.display.set_mode((0, 0), pygame.FULLSCREEN)  # pour mettre en plenine écran
 
 # Le contrôleur débute la partie.
 monCtrl = ctrl.Ctrl()
