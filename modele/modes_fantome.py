@@ -2,6 +2,9 @@ from enum import Enum
 
 
 class Mode(Enum):
+    """
+    Enum contenant les différents modes que les fantômes adopter durant la partie.
+    """
     CHASSE = lambda fantome, jeu: fantome.mode_chasse(jeu)
     DISPERSION = lambda fantome, jeu: fantome.avancer()
     EFFRAYE = lambda fantome, jeu: fantome.mode_effraye()
@@ -11,5 +14,11 @@ class Mode(Enum):
 
     @staticmethod
     def inactif(fantome, jeu):
+        """
+        S'il y a assez de pastilles mangées dans le jeu, alors le fantôme passe en mode «sortir».
+        :param fantome: Un fantôme.
+        :param jeu: Le jeu auquel le fantôme appartient.
+        :return: None
+        """
         if fantome.nbr_activation < jeu.pastilles_mangees:
             fantome.mode = Mode.SORTIR

@@ -1,8 +1,11 @@
 from enum import Enum
-#import numpy as np
 
 
 class Direction(Enum):
+    """
+    Enum contenant les différentes actions que l'utilisateur peut faire.
+    Cet enum est aussi utile pour connaître la direction des sprites.
+    """
     GAUCHE = 0
     HAUT = 1
     DROITE = 2
@@ -10,6 +13,10 @@ class Direction(Enum):
     AUCUNE = 4
 
     def get_vecteur(self):
+        """
+        Retourne le vecteur unitaire de la direction.
+        :return: le vecteur unitaire de la direction.
+        """
         if self == Direction.GAUCHE:
             return [-1, 0]
         elif self == Direction.HAUT:
@@ -20,6 +27,10 @@ class Direction(Enum):
             return [0, 1]
 
     def opposee(self):
+        """
+        Retourne la direction opposée à cette direction (self).
+        :return: la direction opposée à cette direction (self).
+        """
         if self == Direction.GAUCHE:
             return Direction.DROITE
         elif self == Direction.HAUT:

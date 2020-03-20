@@ -1,32 +1,39 @@
-import os
-
 import pygame
-
-from modele import jeu
 from modele.direction import Direction
 import os
 
 window = pygame.display.set_mode((672, 864))
 
-
 class Vue:
+    """
+    Cette classe est la vue du jeu de Pac-Man. Elle permet d'afficher les frames et de jouer de la musique.
+    """
+
+    FRAME_RATE = 30
+
     def __init__(self, p_ctrl):
+        """
+        Constructeur de la classe.
+        :param p_ctrl: Contrôleur du jeu de Pac-Man.
+        """
         self.ctrl = p_ctrl
 
     def interface_debut(self):
-        ''' Affiche l'interface qui donne le choix d'accéder au jeu en tant que joueur ou IA.
-        Retourne vrai si le joueur à été sélectionner. '''
+        '''
+        Affiche l'interface qui donne le choix d'accéder au jeu en tant que joueur ou IA.
+        :return: «True» si le joueur à été sélectionner.
+        '''
         board = pygame.image.load(os.path.join('ressource', 'images', 'Board_Intro.png'))
 
         player1 = pygame.image.load(os.path.join('ressource', 'images', 'PlayerOne.png'))
         player1_rect = player1.get_rect()
-        player1_rect.topleft = (217,332)
+        player1_rect.topleft = (217, 332)
 
         IA = pygame.image.load(os.path.join('ressource', 'images', 'Player_IA.png'))
-        IA_rect= IA.get_rect()
+        IA_rect = IA.get_rect()
         IA_rect.topleft = (285, 532)
 
-        window.blit(board, (0,0))
+        window.blit(board, (0, 0))
         window.blit(player1, (217, 332))
         window.blit(IA, (285, 532))
         pygame.display.flip()
@@ -44,8 +51,12 @@ class Vue:
                         return True
 
     def ready(self):
+        """
+        Affiche l'image «Ready!.png» au début de la partie et joue la musique du début.
+        :return: None
+        """
         ready = pygame.image.load(os.path.join('ressource', 'images', 'Ready!.png'))
-        window.blit(self.ctrl.get_surface(Direction.AUCUNE), (0, 0))
+        window.blit(self.ctrl.get_surface(), (0, 0))
         window.blit(ready, (270, 485))
         pygame.display.update()
         pygame.mixer.music.load(os.path.join('ressource', 'sons', 'Theme.wav'))
@@ -55,25 +66,22 @@ class Vue:
 
         pygame.mixer_music.stop()
 
-
-
-
     def mode_IA(self):
-        '''Lance une partie avec l'IA.'''
-        return 0
+        '''
+        Lance une partie avec l'IA.
+        :return: None
+        '''
+        pass
 
     def mode_joueur(self):
         """
-        Crée les events pour que le joueur puisse puisse jouer
-        :return:
+        Lance une partie où est-ce-que le joueur peut interagir avec les touches directionnelles.
+        :return: None
         """
         quitter = False
         clock = pygame.time.Clock()
-        clock.tick(40)
-        pac_direction = Direction.AUCUNE
         key_pressed = []
         self.ready()
-        self.ctrl.start_timer()
 
         while not quitter:
 
@@ -82,7 +90,6 @@ class Vue:
                     quitter = True
 
                 elif event.type == pygame.KEYDOWN:
-
                     if event.key == pygame.K_LEFT:
                         key_pressed.append(Direction.GAUCHE)
                     if event.key == pygame.K_UP:
@@ -90,11 +97,9 @@ class Vue:
                     if event.key == pygame.K_RIGHT:
                         key_pressed.append(Direction.DROITE)
                     if event.key == pygame.K_DOWN:
-
                         key_pressed.append(Direction.BAS)
                     if event.key == pygame.K_ESCAPE:
                         quitter = True
-
 
                 elif event.type == pygame.KEYUP:
                     if event.key == pygame.K_LEFT:
@@ -104,16 +109,15 @@ class Vue:
                     if event.key == pygame.K_RIGHT:
                         key_pressed.remove(Direction.DROITE)
                     if event.key == pygame.K_DOWN:
-
                         key_pressed.remove(Direction.BAS)
                     if event.key == pygame.K_ESCAPE:
                         quitter = True
 
-
             if key_pressed:
-                pac_direction = key_pressed[-1]
+                self.ctrl.update_jeu(key_pressed[-1])
             else:
-                pac_direction = Direction.AUCUNE
+                self.ctrl.update_jeu(Direction.AUCUNE)
 
-            window.blit(self.ctrl.get_surface(pac_direction), (0, 0))
+            window.blit(self.ctrl.get_surface(), (0, 0))
+            clock.tick(Vue.FRAME_RATE)
             pygame.display.update()

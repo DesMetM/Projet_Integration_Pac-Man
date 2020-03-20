@@ -5,7 +5,6 @@ from modele.modes_fantome import Mode
 from modele.timer import TimerJeu
 
 
-# lignes 109, 110 à enlever
 # permet de partir une nouvelle partie avec les éléments
 # APP_FOLDER = os.path.dirname(os.path.realpath(sys.argv[0]))
 
@@ -23,7 +22,6 @@ class Jeu:
         self.timer_jeu = TimerJeu(self)
         self.nbr_fantomes_manges = 0
         self.anim_1up = True
-        self.count_board_anim = 0
 
         self.nouvelle_partie()
         self.score = 0
@@ -88,7 +86,6 @@ class Jeu:
     def get_surface(self, direction) -> pygame.Surface:
         '''Point d'entrée du ctrl.'''
         background = pygame.image.load(os.path.join('ressource', 'images', 'Board.png'))
-
         self.pellets_animation()
         self.pastilles.draw(background)
         self.power_pellets.draw(background)
@@ -99,45 +96,14 @@ class Jeu:
         self.timer_jeu.update()
 
         if self.pacman.sprite.is_alive:
+            self.collision()
+            self.pacman.update(direction)
+            self.pacman.sprite.move_animation()
+            board.detecte_noeud(self.pacman.sprite.rect)
+            self.fantomes.update(self)
+            self.fantomes.draw(background)
 
-            '''À enlever, seulement pour que les tests soit moins long'''
-            if self.pastilles_mangees == 5:
-                self.pastilles.empty()
-                self.power_pellets.empty()
-
-            if len(self.pastilles) == 0 and len(self.power_pellets) == 0:
-                self.timer_jeu.pause(True)
-                pac0 =  pygame.image.load(os.path.join('ressource', 'images', 'PacDead0.png'))
-                backgroundNoir = pygame.image.load(os.path.join('ressource', 'images', 'Board.png'))
-                backgroundBlanc = pygame.image.load(os.path.join('ressource', 'images', 'Board_Blanc.png'))
-                self.pacman.sprite.vitesse = [0, 0]
-
-                # Change la couleur du board
-                self.count_board_anim += 1
-                if self.count_board_anim < 16:
-                    count = self.count_board_anim / 2
-                    if count % 2 == 0:
-                        background = backgroundBlanc
-                    else :
-                        background = backgroundNoir
-                    self.pacman.sprite.image = pac0
-                    self.pacman.draw(background)
-                    return background
-
-                else:
-                    self.nouvelle_partie()
-                    self.partie_terminee = True
-
-
-            else:
-                self.collision()
-                self.pacman.update(direction)
-                self.pacman.sprite.move_animation()
-                board.detecte_noeud(self.pacman.sprite.rect)
-                self.fantomes.update(self)
-                self.fantomes.draw(background)
-
-        elif not self.partie_terminee:
+        else:
             self.partie_terminee = self.pacman.sprite.kill_animation()
         self.pacman.draw(background)
 
