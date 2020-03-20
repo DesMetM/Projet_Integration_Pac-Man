@@ -7,43 +7,49 @@ from modele.pacman import PacMan
 from modele.direction import Direction
 
 
-# permet de partir une nouvelle partie avec les éléments
-# APP_FOLDER = os.path.dirname(os.path.realpath(sys.argv[0]))
-
 class Jeu:
+    """
+    Cette classe gère le jeu Pac-Man.
+    """
     BACKGROUND = pygame.image.load(os.path.join('ressource', 'images', 'Board.png'))
+    FONT = None
 
     def __init__(self):
-        # self.chomp = pygame.mixer.Sound(os.path.join('ressource', 'sons', 'Chomp.wav'))
+        """
+        Le constructeur déclare seulement les attributs. Il faut appeller la méthode nouvelle_partie(self) par la suite.
+        """
         self.pastilles = None
         self.power_pellets = None
         self.pacman = None
         self.fantomes = None
         self.blinky = None
-        self.pellet_anim = 0
         self.pastilles_mangees = 0
         self.partie_terminee = False
         self.timer_jeu = None
         self.nbr_fantomes_manges = 0
-        self.anim_1up = True
-        self.font = pygame.font.Font(os.path.abspath("ressource/font/emulogic.ttf"), 20)
         self.score = 0
-        # self.bool_chomp = False;
-        # pygame.mixer.Sound(os.path.join('ressource','sons','Chomp.wav')).play(-1)
 
-    # débute une nouvelle partie
+        if Jeu.FONT is None:
+            Jeu.FONT = pygame.font.Font(os.path.abspath("ressource/font/emulogic.ttf"), 20)
+
     def nouvelle_partie(self, frame_rate):
-        '''Reset tout pour une nouvelle partie.'''
+        '''
+        Débute une nouvelle partie.
+        :param frame_rate: La vitesse que doit compter le timer. Le frame rate doit correspondre à celui de la vue.
+        :return: None
+        '''
         self.pastilles = board.pastilles()
         self.power_pellets = board.grosses_pastilles()
-        self.pacman = board.pac_init_pos()
+        self.pacman = board.get_pacman()
         self.fantomes, self.blinky = board.fantomes_init_pos()
         self.partie_terminee = False
         self.timer_jeu = TimerJeu(self, frame_rate)
 
-    """Vérifies les collisions entre les groupes de Sprites(voir board.py)"""
-
     def collision(self):
+        """
+        Cette méthode s'occupe des collisions entre les pastilles, Pac-Man et les fantômes.
+        :return: None
+        """
         if pygame.sprite.groupcollide(groupa=self.pacman, groupb=self.pastilles, dokilla=False,
                                       dokillb=True):  # collision avec une pastille
             self.pastilles_mangees += 1
@@ -74,6 +80,11 @@ class Jeu:
                     ghost.set_mode(Mode.RETOUR)
 
     def update_jeu(self, direction):
+        """
+        Passe au prochain état du jeu selon l'action du joueur.
+        :param direction: L'action du joueur.
+        :return: None
+        """
         self.timer_jeu.update()
 
         if self.pacman.sprite.is_alive:
@@ -90,16 +101,19 @@ class Jeu:
                 fantome.respawn(self)
 
     def get_surface(self) -> pygame.Surface:
-        '''Point d'entrée du ctrl.'''
+        '''
+        Construit et retourne l'image de l'état actuel du jeu.
+        :return: l'image de l'état actuel du jeu.
+        '''
         background = pygame.Surface(Jeu.BACKGROUND.get_size())
         background.blit(Jeu.BACKGROUND, (0, 0))
 
         self.pastilles.draw(background)
-        text_score = self.font.render(str(self.score), 1, (255, 255, 255))
+        text_score = Jeu.FONT.render(str(self.score), 1, (255, 255, 255))
         background.blit(text_score, (130 - text_score.get_rect().right, 40))
 
         if self.timer_jeu.timer_animation.pastilles_visibles:
-            text_1up = self.font.render('1UP', 1, (255, 255, 255))
+            text_1up = Jeu.FONT.render('1UP', 1, (255, 255, 255))
             background.blit(text_1up, (70, 0))
             self.power_pellets.draw(background)
 
@@ -114,10 +128,22 @@ class Jeu:
         return background
 
     def ajouter_points_pellet(self):
+        """
+        Incrémente le score du jeu pour avoir mangé une pastille.
+        :return: None
+        """
         self.score += 10
 
     def ajouter_points_powerpellet(self):
+        """
+        Incrémente le score du jeu pour avoir mangé une grosse pastille.
+        :return: None
+        """
         self.score += 50
 
     def ajouter_points_fantome(self):
+        """
+        Incrémente le score du jeu pour avoir mangé un fantôme.
+        :return: None
+        """
         self.score += 200 * self.nbr_fantomes_manges

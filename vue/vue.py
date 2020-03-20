@@ -4,16 +4,25 @@ import os
 
 window = pygame.display.set_mode((672, 864))
 
-
 class Vue:
+    """
+    Cette classe est la vue du jeu de Pac-Man. Elle permet d'afficher les frames et de jouer de la musique.
+    """
+
     FRAME_RATE = 30
 
     def __init__(self, p_ctrl):
+        """
+        Constructeur de la classe.
+        :param p_ctrl: Contrôleur du jeu de Pac-Man.
+        """
         self.ctrl = p_ctrl
 
     def interface_debut(self):
-        ''' Affiche l'interface qui donne le choix d'accéder au jeu en tant que joueur ou IA.
-        Retourne vrai si le joueur à été sélectionner. '''
+        '''
+        Affiche l'interface qui donne le choix d'accéder au jeu en tant que joueur ou IA.
+        :return: «True» si le joueur à été sélectionner.
+        '''
         board = pygame.image.load(os.path.join('ressource', 'images', 'Board_Intro.png'))
 
         player1 = pygame.image.load(os.path.join('ressource', 'images', 'PlayerOne.png'))
@@ -42,6 +51,10 @@ class Vue:
                         return True
 
     def ready(self):
+        """
+        Affiche l'image «Ready!.png» au début de la partie et joue la musique du début.
+        :return: None
+        """
         ready = pygame.image.load(os.path.join('ressource', 'images', 'Ready!.png'))
         window.blit(self.ctrl.get_surface(), (0, 0))
         window.blit(ready, (270, 485))
@@ -54,13 +67,16 @@ class Vue:
         pygame.mixer_music.stop()
 
     def mode_IA(self):
-        '''Lance une partie avec l'IA.'''
-        return 0
+        '''
+        Lance une partie avec l'IA.
+        :return: None
+        '''
+        pass
 
     def mode_joueur(self):
         """
-        Crée les events pour que le joueur puisse puisse jouer
-        :return:
+        Lance une partie où est-ce-que le joueur peut interagir avec les touches directionnelles.
+        :return: None
         """
         quitter = False
         clock = pygame.time.Clock()
