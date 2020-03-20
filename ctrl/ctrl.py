@@ -20,8 +20,8 @@ class Ctrl:
         else:
             self.vue.mode_IA()
 
-    def get_surface(self, direction):
-        return self.jeu.get_surface(direction)
+    def update_jeu(self,direction):
+        self.jeu.update_jeu(direction)
 
-    def start_timer(self):
-        self.jeu.timer_jeu.pause(False)
+    def get_surface(self):
+        return self.jeu.get_surface()

@@ -45,8 +45,6 @@ POINT = 0
 SCALING = 24
 DECALAGE = 85
 DECALAGEX = 12
-PACSPAWN = (14 * SCALING, 23 * SCALING + DECALAGE)
-READYSPAWN = (14 * SCALING, 17 * SCALING + DECALAGE)
 NOEUDS = set()
 
 NOEUDS.add(Blinky.SPAWN)
@@ -108,7 +106,7 @@ def grosses_pastilles():
 
 def pac_init_pos():
     groupe = pygame.sprite.GroupSingle()
-    groupe.add(PacMan(PACSPAWN))
+    groupe.add(PacMan())
     return groupe
 
 
@@ -173,9 +171,5 @@ class Pastille(pygame.sprite.Sprite):
 class GrossePastille(pygame.sprite.Sprite):
     def __init__(self, pos):
         pygame.sprite.Sprite.__init__(self)
-        self.images = [pygame.image.load(os.path.join('ressource', 'images', 'BigPellet.png')),
-                       pygame.image.load(os.path.join('ressource', 'images', 'Empty.png'))]
-        self.frame = 0
-        self.image = self.images[self.frame]
+        self.image = pygame.image.load(os.path.join('ressource', 'images', 'BigPellet.png'))
         self.rect = self.image.get_rect(center=pos)
-        self.isVisible = True

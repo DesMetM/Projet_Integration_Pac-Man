@@ -43,7 +43,7 @@ class Vue:
 
     def ready(self):
         ready = pygame.image.load(os.path.join('ressource', 'images', 'Ready!.png'))
-        window.blit(self.ctrl.get_surface(Direction.AUCUNE), (0, 0))
+        window.blit(self.ctrl.get_surface(), (0, 0))
         window.blit(ready, (270, 485))
         pygame.display.update()
         pygame.mixer.music.load(os.path.join('ressource', 'sons', 'Theme.wav'))
@@ -64,10 +64,8 @@ class Vue:
         """
         quitter = False
         clock = pygame.time.Clock()
-        pac_direction = Direction.AUCUNE
         key_pressed = []
         self.ready()
-        self.ctrl.start_timer()
 
         while not quitter:
 
@@ -100,10 +98,10 @@ class Vue:
                         quitter = True
 
             if key_pressed:
-                pac_direction = key_pressed[-1]
+                self.ctrl.update_jeu(key_pressed[-1])
             else:
-                pac_direction = Direction.AUCUNE
+                self.ctrl.update_jeu(Direction.AUCUNE)
 
-            window.blit(self.ctrl.get_surface(pac_direction), (0, 0))
+            window.blit(self.ctrl.get_surface(), (0, 0))
             clock.tick(Vue.FRAME_RATE)
             pygame.display.update()

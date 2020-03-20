@@ -41,18 +41,6 @@ class Jeu:
         self.partie_terminee = False
         self.timer_jeu = TimerJeu(self, frame_rate)
 
-    """Anime les Power-pellets(Clignotent)"""
-
-    def pellets_animation(self):
-        if self.pellet_anim > 6:
-            self.pellet_anim = 0
-            self.anim_1up = not self.anim_1up  # pour l'animation de 1up c'est sagat par contre
-            for sprite in self.power_pellets:
-                sprite.frame = not sprite.frame
-                sprite.image = sprite.images[sprite.frame]
-        else:
-            self.pellet_anim += 1
-
     """Vérifies les collisions entre les groupes de Sprites(voir board.py)"""
 
     def collision(self):
@@ -71,7 +59,6 @@ class Jeu:
                 x.peur = True
                 if x.mode == Mode.CHASSE or x.mode == Mode.DISPERSION:
                     x.set_mode(Mode.EFFRAYE)
-                    self.phase_effraye = True
 
         fantome_list = pygame.sprite.spritecollide(self.pacman.sprite, self.fantomes, False,
                                                    pygame.sprite.collide_circle)
@@ -80,37 +67,21 @@ class Jeu:
             for ghost in fantome_list:
                 if (ghost.mode is not Mode.EFFRAYE) and (ghost.mode is not Mode.RETOUR):
                     self.pacman.sprite.is_alive = False
-                    self.pacman.sprite.count_anim = 0
-                    self.timer_jeu.pause(True)
-                elif ghost.mode is Mode.EFFRAYE:
+                    self.timer_jeu.pacman_mort()
+                elif ghost.peur:
                     self.nbr_fantomes_manges += 1
                     self.ajouter_points_fantome()
                     ghost.set_mode(Mode.RETOUR)
 
-    def get_surface(self, direction) -> pygame.Surface:
-        '''Point d'entrée du ctrl.'''
-        background = pygame.Surface(Jeu.BACKGROUND.get_size())
-        background.blit(Jeu.BACKGROUND, (0, 0))
-        self.pellets_animation()
-        self.pastilles.draw(background)
-        self.power_pellets.draw(background)
-
-        for life in range(self.pacman.sprite.nbr_vie):
-            background.blit(PacMan.IMAGES[Direction.GAUCHE][1], (60 + life * 60, 815))
-
+    def update_jeu(self, direction):
         self.timer_jeu.update()
 
         if self.pacman.sprite.is_alive:
             self.collision()
             self.pacman.update(direction)
-            self.pacman.sprite.move_animation()
-            board.detecte_noeud(self.pacman.sprite.rect)
             self.fantomes.update(self)
-            self.fantomes.draw(background)
-
         else:
-            self.partie_terminee = self.pacman.sprite.kill_animation()
-        self.pacman.draw(background)
+            self.partie_terminee = self.timer_jeu.timer_animation.compteur == 0
 
         if self.partie_terminee:
             self.partie_terminee = False
@@ -118,17 +89,29 @@ class Jeu:
             for fantome in self.fantomes:
                 fantome.respawn(self)
 
-        self.draw_score(background)
+    def get_surface(self) -> pygame.Surface:
+        '''Point d'entrée du ctrl.'''
+        background = pygame.Surface(Jeu.BACKGROUND.get_size())
+        background.blit(Jeu.BACKGROUND, (0, 0))
 
-        return background
-
-    def draw_score(self, background):
+        self.pastilles.draw(background)
         text_score = self.font.render(str(self.score), 1, (255, 255, 255))
+        background.blit(text_score, (130 - text_score.get_rect().right, 40))
 
-        if self.anim_1up:
+        if self.timer_jeu.timer_animation.pastilles_visibles:
             text_1up = self.font.render('1UP', 1, (255, 255, 255))
             background.blit(text_1up, (70, 0))
-        background.blit(text_score, (130 - text_score.get_rect().right, 40))
+            self.power_pellets.draw(background)
+
+        for life in range(self.pacman.sprite.nbr_vie):
+            background.blit(PacMan.IMAGES[Direction.GAUCHE][1], (60 + life * 60, 815))
+
+        if self.pacman.sprite.is_alive:
+            self.fantomes.draw(background)
+
+        self.pacman.draw(background)
+
+        return background
 
     def ajouter_points_pellet(self):
         self.score += 10

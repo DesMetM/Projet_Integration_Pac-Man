@@ -8,6 +8,7 @@ import modele.board as board
 
 class PacMan(pygame.sprite.Sprite):
     CNSTE_VITESSE = 6
+    SPAWN = (336, 637)
     IMAGES = {Direction.GAUCHE: [pygame.image.load(os.path.join('ressource', 'images', 'PacManLeft0.png')),
                                  pygame.image.load(os.path.join('ressource', 'images', 'PacManLeft1.png'))],
               Direction.HAUT: [pygame.image.load(os.path.join('ressource', 'images', 'PacManUp0.png')),
@@ -22,19 +23,16 @@ class PacMan(pygame.sprite.Sprite):
 
     """Constructeur. Load les images d'animation, set l'image de base, crée le rect et instantie les frames pour l'animation."""
 
-    def __init__(self, pos):
-        self.frame = 0
+    def __init__(self):
         pygame.sprite.Sprite.__init__(self)
-
         self.image = PacMan.IMAGES[Direction.GAUCHE][1]
-
-        self.rect = self.image.get_rect(center=pos)
+        self.rect = self.image.get_rect(center=PacMan.SPAWN)
         self.radius = 21
         self.direction = Direction.GAUCHE
         self.vitesse = [0, 0]
-        self.count_anim = 0
         self.nbr_vie = 4
         self.is_alive = True
+        self.action = 1
 
     """Méthode appelée à chaque update de position du Pac-Man. Dépendement de la direction donnée en paramètre (Enum), set la vitesse actuelle. 
 La vitesse acctuelle est un vecteur représentant la vitesse x et y. Tentative de portail Haha"""
@@ -51,31 +49,17 @@ La vitesse acctuelle est un vecteur représentant la vitesse x et y. Tentative d
         board.tunnel(self.rect)
         self.rect = self.rect.move(self.vitesse)
 
-    """ Méthode qui anime la mort de Pac-Man. 12 images."""
-
-    def kill_animation(self):
-        self.count_anim = self.count_anim + 1
-        if self.count_anim <= 33:
-            self.image = PacMan.MORT[self.count_anim // 3]
-
-        return self.count_anim == 50
-
-    """Méthode qui anime le mouvement de Pac-Man"""
-
-    def move_animation(self):
-        if self.count_anim > 1:
-            self.count_anim = 0
-            """Dépendemment de la direction, l'animation est différente ( Pac-Man fait face à sa direction)"""
+    def animation(self, compteur):
+        if self.is_alive:
             if self.vitesse != [0, 0]:
-                self.frame = not self.frame
-                self.image = PacMan.IMAGES[self.direction][self.frame]
-        else:
-            self.count_anim += 1
+                self.action = not self.action
+                self.image = PacMan.IMAGES[self.direction][self.action]
+        elif compteur <= 33:
+            self.image = PacMan.MORT[compteur // 3]
 
     def respawn(self):
         self.nbr_vie -= 1
-        self.count_anim = 0
         self.vitesse = [0, 0]
-        self.rect.center = board.PACSPAWN
+        self.rect.center = PacMan.SPAWN
         self.image = PacMan.IMAGES[Direction.GAUCHE][1]
         self.is_alive = True

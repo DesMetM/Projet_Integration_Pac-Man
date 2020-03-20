@@ -27,10 +27,7 @@ class Fantome(pygame.sprite.Sprite):
         self.nbr_activation = -1
         self.direction = Direction.GAUCHE
         self.vitesse = [0, 0]
-        self.count_anim = 0
-        self.count_effraye = 0
-        self.frame = 0
-        self.radius = 15
+        self.radius = 16
         self.scatter = scatter
         pygame.sprite.Sprite.__init__(self)
 
@@ -49,8 +46,6 @@ class Fantome(pygame.sprite.Sprite):
 
     def update(self, jeu):
         self.mode(self, jeu)
-
-        self.animation(jeu.timer_jeu.timer_fantome.acheve)
 
     def sortir(self, jeu):
         if self.rect.centerx != 336:
@@ -153,30 +148,13 @@ class Fantome(pygame.sprite.Sprite):
         """
         return hypot(rect.centerx - self.target[0], rect.centery - self.target[1])
 
-    def animation(self, timer_acheve):
-        if self.mode == Mode.EFFRAYE or self.peur:
-            if self.count_anim > 2:
-                if not timer_acheve:
-                    self.count_anim = 0
-                    self.frame = not self.frame
-                    self.image = Fantome.IMAGES_EFFRAYE[self.frame]
-                else:
-                    self.count_anim = 0
-                    self.frame = (self.frame + 1) % 4
-                    self.image = Fantome.IMAGES_EFFRAYE[self.frame]
-            else:
-                self.count_anim += 1
-
+    def animation(self, action_fantome):
+        if self.peur:
+            self.image = Fantome.IMAGES_EFFRAYE[action_fantome]
         elif self.mode == Mode.RETOUR:
             self.image = Fantome.IMAGES_RETOUR[self.direction]
-
         else:
-            if self.count_anim > 2:
-                self.count_anim = 0
-                self.frame = not self.frame
-                self.image = self.images[self.direction][self.frame]
-            else:
-                self.count_anim += 1
+            self.image = self.images[self.direction][action_fantome % 2]
 
     # Cette phase est activé lorsque le Pac-Man mange un power pellet
     def mode_effraye(self):
