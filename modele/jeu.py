@@ -29,8 +29,10 @@ class Jeu:
         self.pastilles_mangees = 0
         self.partie_terminee = False
         self.timer_jeu = None
+        self.channel_actif = [False] * 9
         self.nbr_fantomes_manges = 0
         self.score = 0
+        self.derniere_pastille = None
         self.count_board_anim = 0
 
 
@@ -55,16 +57,20 @@ class Jeu:
         Cette méthode s'occupe des collisions entre les pastilles, Pac-Man et les fantômes.
         :return: None
         """
-        if pygame.sprite.groupcollide(groupa=self.pacman, groupb=self.pastilles, dokilla=False,
-                                      dokillb=True):  # collision avec une pastille
+        dict = pygame.sprite.groupcollide(groupa=self.pacman, groupb=self.pastilles, dokilla=False,
+                                          dokillb=True)
+        if dict:  # collision avec une pastille
             self.pastilles_mangees += 1
             self.ajouter_points_pellet()
+            self.derniere_pastille = list(dict.values())[0][0]
 
-        if pygame.sprite.groupcollide(groupa=self.pacman, groupb=self.power_pellets, dokilla=False,
-                                      dokillb=True):  # collision avec une power pellet
+        dict = pygame.sprite.groupcollide(groupa=self.pacman, groupb=self.power_pellets, dokilla=False,
+                                          dokillb=True)
+        if dict:  # collision avec une power pellet
             self.timer_jeu.mode_effraye()
             self.ajouter_points_powerpellet()
             self.nbr_fantomes_manges = 0
+            self.derniere_pastille = list(dict.values())[0][0]
 
             for x in self.fantomes:
                 x.peur = True
@@ -77,9 +83,11 @@ class Jeu:
         if fantome_list:  # collision avec un fantome
             for ghost in fantome_list:
                 if (ghost.mode is not Mode.EFFRAYE) and (ghost.mode is not Mode.RETOUR):
+                    self.channel_actif[8] = True
                     self.pacman.sprite.is_alive = False
                     self.timer_jeu.pacman_mort()
                 elif ghost.peur:
+                    self.channel_actif[3] = True
                     self.nbr_fantomes_manges += 1
                     self.ajouter_points_fantome()
                     ghost.set_mode(Mode.RETOUR)
@@ -90,13 +98,19 @@ class Jeu:
         :param direction: L'action du joueur.
         :return: None
         """
+        self.channel_actif = [False] * 9
+        self.channel_actif[0] = self.score >= 10000
+
         self.timer_jeu.update()
 
         if self.pacman.sprite.is_alive:
-
             self.collision()
             self.pacman.update(direction)
             self.fantomes.update(self)
+
+            if not self.channel_actif[0] and self.score >= 10000:
+                self.pacman.sprite.nbr_vie += 1
+                self.channel_actif[0] = True
 
         else:
             self.partie_terminee = self.timer_jeu.timer_animation.compteur == 0
@@ -148,6 +162,7 @@ class Jeu:
                     self.nouvelle_partie(self.ctrl.vue.FRAME_RATE)
                     self.count_board_anim = 0
             self.fantomes.draw(background)
+
         self.pacman.draw(background)
 
         return background
@@ -172,3 +187,25 @@ class Jeu:
         :return: None
         """
         self.score += 200 * self.nbr_fantomes_manges
+
+    def get_audio(self):
+        """
+        Retourne une liste de channel à activer selon l'état du jeu.
+        :return: une liste de channel à activer selon l'état du jeu.
+        """
+        if self.pacman.sprite.is_alive:
+            if self.derniere_pastille is not None:
+                if pygame.sprite.spritecollideany(self.derniere_pastille, self.pacman) and self.pacman.sprite.vitesse != [0,
+                                                                                                                          0]:
+                    self.channel_actif[1] = True
+                else:
+                    self.derniere_pastille = None
+
+            for fantome in self.fantomes:
+                if fantome.mode is Mode.EFFRAYE:
+                    self.channel_actif[2] = True
+                elif fantome.mode is Mode.RETOUR:
+                    self.channel_actif[5] = True
+                else:
+                    self.channel_actif[4] = True
+        return self.channel_actif

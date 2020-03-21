@@ -3,7 +3,7 @@ import ctrl.ctrl as ctrl
 import os
 
 # Initialiser pygame.
-pygame.mixer.pre_init(44100, 16, 2, 4096)
+pygame.mixer.pre_init(44100, 16, 8, 4096)
 pygame.init()
 pygame.mixer.init()
 pygame.font.init()

@@ -112,6 +112,7 @@ class Fantome(pygame.sprite.Sprite):
         if self.target == Blinky.SPAWN:
             if board.detecte_noeud(self.rect):
                 self.choose_direction(True)
+                self.vitesse = [2*i for i in self.vitesse]
         else:
             self.choose_direction(False)
 
