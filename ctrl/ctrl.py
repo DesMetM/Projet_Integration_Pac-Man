@@ -12,7 +12,7 @@ class Ctrl:
         """
         Constructeur de la classe. Instancie le jeu et la vue.
         """
-        self.jeu = Jeu()
+        self.jeu = Jeu(self)
         self.vue = Vue(self)
 
     def start(self):
