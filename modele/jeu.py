@@ -20,6 +20,7 @@ class Jeu:
         """
         Le constructeur déclare seulement les attributs. Il faut appeller la méthode nouvelle_partie(self) par la suite.
         """
+
         self.ctrl = ctrl
         self.pastilles = None
         self.power_pellets = None
@@ -35,6 +36,8 @@ class Jeu:
         self.derniere_pastille = None
         self.count_board_anim = 0
 
+        '''peut être enlevé pour version finale'''
+        self.game_rapide = True
 
         if Jeu.FONT is None:
             Jeu.FONT = pygame.font.Font(os.path.abspath("ressource/font/emulogic.ttf"), 20)
@@ -144,10 +147,11 @@ class Jeu:
         if self.pacman.sprite.is_alive:
 
             '''À enlever, seulement pour que les tests soit moins long'''
-            if self.pastilles_mangees == 15:
-                self.pastilles.empty()
-                self.power_pellets.empty()
-                self.pastilles_mangees = 0
+            if self.game_rapide:
+                if self.pastilles_mangees == 15:
+                    self.pastilles.empty()
+                    self.power_pellets.empty()
+                    self.pastilles_mangees = 0
 
             if len(self.pastilles) + len(self.power_pellets) == 0:
                 # Change la couleur du board
@@ -195,8 +199,7 @@ class Jeu:
         """
         if self.pacman.sprite.is_alive:
             if self.derniere_pastille is not None:
-                if pygame.sprite.spritecollideany(self.derniere_pastille, self.pacman) and self.pacman.sprite.vitesse != [0,
-                                                                                                                          0]:
+                if pygame.sprite.spritecollideany(self.derniere_pastille, self.pacman) and self.pacman.sprite.vitesse != [0, 0]:
                     self.channel_actif[1] = True
                 else:
                     self.derniere_pastille = None
