@@ -4,12 +4,14 @@ import os
 
 window = pygame.display.set_mode((672, 864))
 
+
 class Vue:
     """
     Cette classe est la vue du jeu de Pac-Man. Elle permet d'afficher les frames et de jouer de la musique.
     """
 
     FRAME_RATE = 30
+    SOUND = None
 
     def __init__(self, p_ctrl):
         """
@@ -17,6 +19,22 @@ class Vue:
         :param p_ctrl: Contrôleur du jeu de Pac-Man.
         """
         self.ctrl = p_ctrl
+        self.vie_sup = False
+        if Vue.SOUND is None:
+            Vue.SOUND = [pygame.mixer.Sound(os.path.join('ressource', 'sons', '1_up.ogg')),
+                         pygame.mixer.Sound(os.path.join('ressource', 'sons', '1_waka_waka.ogg')),
+                         pygame.mixer.Sound(os.path.join('ressource', 'sons', 'fantome_effraye.ogg')),
+                         pygame.mixer.Sound(os.path.join('ressource', 'sons', 'fantome_mange.ogg')),
+                         pygame.mixer.Sound(os.path.join('ressource', 'sons', 'fantome_normal.ogg')),
+                         pygame.mixer.Sound(os.path.join('ressource', 'sons', 'fantome_retour.ogg')),
+                         pygame.mixer.Sound(os.path.join('ressource', 'sons', 'fruit.ogg')),
+                         pygame.mixer.Sound(os.path.join('ressource', 'sons', 'Intro.ogg')),
+                         pygame.mixer.Sound(os.path.join('ressource', 'sons', 'pacman_mort.ogg'))]
+
+        self.channels = [None] * 9
+        for i in [1, 2, 4, 5]:
+            self.channels[i] = Vue.SOUND[i].play(-1)
+            self.channels[i].pause()
 
     def interface_debut(self):
         '''
@@ -59,12 +77,9 @@ class Vue:
         window.blit(self.ctrl.get_surface(), (0, 0))
         window.blit(ready, (270, 485))
         pygame.display.update()
-        pygame.mixer.music.load(os.path.join('ressource', 'sons', 'Theme.wav'))
-        pygame.mixer_music.play(loops=0)
 
-        pygame.time.delay(4700)
-
-        pygame.mixer_music.stop()
+        Vue.SOUND[-2].play(loops=0)
+        pygame.time.delay(4500)
 
     def mode_IA(self):
         '''
@@ -72,6 +87,46 @@ class Vue:
         :return: None
         '''
         pass
+
+    def audio(self):
+        """
+        Cette méthode active certains sons selon l'état du jeu.
+        :return: None
+        """
+        channel_actif = self.ctrl.get_audio()
+
+        if channel_actif[-1]:
+            for channel in self.channels:
+                if channel is not None:
+                    channel.pause()
+            self.channels[-1] = Vue.SOUND[-1].play(loops=0)
+
+        elif channel_actif[0] and not self.vie_sup:
+            self.vie_sup = True
+            self.channels[0] = Vue.SOUND[0].play(loops=0)
+
+        else:
+            if self.channels[-1] is None or not self.channels[-1].get_busy():
+                if channel_actif[3]:
+                    self.channels[3] = Vue.SOUND[3].play(loops=0)
+                elif channel_actif[1]:
+                    if self.channels[1].get_busy():
+                        self.channels[1].unpause()
+                else:
+                    self.channels[1].pause()
+
+                if channel_actif[5]:
+                    self.channels[2].pause()
+                    self.channels[4].pause()
+                    self.channels[5].unpause()
+                elif channel_actif[2]:
+                    self.channels[2].unpause()
+                    self.channels[4].pause()
+                    self.channels[5].pause()
+                elif channel_actif[4]:
+                    self.channels[2].pause()
+                    self.channels[4].unpause()
+                    self.channels[5].pause()
 
     def mode_joueur(self):
         """
@@ -81,6 +136,7 @@ class Vue:
         quitter = False
         clock = pygame.time.Clock()
         key_pressed = []
+        self.vie_sup = False
         self.ready()
 
         while not quitter:
@@ -118,6 +174,7 @@ class Vue:
             else:
                 self.ctrl.update_jeu(Direction.AUCUNE)
 
+            self.audio()
             window.blit(self.ctrl.get_surface(), (0, 0))
             clock.tick(Vue.FRAME_RATE)
             pygame.display.update()

@@ -147,7 +147,7 @@ class TimerAnimation:
     Timer d'animation du jeu. Ce timer NE compte PAS des secondes, mais des frames.
     Le timer s'occupe de mettre à jour l'animation des fantômes, de Pac-Man et des grosses pastilles.
     """
-    CYCLE = 54
+    CYCLE = 102
 
     def __init__(self, jeu):
         """

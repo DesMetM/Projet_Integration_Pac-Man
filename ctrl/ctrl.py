@@ -43,3 +43,10 @@ class Ctrl:
         :return: None
         """
         return self.jeu.get_surface()
+
+    def get_audio(self):
+        """
+        Retourne une liste de channel à activer.
+        :return: une liste de channel à activer.
+        """
+        return self.jeu.get_audio()
