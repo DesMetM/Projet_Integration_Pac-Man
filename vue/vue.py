@@ -12,6 +12,7 @@ class Vue:
 
     FRAME_RATE = 30
     SOUND = None
+    READY = pygame.image.load(os.path.join('ressource', 'images', 'Ready!.png'))
 
     def __init__(self, p_ctrl):
         """
@@ -68,14 +69,13 @@ class Vue:
                         print('Ça lance le joueur 1 puisque l\'IA n\'est pas encore prêt :)')
                         return True
 
-    def ready(self):
+    def intro(self):
         """
         Affiche l'image «Ready!.png» au début de la partie et joue la musique du début.
         :return: None
         """
-        ready = pygame.image.load(os.path.join('ressource', 'images', 'Ready!.png'))
         window.blit(self.ctrl.get_surface(), (0, 0))
-        window.blit(ready, (270, 485))
+        window.blit(Vue.READY, (270, 485))
         pygame.display.update()
 
         Vue.SOUND[-2].play(loops=0)
@@ -127,6 +127,22 @@ class Vue:
                     self.channels[2].pause()
                     self.channels[4].unpause()
                     self.channels[5].pause()
+                else:
+                    for channel in self.channels:
+                        if channel is not None:
+                            channel.pause()
+
+    def ready_respawn(self):
+        """
+        Apparaît l'image «Ready!.png» lorsqu'une partie est relancée.
+        :return: None
+        """
+        window.blit(self.ctrl.get_surface(), (0, 0))
+        window.blit(Vue.READY, (270, 485))
+        pygame.display.update()
+
+        pygame.time.delay(1500)
+
 
     def mode_joueur(self):
         """
@@ -137,7 +153,7 @@ class Vue:
         clock = pygame.time.Clock()
         key_pressed = []
         self.vie_sup = False
-        self.ready()
+        self.intro()
 
         while not quitter:
 
@@ -170,9 +186,12 @@ class Vue:
                         quitter = True
 
             if key_pressed:
-                self.ctrl.update_jeu(key_pressed[-1])
+                p_terminee = self.ctrl.update_jeu(key_pressed[-1])
             else:
-                self.ctrl.update_jeu(Direction.AUCUNE)
+                p_terminee = self.ctrl.update_jeu(Direction.AUCUNE)
+
+            if p_terminee:
+                self.ready_respawn()
 
             self.audio()
             window.blit(self.ctrl.get_surface(), (0, 0))

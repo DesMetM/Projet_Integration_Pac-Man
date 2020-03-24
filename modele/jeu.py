@@ -5,6 +5,7 @@ from modele.modes_fantome import Mode
 from modele.timer import TimerJeu
 from modele.pacman import PacMan
 from modele.direction import Direction
+from modele.timer import TimerAnimation
 
 
 class Jeu:
@@ -13,31 +14,24 @@ class Jeu:
     """
     BACKGROUND = pygame.image.load(os.path.join('ressource', 'images', 'Board.png'))
     BACKGROUND_BLANC = pygame.image.load(os.path.join('ressource', 'images', 'Board_Blanc.png'))
-    #PAC0 = pygame.image.load(os.path.join('ressource', 'images', 'PacDead0.png'))
     FONT = None
 
-    def __init__(self, ctrl):
+    def __init__(self):
         """
         Le constructeur déclare seulement les attributs. Il faut appeller la méthode nouvelle_partie(self) par la suite.
         """
 
-        self.ctrl = ctrl
         self.pastilles = None
         self.power_pellets = None
         self.pacman = None
         self.fantomes = None
         self.blinky = None
         self.pastilles_mangees = 0
-        self.partie_terminee = False
         self.timer_jeu = None
         self.channel_actif = [False] * 9
         self.nbr_fantomes_manges = 0
         self.score = 0
         self.derniere_pastille = None
-        self.count_board_anim = 0
-
-        '''peut être enlevé pour version finale'''
-        self.game_rapide = True
 
         if Jeu.FONT is None:
             Jeu.FONT = pygame.font.Font(os.path.abspath("ressource/font/emulogic.ttf"), 20)
@@ -52,7 +46,6 @@ class Jeu:
         self.power_pellets = board.grosses_pastilles()
         self.pacman = board.get_pacman()
         self.fantomes, self.blinky = board.fantomes_init_pos()
-        self.partie_terminee = False
         self.timer_jeu = TimerJeu(self, frame_rate)
 
     def collision(self):
@@ -63,6 +56,8 @@ class Jeu:
         dict = pygame.sprite.groupcollide(groupa=self.pacman, groupb=self.pastilles, dokilla=False,
                                           dokillb=True)
         if dict:  # collision avec une pastille
+            if len(self.pastilles) + len(self.power_pellets) == 0:
+                self.timer_jeu.timer_animation.compteur = TimerAnimation.CYCLE // 2
             self.pastilles_mangees += 1
             self.ajouter_points_pellet()
             self.derniere_pastille = list(dict.values())[0][0]
@@ -70,6 +65,8 @@ class Jeu:
         dict = pygame.sprite.groupcollide(groupa=self.pacman, groupb=self.power_pellets, dokilla=False,
                                           dokillb=True)
         if dict:  # collision avec une power pellet
+            if len(self.pastilles) + len(self.power_pellets) == 0:
+                self.timer_jeu.timer_animation.compteur = TimerAnimation.CYCLE // 2
             self.timer_jeu.mode_effraye()
             self.ajouter_points_powerpellet()
             self.nbr_fantomes_manges = 0
@@ -99,7 +96,7 @@ class Jeu:
         """
         Passe au prochain état du jeu selon l'action du joueur.
         :param direction: L'action du joueur.
-        :return: None
+        :return: «True» si la partie est relancée.
         """
         self.channel_actif = [False] * 9
         self.channel_actif[0] = self.score >= 10000
@@ -107,6 +104,12 @@ class Jeu:
         self.timer_jeu.update()
 
         if self.pacman.sprite.is_alive:
+            if len(self.pastilles) + len(self.power_pellets) == 0:
+                if self.timer_jeu.timer_animation.compteur == 0:
+                    self.nouvelle_partie(self.timer_jeu.frame_rate)
+                    return True
+                return False
+
             self.collision()
             self.pacman.update(direction)
             self.fantomes.update(self)
@@ -115,14 +118,26 @@ class Jeu:
                 self.pacman.sprite.nbr_vie += 1
                 self.channel_actif[0] = True
 
-        else:
-            self.partie_terminee = self.timer_jeu.timer_animation.compteur == 0
-
-        if self.partie_terminee:
-            self.partie_terminee = False
+        elif self.timer_jeu.timer_animation.compteur == 0:
             self.pacman.sprite.respawn()
             for fantome in self.fantomes:
                 fantome.respawn(self)
+            return True
+
+        return False
+
+    def surface_partie_gagnee(self, background):
+        """
+        Fais clignoter la grille de jeu selon le timer.
+        :param background: La surface a retourné.
+        :return: Une surface de la grille de jeu qui contient Pac-Man et qui est soit blanche, soit bleu.
+        """
+        if self.timer_jeu.timer_animation.compteur % 8 <= 3:
+            background.blit(Jeu.BACKGROUND_BLANC, (0, 0))
+        else:
+            background.blit(Jeu.BACKGROUND, (0, 0))
+        self.pacman.draw(background)
+        return background
 
     def get_surface(self) -> pygame.Surface:
         '''
@@ -130,6 +145,10 @@ class Jeu:
         :return: l'image de l'état actuel du jeu.
         '''
         background = pygame.Surface(Jeu.BACKGROUND.get_size())
+
+        if len(self.pastilles) + len(self.power_pellets) == 0:
+            return self.surface_partie_gagnee(background)
+
         background.blit(Jeu.BACKGROUND, (0, 0))
 
         self.pastilles.draw(background)
@@ -145,26 +164,6 @@ class Jeu:
             background.blit(PacMan.IMAGES[Direction.GAUCHE][1], (60 + life * 60, 815))
 
         if self.pacman.sprite.is_alive:
-
-            '''À enlever, seulement pour que les tests soit moins long'''
-            if self.game_rapide:
-                if self.pastilles_mangees == 15:
-                    self.pastilles.empty()
-                    self.power_pellets.empty()
-                    self.pastilles_mangees = 0
-
-            if len(self.pastilles) + len(self.power_pellets) == 0:
-                # Change la couleur du board
-                self.count_board_anim += 0.25
-                if self.count_board_anim < 8:
-                    if (self.count_board_anim//1) % 2 == 0:
-                        background = self.BACKGROUND_BLANC
-                    else:
-                        background = self.BACKGROUND
-                    return background
-                else:
-                    self.nouvelle_partie(self.ctrl.vue.FRAME_RATE)
-                    self.count_board_anim = 0
             self.fantomes.draw(background)
 
         self.pacman.draw(background)
@@ -197,9 +196,10 @@ class Jeu:
         Retourne une liste de channel à activer selon l'état du jeu.
         :return: une liste de channel à activer selon l'état du jeu.
         """
-        if self.pacman.sprite.is_alive:
+        if self.pacman.sprite.is_alive and len(self.pastilles) + len(self.power_pellets) != 0:
             if self.derniere_pastille is not None:
-                if pygame.sprite.spritecollideany(self.derniere_pastille, self.pacman) and self.pacman.sprite.vitesse != [0, 0]:
+                if pygame.sprite.spritecollideany(self.derniere_pastille,
+                                                  self.pacman) and self.pacman.sprite.vitesse != [0, 0]:
                     self.channel_actif[1] = True
                 else:
                     self.derniere_pastille = None

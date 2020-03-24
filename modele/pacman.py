@@ -36,7 +36,6 @@ class PacMan(pygame.sprite.Sprite):
         self.is_alive = True
         self.action = 1
 
-
     def update(self, direction):
         """
         Méthode appelée à chaque update de position du Pac-Man. Dépendement de la direction donnée en paramètre,
@@ -54,13 +53,15 @@ class PacMan(pygame.sprite.Sprite):
         board.tunnel(self.rect)
         self.rect = self.rect.move(self.vitesse)
 
-    def animation(self, compteur):
+    def animation(self, compteur, partie_gagnee):
         """
         Affecte l'image de Pac-Man selon le temps, sa direction et s'il est en vie.
         :param compteur: Le temps du timer.
         :return: None
         """
-        if self.is_alive:
+        if partie_gagnee:
+            self.image = PacMan.MORT[0]
+        elif self.is_alive:
             if self.vitesse != [0, 0]:
                 self.action = not self.action
                 self.image = PacMan.IMAGES[self.direction][self.action]

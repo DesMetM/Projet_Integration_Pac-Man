@@ -12,7 +12,7 @@ class Ctrl:
         """
         Constructeur de la classe. Instancie le jeu et la vue.
         """
-        self.jeu = Jeu(self)
+        self.jeu = Jeu()
         self.vue = Vue(self)
 
     def start(self):
@@ -33,9 +33,11 @@ class Ctrl:
         """
         Le jeu passe à l'état suivant selon l'action qui a été fait.
         :param direction: L'action que le joueur veut faire.
-        :return: None
+        :return: Un tuple de bool. La première valeur désigne si la partie a été gagnée.
+        La deuxième valeur désigne si la partie est relancée.
         """
-        self.jeu.update_jeu(direction)
+        return self.jeu.update_jeu(direction)
+
 
     def get_surface(self):
         """

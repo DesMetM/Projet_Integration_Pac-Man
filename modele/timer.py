@@ -7,6 +7,7 @@ class TimerAbstrait:
     Le timer compte le nombre de frame et le compare avec le frame rate du jeu.
     ATTENTION : Le frame rate est approximé par une constante, il ne faut donc pas avoir de baisse de fps.
     """
+
     def __init__(self, frame_rate):
         """
         Construit un timer abstrait selon le frame rate.
@@ -126,6 +127,7 @@ class TimerFantome(TimerAbstrait):
     Cette classe est le timer des fantômes lorsqu'ils sont effrayé.
     Les fantômes doivent clignoter quand il reste 2 secondes.
     """
+
     def __init__(self, frame_rate):
         """
         Constructeur du timer des fantômes en mode effrayé.
@@ -170,15 +172,18 @@ class TimerAnimation:
             self.compteur = 0
 
         if self.compteur % 3 == 0:
-            self.jeu.pacman.sprite.animation(self.compteur)
+            partie_gagnee = len(self.jeu.pastilles) + len(self.jeu.power_pellets) == 0
 
-            if not timer_fantome.ended and timer_fantome.acheve:
-                self.action_fantome = (self.action_fantome + 1) % 4
-            else:
-                self.action_fantome = not self.action_fantome
+            self.jeu.pacman.sprite.animation(self.compteur, partie_gagnee)
 
-            for fantome in self.jeu.fantomes:
-                fantome.animation(self.action_fantome)
+            if not partie_gagnee:
+                if not timer_fantome.ended and timer_fantome.acheve:
+                    self.action_fantome = (self.action_fantome + 1) % 4
+                else:
+                    self.action_fantome = not self.action_fantome
 
-            if self.compteur % 6 == 0:
-                self.pastilles_visibles = not self.pastilles_visibles
+                for fantome in self.jeu.fantomes:
+                    fantome.animation(self.action_fantome)
+
+                if self.compteur % 6 == 0:
+                    self.pastilles_visibles = not self.pastilles_visibles
