@@ -95,42 +95,44 @@ class Vue:
         """
         channel_actif = self.ctrl.get_audio()
 
+        # Audio mort
         if channel_actif[-1]:
             for channel in self.channels:
                 if channel is not None:
                     channel.pause()
             self.channels[-1] = Vue.SOUND[-1].play(loops=0)
 
+        # Audio vie supplémentaire
         elif channel_actif[0] and not self.vie_sup:
             self.vie_sup = True
             self.channels[0] = Vue.SOUND[0].play(loops=0)
 
         else:
+            # Audio manger
             if self.channels[-1] is None or not self.channels[-1].get_busy():
                 if channel_actif[3]:
                     self.channels[3] = Vue.SOUND[3].play(loops=0)
+                elif channel_actif[6]:
+                    self.channels[6] = Vue.SOUND[6].play(loops=0)
                 elif channel_actif[1]:
-                    if self.channels[1].get_busy():
-                        self.channels[1].unpause()
+                    self.channels[1].unpause()
                 else:
                     self.channels[1].pause()
 
-                if channel_actif[5]:
-                    self.channels[2].pause()
-                    self.channels[4].pause()
-                    self.channels[5].unpause()
-                elif channel_actif[2]:
-                    self.channels[2].unpause()
-                    self.channels[4].pause()
-                    self.channels[5].pause()
-                elif channel_actif[4]:
-                    self.channels[2].pause()
-                    self.channels[4].unpause()
-                    self.channels[5].pause()
-                else:
-                    for channel in self.channels:
-                        if channel is not None:
-                            channel.pause()
+                # Audio fantômes
+                for i in [5, 2, 4]:
+                    if channel_actif[i]:
+                        for j in [5, 2, 4]:
+                            if i == j:
+                                self.channels[j].unpause()
+                            else:
+                                self.channels[j].pause()
+                        break
+                    elif i == 4:
+                        for channel in self.channels:
+                            if channel is not None:
+                                channel.pause()
+
 
     def ready_respawn(self):
         """
@@ -142,7 +144,6 @@ class Vue:
         pygame.display.update()
 
         pygame.time.delay(1500)
-
 
     def mode_joueur(self):
         """

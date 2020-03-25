@@ -36,6 +36,16 @@ class PacMan(pygame.sprite.Sprite):
         self.is_alive = True
         self.action = 1
 
+    @staticmethod
+    def get_pacman():
+        """
+        Retourne un SingleGroup contenant le Pac-Man.
+        :return: Un SingleGroup contenant le Pac-Man.
+        """
+        groupe = pygame.sprite.GroupSingle()
+        groupe.add(PacMan())
+        return groupe
+
     def update(self, direction):
         """
         Méthode appelée à chaque update de position du Pac-Man. Dépendement de la direction donnée en paramètre,

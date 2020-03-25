@@ -6,6 +6,9 @@ from modele.timer import TimerJeu
 from modele.pacman import PacMan
 from modele.direction import Direction
 from modele.timer import TimerAnimation
+from modele.board import Pastille
+from modele.board import GrossePastille
+from modele.board import Fruit
 
 
 class Jeu:
@@ -14,6 +17,7 @@ class Jeu:
     """
     BACKGROUND = pygame.image.load(os.path.join('ressource', 'images', 'Board.png'))
     BACKGROUND_BLANC = pygame.image.load(os.path.join('ressource', 'images', 'Board_Blanc.png'))
+    FRUIT = Fruit.get_liste_fruits()
     FONT = None
 
     def __init__(self):
@@ -21,9 +25,9 @@ class Jeu:
         Le constructeur déclare seulement les attributs. Il faut appeller la méthode nouvelle_partie(self) par la suite.
         """
 
-        self.pastilles = None
-        self.power_pellets = None
-        self.pacman = None
+        self.pastilles = Pastille.pastilles()
+        self.power_pellets = GrossePastille.grosses_pastilles()
+        self.pacman = PacMan.get_pacman()
         self.fantomes = None
         self.blinky = None
         self.pastilles_mangees = 0
@@ -32,6 +36,7 @@ class Jeu:
         self.nbr_fantomes_manges = 0
         self.score = 0
         self.derniere_pastille = None
+        self.fruits_mangees = 0
 
         if Jeu.FONT is None:
             Jeu.FONT = pygame.font.Font(os.path.abspath("ressource/font/emulogic.ttf"), 20)
@@ -42,11 +47,13 @@ class Jeu:
         :param frame_rate: La vitesse que doit compter le timer. Le frame rate doit correspondre à celui de la vue.
         :return: None
         '''
-        self.pastilles = board.pastilles()
-        self.power_pellets = board.grosses_pastilles()
-        self.pacman = board.get_pacman()
+        self.pastilles = Pastille.pastilles()
+        self.power_pellets = GrossePastille.grosses_pastilles()
+        self.pacman.sprite.respawn()
+        self.pacman.sprite.nbr_vie += 1
         self.fantomes, self.blinky = board.fantomes_init_pos()
         self.timer_jeu = TimerJeu(self, frame_rate)
+        self.pastilles_mangees = 0
 
     def collision(self):
         """
@@ -92,6 +99,17 @@ class Jeu:
                     self.ajouter_points_fantome()
                     ghost.set_mode(Mode.RETOUR)
 
+        if not self.timer_jeu.timer_fruit.ended and pygame.sprite.spritecollide(
+                Jeu.FRUIT[self.fruits_mangees if self.fruits_mangees < 13 else 12], self.pacman,
+                False):
+            self.timer_jeu.timer_fruit.ended = True
+            self.score += Jeu.FRUIT[self.fruits_mangees if self.fruits_mangees < 13 else 12].score
+            self.fruits_mangees += 1
+            self.channel_actif[6] = True
+
+    def nouveau_fruit(self, fruit):
+        self.timer_jeu.nouveau_fruit(fruit)
+
     def update_jeu(self, direction):
         """
         Passe au prochain état du jeu selon l'action du joueur.
@@ -104,7 +122,10 @@ class Jeu:
         self.timer_jeu.update()
 
         if self.pacman.sprite.is_alive:
-            if len(self.pastilles) + len(self.power_pellets) == 0:
+            if self.pastilles_mangees == 70 or self.pastilles_mangees == 100:
+                self.nouveau_fruit(self.pastilles_mangees)
+
+            elif len(self.pastilles) + len(self.power_pellets) == 0:
                 if self.timer_jeu.timer_animation.compteur == 0:
                     self.nouvelle_partie(self.timer_jeu.frame_rate)
                     return True
@@ -129,7 +150,7 @@ class Jeu:
     def surface_partie_gagnee(self, background):
         """
         Fais clignoter la grille de jeu selon le timer.
-        :param background: La surface a retourné.
+        :param background: La surface à retourner.
         :return: Une surface de la grille de jeu qui contient Pac-Man et qui est soit blanche, soit bleu.
         """
         if self.timer_jeu.timer_animation.compteur % 8 <= 3:
@@ -160,8 +181,14 @@ class Jeu:
             background.blit(text_1up, (70, 0))
             self.power_pellets.draw(background)
 
+        if not self.timer_jeu.timer_fruit.ended:
+            background.blit(Jeu.FRUIT[self.fruits_mangees if self.fruits_mangees < 13 else 12].image, Fruit.POSITION)
+        for fruit in range(self.fruits_mangees + 1 if self.fruits_mangees < 8 else 8):
+            background.blit(Jeu.FRUIT[self.fruits_mangees - fruit if fruit < 13 else 12].image,
+                            (620 - (self.fruits_mangees - fruit if fruit < 13 else 12) * 50, 815))
+
         for life in range(self.pacman.sprite.nbr_vie):
-            background.blit(PacMan.IMAGES[Direction.GAUCHE][1], (60 + life * 60, 815))
+            background.blit(PacMan.IMAGES[Direction.GAUCHE][1], (50 + life * 60, 815))
 
         if self.pacman.sprite.is_alive:
             self.fantomes.draw(background)

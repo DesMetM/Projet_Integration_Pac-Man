@@ -55,6 +55,7 @@ class TimerJeu(TimerAbstrait):
     TEMPS_DISPERSION = 7
     TEMPS_CHASSE = 20
     TEMPS_EFFRAYE = 10
+    TEMPS_FRUIT = 10
 
     def __init__(self, jeu, frame_rate):
         """
@@ -67,6 +68,7 @@ class TimerJeu(TimerAbstrait):
         self.set_timer(TimerJeu.TEMPS_DISPERSION)
         self.timer_fantome = TimerFantome(frame_rate)
         self.timer_animation = TimerAnimation(jeu)
+        self.timer_fruit = TimerFruit(frame_rate)
         self.jeu = jeu
 
     def update(self):
@@ -91,6 +93,7 @@ class TimerJeu(TimerAbstrait):
             self.paused = False  # Repartir le timer du jeu.
             self.update_mode()
 
+        self.timer_fruit.is_running()
         self.timer_animation.update(self.timer_fantome)
 
     def pacman_mort(self):
@@ -101,6 +104,13 @@ class TimerJeu(TimerAbstrait):
         """
         self.paused = True
         self.timer_animation.compteur = 0
+
+    def nouveau_fruit(self, fruit):
+        """
+        Part un timer de 10 secondes, soit la durée de vie d'un fruit.
+        :return: None
+        """
+        self.timer_fruit.set_timer_fruit(TimerJeu.TEMPS_FRUIT, fruit)
 
     def mode_effraye(self):
         """
@@ -120,6 +130,27 @@ class TimerJeu(TimerAbstrait):
             fantome.peur = False
             if fantome.mode != Mode.INACTIF and fantome.mode != Mode.RETOUR and fantome.mode != Mode.SORTIR:
                 fantome.set_mode(self.current_mode)
+
+
+class TimerFruit(TimerAbstrait):
+    def __init__(self, frame_rate):
+        TimerAbstrait.__init__(self, frame_rate)
+        self.fruit = None
+        self.queue = []
+
+    def set_timer_fruit(self, seconde, fruit):
+        if fruit != self.fruit:
+            if self.ended:
+                self.set_timer(seconde)
+                self.fruit = fruit
+            else:
+                if fruit not in self.queue:
+                    self.queue.append(fruit)
+
+    def is_running(self):
+        if self.ended and self.queue:
+            self.set_timer_fruit(TimerJeu.TEMPS_FRUIT, self.queue.pop(0))
+        super(TimerFruit, self).is_running()
 
 
 class TimerFantome(TimerAbstrait):
