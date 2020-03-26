@@ -19,6 +19,7 @@ class Jeu:
     BACKGROUND_BLANC = pygame.image.load(os.path.join('ressource', 'images', 'Board_Blanc.png'))
     FRUIT = Fruit.get_liste_fruits()
     FONT = None
+    FONT2 = None
 
     def __init__(self):
         """
@@ -33,6 +34,8 @@ class Jeu:
         self.pastilles_mangees = 0
         self.timer_jeu = None
         self.channel_actif = [False] * 9
+        self.fantome_mange = False
+        self.position_fantome_mange = None
         self.nbr_fantomes_manges = 0
         self.score = 0
         self.derniere_pastille = None
@@ -40,6 +43,8 @@ class Jeu:
 
         if Jeu.FONT is None:
             Jeu.FONT = pygame.font.Font(os.path.abspath("ressource/font/emulogic.ttf"), 20)
+        if Jeu.FONT2 is None:
+            Jeu.FONT2 = pygame.font.Font(os.path.abspath("ressource/font/emulogic.ttf"), 12)
 
     def nouvelle_partie(self, frame_rate):
         '''
@@ -94,6 +99,8 @@ class Jeu:
                     self.pacman.sprite.is_alive = False
                     self.timer_jeu.pacman_mort()
                 elif ghost.peur:
+                    self.fantome_mange = True
+                    self.position_fantome_mange = (ghost.rect.left - 10, ghost.rect.top - 10)
                     self.channel_actif[3] = True
                     self.nbr_fantomes_manges += 1
                     self.ajouter_points_fantome()
@@ -189,6 +196,10 @@ class Jeu:
 
         for life in range(self.pacman.sprite.nbr_vie):
             background.blit(PacMan.IMAGES[Direction.GAUCHE][1], (50 + life * 60, 815))
+
+        if self.fantome_mange:
+            text_pts = Jeu.FONT2.render(str(self.nbr_fantomes_manges * 200), 1, (3, 240, 252))
+            background.blit(text_pts, self.position_fantome_mange)
 
         if self.pacman.sprite.is_alive:
             self.fantomes.draw(background)
