@@ -198,3 +198,12 @@ class Vue:
             window.blit(self.ctrl.get_surface(), (0, 0))
             clock.tick(Vue.FRAME_RATE)
             pygame.display.update()
+
+    def mode_IA(self):
+        """
+        Lance une partie où est-ce-que l'IA joue à notre place'
+        :return: None
+        """
+        # Choose direction using model
+        # Send choice to game
+        # Read&Save new game_info
