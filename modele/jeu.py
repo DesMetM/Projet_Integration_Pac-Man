@@ -36,6 +36,7 @@ class Jeu:
         self.channel_actif = [False] * 9
         self.fantome_mange = False
         self.position_fantome_mange = None
+        self.frame_fantome_mange = 0
         self.nbr_fantomes_manges = 0
         self.score = 0
         self.derniere_pastille = None
@@ -101,6 +102,7 @@ class Jeu:
                 elif ghost.peur:
                     self.fantome_mange = True
                     self.position_fantome_mange = (ghost.rect.left - 10, ghost.rect.top - 10)
+                    self.frame_fantome_mange = self.timer_jeu.timer_animation.compteur if self.timer_jeu.timer_animation.compteur < self.timer_jeu.timer_animation.CYCLE - 10 else self.timer_jeu.timer_animation.CYCLE - 1 - 10
                     self.channel_actif[3] = True
                     self.nbr_fantomes_manges += 1
                     self.ajouter_points_fantome()
@@ -197,7 +199,9 @@ class Jeu:
         for life in range(self.pacman.sprite.nbr_vie):
             background.blit(PacMan.IMAGES[Direction.GAUCHE][1], (50 + life * 60, 815))
 
-        if self.fantome_mange:
+        if self.fantome_mange:  # permet d'indiquer les points à coté du fantôme mangé
+            if self.frame_fantome_mange + 10 == self.timer_jeu.timer_animation.compteur:
+                self.fantome_mange = False
             text_pts = Jeu.FONT2.render(str(self.nbr_fantomes_manges * 200), 1, (3, 240, 252))
             background.blit(text_pts, self.position_fantome_mange)
 
