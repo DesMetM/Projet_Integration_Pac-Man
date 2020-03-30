@@ -2,13 +2,10 @@ import pygame
 import os
 import modele.board as board
 from modele.modes_fantome import Mode
-from modele.timer import TimerJeu
+from modele.timer import TimerJeu, TimerFruit, TimerAnimation
 from modele.pacman import PacMan
 from modele.direction import Direction
-from modele.timer import TimerAnimation
-from modele.board import Pastille
-from modele.board import GrossePastille
-from modele.board import Fruit
+from modele.board import Pastille, GrossePastille, Fruit
 
 
 class Jeu:
@@ -99,7 +96,7 @@ class Jeu:
                     self.ajouter_points_fantome()
                     ghost.set_mode(Mode.RETOUR)
 
-        if not self.timer_jeu.timer_fruit.ended and pygame.sprite.spritecollide(
+        if not self.timer_jeu.timer_fruit.ended and self.timer_jeu.timer_fruit.fruit != TimerFruit.TEMPS_DELAI and pygame.sprite.spritecollide(
                 Jeu.FRUIT[self.fruits_mangees if self.fruits_mangees < 13 else 12], self.pacman,
                 False):
             self.timer_jeu.timer_fruit.ended = True
@@ -181,7 +178,7 @@ class Jeu:
             background.blit(text_1up, (70, 0))
             self.power_pellets.draw(background)
 
-        if not self.timer_jeu.timer_fruit.ended:
+        if not self.timer_jeu.timer_fruit.ended and self.timer_jeu.timer_fruit.fruit != TimerFruit.TEMPS_DELAI:
             background.blit(Jeu.FRUIT[self.fruits_mangees if self.fruits_mangees < 13 else 12].image, Fruit.POSITION)
         for fruit in range(self.fruits_mangees + 1 if self.fruits_mangees < 8 else 8):
             background.blit(Jeu.FRUIT[self.fruits_mangees - fruit if fruit < 13 else 12].image,

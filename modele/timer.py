@@ -107,10 +107,12 @@ class TimerJeu(TimerAbstrait):
 
     def nouveau_fruit(self, fruit):
         """
-        Part un timer de 10 secondes, soit la durée de vie d'un fruit.
+        Part un timer de 10 secondes, soit la durée de vie d'un fruit et ajoute un délai de 2 secondes par la suite.
         :return: None
         """
-        self.timer_fruit.set_timer_fruit(TimerJeu.TEMPS_FRUIT, fruit)
+        if fruit != self.timer_fruit.fruit and fruit not in self.timer_fruit.queue:
+            self.timer_fruit.queue.append(fruit)
+            self.timer_fruit.queue.append(TimerFruit.TEMPS_DELAI)
 
     def mode_effraye(self):
         """
@@ -124,7 +126,7 @@ class TimerJeu(TimerAbstrait):
     def update_mode(self):
         """
         S'occupe des changements de mode des fantômes. Cette méthode est appelée seulement à la fin d'un timer.
-        :return:
+        :return: None
         """
         for fantome in self.jeu.fantomes:
             fantome.peur = False
@@ -133,23 +135,21 @@ class TimerJeu(TimerAbstrait):
 
 
 class TimerFruit(TimerAbstrait):
+    TEMPS_DELAI = 2
+
     def __init__(self, frame_rate):
         TimerAbstrait.__init__(self, frame_rate)
         self.fruit = None
         self.queue = []
 
-    def set_timer_fruit(self, seconde, fruit):
-        if fruit != self.fruit:
-            if self.ended:
-                self.set_timer(seconde)
-                self.fruit = fruit
-            else:
-                if fruit not in self.queue:
-                    self.queue.append(fruit)
-
     def is_running(self):
         if self.ended and self.queue:
-            self.set_timer_fruit(TimerJeu.TEMPS_FRUIT, self.queue.pop(0))
+            self.fruit = self.queue.pop(0)
+
+            if self.fruit == TimerFruit.TEMPS_DELAI:
+                self.set_timer(TimerFruit.TEMPS_DELAI)
+            else:
+                self.set_timer(TimerJeu.TEMPS_FRUIT)
         super(TimerFruit, self).is_running()
 
 
