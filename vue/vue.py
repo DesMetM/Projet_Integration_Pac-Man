@@ -1,8 +1,4 @@
-import os
-
 import pygame
-
-from modele import jeu
 from modele.direction import Direction
 import os
 
@@ -10,23 +6,53 @@ window = pygame.display.set_mode((672, 864))
 
 
 class Vue:
+    """
+    Cette classe est la vue du jeu de Pac-Man. Elle permet d'afficher les frames et de jouer de la musique.
+    """
+
+    FRAME_RATE = 30
+    SOUND = None
+    READY = pygame.image.load(os.path.join('ressource', 'images', 'Ready!.png'))
+
     def __init__(self, p_ctrl):
+        """
+        Constructeur de la classe.
+        :param p_ctrl: Contrôleur du jeu de Pac-Man.
+        """
         self.ctrl = p_ctrl
+        self.vie_sup = False
+        if Vue.SOUND is None:
+            Vue.SOUND = [pygame.mixer.Sound(os.path.join('ressource', 'sons', '1_up.ogg')),
+                         pygame.mixer.Sound(os.path.join('ressource', 'sons', '1_waka_waka.ogg')),
+                         pygame.mixer.Sound(os.path.join('ressource', 'sons', 'fantome_effraye.ogg')),
+                         pygame.mixer.Sound(os.path.join('ressource', 'sons', 'fantome_mange.ogg')),
+                         pygame.mixer.Sound(os.path.join('ressource', 'sons', 'fantome_normal.ogg')),
+                         pygame.mixer.Sound(os.path.join('ressource', 'sons', 'fantome_retour.ogg')),
+                         pygame.mixer.Sound(os.path.join('ressource', 'sons', 'fruit.ogg')),
+                         pygame.mixer.Sound(os.path.join('ressource', 'sons', 'Intro.ogg')),
+                         pygame.mixer.Sound(os.path.join('ressource', 'sons', 'pacman_mort.ogg'))]
+
+        self.channels = [None] * 9
+        for i in [1, 2, 4, 5]:
+            self.channels[i] = Vue.SOUND[i].play(-1)
+            self.channels[i].pause()
 
     def interface_debut(self):
-        ''' Affiche l'interface qui donne le choix d'accéder au jeu en tant que joueur ou IA.
-        Retourne vrai si le joueur à été sélectionner. '''
+        '''
+        Affiche l'interface qui donne le choix d'accéder au jeu en tant que joueur ou IA.
+        :return: «True» si le joueur à été sélectionner.
+        '''
         board = pygame.image.load(os.path.join('ressource', 'images', 'Board_Intro.png'))
 
         player1 = pygame.image.load(os.path.join('ressource', 'images', 'PlayerOne.png'))
         player1_rect = player1.get_rect()
-        player1_rect.topleft = (217,332)
+        player1_rect.topleft = (217, 332)
 
         IA = pygame.image.load(os.path.join('ressource', 'images', 'Player_IA.png'))
-        IA_rect= IA.get_rect()
+        IA_rect = IA.get_rect()
         IA_rect.topleft = (285, 532)
 
-        window.blit(board, (0,0))
+        window.blit(board, (0, 0))
         window.blit(player1, (217, 332))
         window.blit(IA, (285, 532))
         pygame.display.flip()
@@ -43,37 +69,92 @@ class Vue:
                         print('Ça lance le joueur 1 puisque l\'IA n\'est pas encore prêt :)')
                         return True
 
-    def ready(self):
-        ready = pygame.image.load(os.path.join('ressource', 'images', 'Ready!.png'))
-        window.blit(self.ctrl.get_surface(Direction.AUCUNE), (0, 0))
-        window.blit(ready, (270, 485))
+    def intro(self):
+        """
+        Affiche l'image «Ready!.png» au début de la partie et joue la musique du début.
+        :return: None
+        """
+        window.blit(self.ctrl.get_surface(), (0, 0))
+        window.blit(Vue.READY, (270, 485))
         pygame.display.update()
-        pygame.mixer.music.load(os.path.join('ressource', 'sons', 'Theme.wav'))
-        pygame.mixer_music.play(loops=0)
 
-        pygame.time.delay(4700)
-
-        pygame.mixer_music.stop()
-
-
-
+        Vue.SOUND[-2].play(loops=0)
+        pygame.time.delay(4500)
 
     def mode_IA(self):
-        '''Lance une partie avec l'IA.'''
-        return 0
+        '''
+        Lance une partie avec l'IA.
+        :return: None
+        '''
+        pass
+
+    def audio(self):
+        """
+        Cette méthode active certains sons selon l'état du jeu.
+        :return: None
+        """
+        channel_actif = self.ctrl.get_audio()
+
+        # Audio mort
+        if channel_actif[-1]:
+            for channel in self.channels:
+                if channel is not None:
+                    channel.pause()
+            self.channels[-1] = Vue.SOUND[-1].play(loops=0)
+
+        # Audio vie supplémentaire
+        elif channel_actif[0] and not self.vie_sup:
+            self.vie_sup = True
+            self.channels[0] = Vue.SOUND[0].play(loops=0)
+
+        else:
+            # Audio manger
+            if self.channels[-1] is None or not self.channels[-1].get_busy():
+                if channel_actif[3]:
+                    self.channels[3] = Vue.SOUND[3].play(loops=0)
+                elif channel_actif[6]:
+                    self.channels[6] = Vue.SOUND[6].play(loops=0)
+                elif channel_actif[1]:
+                    self.channels[1].unpause()
+                else:
+                    self.channels[1].pause()
+
+                # Audio fantômes
+                for i in [5, 2, 4]:
+                    if channel_actif[i]:
+                        for j in [5, 2, 4]:
+                            if i == j:
+                                self.channels[j].unpause()
+                            else:
+                                self.channels[j].pause()
+                        break
+                    elif i == 4:
+                        for channel in self.channels:
+                            if channel is not None:
+                                channel.pause()
+
+
+    def ready_respawn(self):
+        """
+        Apparaît l'image «Ready!.png» lorsqu'une partie est relancée.
+        :return: None
+        """
+        window.blit(self.ctrl.get_surface(), (0, 0))
+        window.blit(Vue.READY, (270, 485))
+        pygame.display.update()
+
+        pygame.time.delay(1500)
 
     def mode_joueur(self):
         """
-        Crée les events pour que le joueur puisse puisse jouer
-        :return:
+        Lance une partie où est-ce-que le joueur peut interagir avec les touches directionnelles.
+        :return: None
         """
         quitter = False
         clock = pygame.time.Clock()
-        clock.tick(40)
-        pac_direction = Direction.AUCUNE
         key_pressed = []
-        self.ready()
-        self.ctrl.start_timer()
+        self.vie_sup = False
+        self.intro()
 
         while not quitter:
 
@@ -82,7 +163,6 @@ class Vue:
                     quitter = True
 
                 elif event.type == pygame.KEYDOWN:
-
                     if event.key == pygame.K_LEFT:
                         key_pressed.append(Direction.GAUCHE)
                     if event.key == pygame.K_UP:
@@ -90,11 +170,9 @@ class Vue:
                     if event.key == pygame.K_RIGHT:
                         key_pressed.append(Direction.DROITE)
                     if event.key == pygame.K_DOWN:
-
                         key_pressed.append(Direction.BAS)
                     if event.key == pygame.K_ESCAPE:
                         quitter = True
-
 
                 elif event.type == pygame.KEYUP:
                     if event.key == pygame.K_LEFT:
@@ -104,16 +182,19 @@ class Vue:
                     if event.key == pygame.K_RIGHT:
                         key_pressed.remove(Direction.DROITE)
                     if event.key == pygame.K_DOWN:
-
                         key_pressed.remove(Direction.BAS)
                     if event.key == pygame.K_ESCAPE:
                         quitter = True
 
-
             if key_pressed:
-                pac_direction = key_pressed[-1]
+                p_terminee = self.ctrl.update_jeu(key_pressed[-1])
             else:
-                pac_direction = Direction.AUCUNE
+                p_terminee = self.ctrl.update_jeu(Direction.AUCUNE)
 
-            window.blit(self.ctrl.get_surface(pac_direction), (0, 0))
+            if p_terminee:
+                self.ready_respawn()
+
+            self.audio()
+            window.blit(self.ctrl.get_surface(), (0, 0))
+            clock.tick(Vue.FRAME_RATE)
             pygame.display.update()

@@ -42,17 +42,22 @@ VIDE = 6
 MUR = 1
 POWER_PELLET = 8
 POINT = 0
+
 SCALING = 24
 DECALAGE = 85
 DECALAGEX = 12
-PACSPAWN = (14 * SCALING, 23 * SCALING + DECALAGE)
-READYSPAWN = (14 * SCALING, 17 * SCALING + DECALAGE)
-NOEUDS = set()
+NOEUDS = set()  # Les coordonnées en pixel des intersections dans la grille.
 
 NOEUDS.add(Blinky.SPAWN)
 
 
 def is_node(x, y):
+    """
+    Valide si la position donnée est un noeud dans la grille de jeu.
+    :param x: Position en x de la case à vérifier.
+    :param y: Position en y de la case à vérifier.
+    :return: «True» si et seulement si la case est un noeud dans la grille.
+    """
     pas_un_mur = 0
     for dx in [-1, 1]:
         try:
@@ -77,52 +82,24 @@ for x in range(len(GRILLE_DE_JEU)):
         if GRILLE_DE_JEU[x][y] != MUR and is_node(x, y):
             NOEUDS.add((y * SCALING + DECALAGEX, x * SCALING + DECALAGE))
 
-"""Crée le groupe de pellets et les place à leur position de base selon la grille de jeu.
-Le groupe sert à intéragir avec Pac-Man"""
-
-
-def pastilles():
-    groupe = pygame.sprite.Group()
-    for ligne in range(len(GRILLE_DE_JEU)):
-        for col in range(len(GRILLE_DE_JEU[ligne])):
-            if GRILLE_DE_JEU[ligne][col] == POINT:
-                groupe.add(Pastille((col * SCALING + DECALAGEX, ligne * SCALING + DECALAGE)))
-    return groupe
-
-
-"""Crée le groupe de Power-pellets et les place à leur position de base selon la grille ed jeu
-Le groupe sert à intéragir avec Pac-Man"""
-
-
-def grosses_pastilles():
-    groupe = pygame.sprite.Group()
-    for ligne in range(len(GRILLE_DE_JEU)):
-        for col in range(len(GRILLE_DE_JEU[ligne])):
-            if GRILLE_DE_JEU[ligne][col] == POWER_PELLET:
-                groupe.add(GrossePastille((col * SCALING + DECALAGEX, ligne * SCALING + DECALAGE)))
-    return groupe
-
-
-"""Crée une instance de Pac-Man et lui fait un groupe personnel pour le controller à partir des autres classes."""
-
-
-def pac_init_pos():
-    groupe = pygame.sprite.GroupSingle()
-    groupe.add(PacMan(PACSPAWN))
-    return groupe
-
 
 def fantomes_init_pos():
+    """
+    Retourne un groupe de fantôme et l'instance de Blinky.
+    :return: Un groupe de fantôme et l'instance de Blinky.
+    """
     groupe = pygame.sprite.Group()
     blinky = Blinky()
     groupe.add(blinky, Pinky(), Inky(), Clyde())
     return groupe, blinky
 
 
-"""Vérifies si la position donnée est une entité donnée"""
-
-
 def est_un_mur(position):
+    """
+    Vérifie selon la grille de jeu si la position donnée est un mur.
+    :param position: une position dans la grille.
+    :return: «True» si et seulement si c'est un mur.
+    """
     try:
         return GRILLE_DE_JEU[position[1]][position[0]] == MUR
     except IndexError:
@@ -130,6 +107,12 @@ def est_un_mur(position):
 
 
 def tunnel(rect):
+    """
+    Regarde si un rectangle est sorti par la gauche ou la droite de la grille de jeu.
+    Fais réapparaître le rectangle de l'autre côté.
+    :param rect: Le rectangle (Pac-Man ou les fantômes) à observer.
+    :return: None
+    """
     if rect.x < -39:
         rect.y = 400
         rect.x = 681
@@ -139,13 +122,21 @@ def tunnel(rect):
 
 
 def detecte_noeud(rect):
+    """
+    Retourne «True» si et seulement si le rectangle est sur un noeud dans la grille.
+    :param rect: Le rectangle (Pac-Man ou les fantômes) à observer.
+    :return: «True» si et seulement si le rectangle est sur un noeud dans la grille.
+    """
     return rect.center in NOEUDS
 
 
-"""Vérifies si le prochain pixel dans la trajectoire d'une entité dynamique est un mur"""
-
-
 def collision_mur(rect, direction):
+    """
+    Regarde s'il y a un mur devant le rectangle.
+    :param rect: Le rectangle (Pac-Man ou les fantômes) à observer.
+    :param direction: La direction du rectangle.
+    :return: «True» si et seulement s'il y a un mur devant le rectangle.
+    """
     if direction == Direction.GAUCHE:
         pos_grille = ((rect.left + 4) // SCALING, (rect.centery - DECALAGE) // SCALING)
         return est_un_mur(pos_grille) or not pos_grille[1] * SCALING == rect.centery - DECALAGE
@@ -164,18 +155,76 @@ def collision_mur(rect, direction):
 
 
 class Pastille(pygame.sprite.Sprite):
+    """
+    Cette classe contient l'image et la position d'une pastille.
+    """
+    IMAGE = pygame.image.load(os.path.join('ressource', 'images', 'Pellet.png'))
+
     def __init__(self, pos):
         pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.image.load(os.path.join('ressource', 'images', 'Pellet.png'))
+        self.image = Pastille.IMAGE
         self.rect = self.image.get_rect(center=pos)
+
+    @staticmethod
+    def pastilles():
+        """
+        Crée le groupe de pastilles selon leur position dans la grille de jeu.
+        :return: Un groupe de pastilles.
+        """
+        groupe = pygame.sprite.Group()
+        for ligne in range(len(GRILLE_DE_JEU)):
+            for col in range(len(GRILLE_DE_JEU[ligne])):
+                if GRILLE_DE_JEU[ligne][col] == POINT:
+                    groupe.add(Pastille((col * SCALING + DECALAGEX, ligne * SCALING + DECALAGE)))
+        return groupe
 
 
 class GrossePastille(pygame.sprite.Sprite):
+    """
+    Cette classe contient l'image et la position d'une grosse pastille.
+    """
+    IMAGE = pygame.image.load(os.path.join('ressource', 'images', 'BigPellet.png'))
+
     def __init__(self, pos):
         pygame.sprite.Sprite.__init__(self)
-        self.images = [pygame.image.load(os.path.join('ressource', 'images', 'BigPellet.png')),
-                       pygame.image.load(os.path.join('ressource', 'images', 'Empty.png'))]
-        self.frame = 0
-        self.image = self.images[self.frame]
+        self.image = GrossePastille.IMAGE
         self.rect = self.image.get_rect(center=pos)
-        self.isVisible = True
+
+    @staticmethod
+    def grosses_pastilles():
+        """
+        Crée le groupe de grosses pastilles selon leur position dans la grille de jeu.
+        :return: Un groupe de grosses pastilles.
+        """
+        groupe = pygame.sprite.Group()
+        for ligne in range(len(GRILLE_DE_JEU)):
+            for col in range(len(GRILLE_DE_JEU[ligne])):
+                if GRILLE_DE_JEU[ligne][col] == POWER_PELLET:
+                    groupe.add(GrossePastille((col * SCALING + DECALAGEX, ligne * SCALING + DECALAGE)))
+        return groupe
+
+
+class Fruit(pygame.sprite.Sprite):
+    POSITION = (13 * SCALING, 16 * SCALING + DECALAGE)
+
+    def __init__(self, image, score):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = image
+        self.rect = self.image.get_rect(center=Fruit.POSITION)
+        self.score = score
+
+    @staticmethod
+    def get_liste_fruits():
+        return [Fruit(pygame.image.load(os.path.join('ressource', 'images', 'Cherry.png')), 100),
+                Fruit(pygame.image.load(os.path.join('ressource', 'images', 'Strawberry.png')), 200),
+                Fruit(pygame.image.load(os.path.join('ressource', 'images', 'Peach.png')), 500),
+                Fruit(pygame.image.load(os.path.join('ressource', 'images', 'Peach.png')), 500),
+                Fruit(pygame.image.load(os.path.join('ressource', 'images', 'Apple.png')), 700),
+                Fruit(pygame.image.load(os.path.join('ressource', 'images', 'Apple.png')), 700),
+                Fruit(pygame.image.load(os.path.join('ressource', 'images', 'Grape.png')), 1000),
+                Fruit(pygame.image.load(os.path.join('ressource', 'images', 'Grape.png')), 1000),
+                Fruit(pygame.image.load(os.path.join('ressource', 'images', 'Galaxian.png')), 2000),
+                Fruit(pygame.image.load(os.path.join('ressource', 'images', 'Galaxian.png')), 2000),
+                Fruit(pygame.image.load(os.path.join('ressource', 'images', 'Bell.png')), 3000),
+                Fruit(pygame.image.load(os.path.join('ressource', 'images', 'Bell.png')), 3000),
+                Fruit(pygame.image.load(os.path.join('ressource', 'images', 'Key.png')), 5000)]
