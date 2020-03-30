@@ -41,6 +41,8 @@ class Jeu:
         self.score = 0
         self.derniere_pastille = None
         self.fruits_mangees = 0
+        self.fruit_est_mange = False
+        self.frame_fruit_mange = 0
 
         if Jeu.FONT is None:
             Jeu.FONT = pygame.font.Font(os.path.abspath("ressource/font/emulogic.ttf"), 20)
@@ -115,6 +117,8 @@ class Jeu:
             self.score += Jeu.FRUIT[self.fruits_mangees if self.fruits_mangees < 13 else 12].score
             self.fruits_mangees += 1
             self.channel_actif[6] = True
+            self.fruit_est_mange = True
+            self.frame_fruit_mange = self.timer_jeu.timer_animation.compteur if self.timer_jeu.timer_animation.compteur < self.timer_jeu.timer_animation.CYCLE - 20 else self.timer_jeu.timer_animation.CYCLE - 1 - 20
 
     def nouveau_fruit(self, fruit):
         self.timer_jeu.nouveau_fruit(fruit)
@@ -204,6 +208,13 @@ class Jeu:
                 self.fantome_mange = False
             text_pts = Jeu.FONT2.render(str(self.nbr_fantomes_manges * 200), 1, (3, 240, 252))
             background.blit(text_pts, self.position_fantome_mange)
+
+        if self.fruit_est_mange:  # permet d'indiquer les points à coté d'un fruit mangé
+            if self.frame_fruit_mange + 20 == self.timer_jeu.timer_animation.compteur:
+                self.fruit_est_mange = False
+            text_pts = Jeu.FONT2.render(str(Jeu.FRUIT[self.fruits_mangees if self.fruits_mangees < 13 else 12].score),
+                                        1, (185, 44, 232))
+            background.blit(text_pts, (Fruit.POSITION[0] - 10, Fruit.POSITION[1] - 10))
 
         if self.pacman.sprite.is_alive:
             self.fantomes.draw(background)
