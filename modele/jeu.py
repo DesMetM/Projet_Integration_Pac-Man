@@ -60,6 +60,15 @@ class Jeu:
         self.timer_jeu = TimerJeu(self, frame_rate)
         self.pastilles_mangees = 0
 
+    def game_over(self, frame_rate):
+        #Afficher Game Over
+        #Afficher LeaderBoard
+            #Afficher ENTER NAME si high score
+        #Afficher Menu principal
+        self.nouvelle_partie(frame_rate)
+        self.pacman.sprite.nbr_vie=4
+        self.score=0
+
     def collision(self):
         """
         Cette méthode s'occupe des collisions entre les pastilles, Pac-Man et les fantômes.
@@ -141,6 +150,10 @@ class Jeu:
                     return True
                 return False
 
+            if self.pacman.sprite.nbr_vie < 0:
+                self.game_over(self.timer_jeu.frame_rate)
+                return True
+
             self.collision()
             self.pacman.update(direction)
             self.fantomes.update(self)
@@ -176,10 +189,7 @@ class Jeu:
         :param background: La surface à retourner.
         :return: Une surface de la grille de jeu qui contient Pac-Man et qui est soit blanche, soit bleu.
         """
-        if self.timer_jeu.timer_animation.compteur % 8 <= 3:
-            background.blit(Jeu.BACKGROUND_BLANC, (0, 0))
-        else:
-            background.blit(Jeu.BACKGROUND, (0, 0))
+        background.blit(Jeu.BACKGROUND, (0, 0))
         self.pacman.draw(background)
         return background
 
@@ -192,9 +202,6 @@ class Jeu:
 
         if len(self.pastilles) + len(self.power_pellets) == 0:
             return self.surface_partie_gagnee(background)
-
-        if PacMan.nbr_vie <= 0:
-            return self.surface_partie_perdu(background)
 
         background.blit(Jeu.BACKGROUND, (0, 0))
 

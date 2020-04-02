@@ -33,7 +33,7 @@ class PacEnv(gym.Env):
     # Evaluate new state
       """Évalue son état actuel pour que le model puisse prendre la prochaine action"""
     # return new_state, reward, done, None
-    pass
+
 
   def reset(self):
     # posPac, posFant, nbPts tous remis à depart
