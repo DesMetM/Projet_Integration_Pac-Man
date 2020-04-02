@@ -10,7 +10,7 @@ class PacEnv(gym.Env):
   sa position(je crois), le score actuel, etc. Il gardera en mémoire le dernier score enregistré pour voir si son 
   score a augmenté et ainsi déterminer sa récompense(Je ne crois pas que c'est ici que cela se fera tho)
   """
-  def __init__(self, df):
+  def __init__(self):
     super(PacEnv, self).__init__()
 
     self.action_space = spaces.Box(low=np.array([0]), high=np.array([3]), dtype=np.int32)

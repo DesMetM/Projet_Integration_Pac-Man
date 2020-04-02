@@ -157,6 +157,19 @@ class Jeu:
         self.pacman.draw(background)
         return background
 
+    def surface_partie_perdu(self, background):
+        """
+        Fais clignoter la grille de jeu selon le timer.
+        :param background: La surface à retourner.
+        :return: Une surface de la grille de jeu qui contient Pac-Man et qui est soit blanche, soit bleu.
+        """
+        if self.timer_jeu.timer_animation.compteur % 8 <= 3:
+            background.blit(Jeu.BACKGROUND_BLANC, (0, 0))
+        else:
+            background.blit(Jeu.BACKGROUND, (0, 0))
+        self.pacman.draw(background)
+        return background
+
     def get_surface(self) -> pygame.Surface:
         '''
         Construit et retourne l'image de l'état actuel du jeu.
@@ -166,6 +179,9 @@ class Jeu:
 
         if len(self.pastilles) + len(self.power_pellets) == 0:
             return self.surface_partie_gagnee(background)
+
+        if PacMan.nbr_vie <= 0:
+            return self.surface_partie_perdu(background)
 
         background.blit(Jeu.BACKGROUND, (0, 0))
 
