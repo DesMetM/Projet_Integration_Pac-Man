@@ -83,42 +83,6 @@ for x in range(len(GRILLE_DE_JEU)):
             NOEUDS.add((y * SCALING + DECALAGEX, x * SCALING + DECALAGE))
 
 
-def pastilles():
-    """
-    Crée le groupe de pastilles selon leur position dans la grille de jeu.
-    :return: Un groupe de pastilles.
-    """
-    groupe = pygame.sprite.Group()
-    for ligne in range(len(GRILLE_DE_JEU)):
-        for col in range(len(GRILLE_DE_JEU[ligne])):
-            if GRILLE_DE_JEU[ligne][col] == POINT:
-                groupe.add(Pastille((col * SCALING + DECALAGEX, ligne * SCALING + DECALAGE)))
-    return groupe
-
-
-def grosses_pastilles():
-    """
-    Crée le groupe de grosses pastilles selon leur position dans la grille de jeu.
-    :return: Un groupe de grosses pastilles.
-    """
-    groupe = pygame.sprite.Group()
-    for ligne in range(len(GRILLE_DE_JEU)):
-        for col in range(len(GRILLE_DE_JEU[ligne])):
-            if GRILLE_DE_JEU[ligne][col] == POWER_PELLET:
-                groupe.add(GrossePastille((col * SCALING + DECALAGEX, ligne * SCALING + DECALAGE)))
-    return groupe
-
-
-def get_pacman():
-    """
-    Retourne un SingleGroup contenant le Pac-Man.
-    :return: Un SingleGroup contenant le Pac-Man.
-    """
-    groupe = pygame.sprite.GroupSingle()
-    groupe.add(PacMan())
-    return groupe
-
-
 def fantomes_init_pos():
     """
     Retourne un groupe de fantôme et l'instance de Blinky.
@@ -201,6 +165,19 @@ class Pastille(pygame.sprite.Sprite):
         self.image = Pastille.IMAGE
         self.rect = self.image.get_rect(center=pos)
 
+    @staticmethod
+    def pastilles():
+        """
+        Crée le groupe de pastilles selon leur position dans la grille de jeu.
+        :return: Un groupe de pastilles.
+        """
+        groupe = pygame.sprite.Group()
+        for ligne in range(len(GRILLE_DE_JEU)):
+            for col in range(len(GRILLE_DE_JEU[ligne])):
+                if GRILLE_DE_JEU[ligne][col] == POINT:
+                    groupe.add(Pastille((col * SCALING + DECALAGEX, ligne * SCALING + DECALAGE)))
+        return groupe
+
 
 class GrossePastille(pygame.sprite.Sprite):
     """
@@ -212,3 +189,42 @@ class GrossePastille(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
         self.image = GrossePastille.IMAGE
         self.rect = self.image.get_rect(center=pos)
+
+    @staticmethod
+    def grosses_pastilles():
+        """
+        Crée le groupe de grosses pastilles selon leur position dans la grille de jeu.
+        :return: Un groupe de grosses pastilles.
+        """
+        groupe = pygame.sprite.Group()
+        for ligne in range(len(GRILLE_DE_JEU)):
+            for col in range(len(GRILLE_DE_JEU[ligne])):
+                if GRILLE_DE_JEU[ligne][col] == POWER_PELLET:
+                    groupe.add(GrossePastille((col * SCALING + DECALAGEX, ligne * SCALING + DECALAGE)))
+        return groupe
+
+
+class Fruit(pygame.sprite.Sprite):
+    POSITION = (13 * SCALING, 16 * SCALING + DECALAGE)
+
+    def __init__(self, image, score):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = image
+        self.rect = self.image.get_rect(center=Fruit.POSITION)
+        self.score = score
+
+    @staticmethod
+    def get_liste_fruits():
+        return [Fruit(pygame.image.load(os.path.join('ressource', 'images', 'Cherry.png')), 100),
+                Fruit(pygame.image.load(os.path.join('ressource', 'images', 'Strawberry.png')), 200),
+                Fruit(pygame.image.load(os.path.join('ressource', 'images', 'Peach.png')), 500),
+                Fruit(pygame.image.load(os.path.join('ressource', 'images', 'Peach.png')), 500),
+                Fruit(pygame.image.load(os.path.join('ressource', 'images', 'Apple.png')), 700),
+                Fruit(pygame.image.load(os.path.join('ressource', 'images', 'Apple.png')), 700),
+                Fruit(pygame.image.load(os.path.join('ressource', 'images', 'Grape.png')), 1000),
+                Fruit(pygame.image.load(os.path.join('ressource', 'images', 'Grape.png')), 1000),
+                Fruit(pygame.image.load(os.path.join('ressource', 'images', 'Galaxian.png')), 2000),
+                Fruit(pygame.image.load(os.path.join('ressource', 'images', 'Galaxian.png')), 2000),
+                Fruit(pygame.image.load(os.path.join('ressource', 'images', 'Bell.png')), 3000),
+                Fruit(pygame.image.load(os.path.join('ressource', 'images', 'Bell.png')), 3000),
+                Fruit(pygame.image.load(os.path.join('ressource', 'images', 'Key.png')), 5000)]

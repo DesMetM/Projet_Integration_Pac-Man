@@ -12,6 +12,7 @@ class Vue:
 
     FRAME_RATE = 30
     SOUND = None
+    READY = pygame.image.load(os.path.join('ressource', 'images', 'Ready!.png'))
 
     def __init__(self, p_ctrl):
         """
@@ -68,14 +69,13 @@ class Vue:
                         print('Ça lance le joueur 1 puisque l\'IA n\'est pas encore prêt :)')
                         return True
 
-    def ready(self):
+    def intro(self):
         """
         Affiche l'image «Ready!.png» au début de la partie et joue la musique du début.
         :return: None
         """
-        ready = pygame.image.load(os.path.join('ressource', 'images', 'Ready!.png'))
         window.blit(self.ctrl.get_surface(), (0, 0))
-        window.blit(ready, (270, 485))
+        window.blit(Vue.READY, (270, 485))
         pygame.display.update()
 
         Vue.SOUND[-2].play(loops=0)
@@ -95,38 +95,55 @@ class Vue:
         """
         channel_actif = self.ctrl.get_audio()
 
+        # Audio mort
         if channel_actif[-1]:
             for channel in self.channels:
                 if channel is not None:
                     channel.pause()
             self.channels[-1] = Vue.SOUND[-1].play(loops=0)
 
+        # Audio vie supplémentaire
         elif channel_actif[0] and not self.vie_sup:
             self.vie_sup = True
             self.channels[0] = Vue.SOUND[0].play(loops=0)
 
         else:
+            # Audio manger
             if self.channels[-1] is None or not self.channels[-1].get_busy():
                 if channel_actif[3]:
                     self.channels[3] = Vue.SOUND[3].play(loops=0)
+                elif channel_actif[6]:
+                    self.channels[6] = Vue.SOUND[6].play(loops=0)
                 elif channel_actif[1]:
-                    if self.channels[1].get_busy():
-                        self.channels[1].unpause()
+                    self.channels[1].unpause()
                 else:
                     self.channels[1].pause()
 
-                if channel_actif[5]:
-                    self.channels[2].pause()
-                    self.channels[4].pause()
-                    self.channels[5].unpause()
-                elif channel_actif[2]:
-                    self.channels[2].unpause()
-                    self.channels[4].pause()
-                    self.channels[5].pause()
-                elif channel_actif[4]:
-                    self.channels[2].pause()
-                    self.channels[4].unpause()
-                    self.channels[5].pause()
+                # Audio fantômes
+                for i in [5, 2, 4]:
+                    if channel_actif[i]:
+                        for j in [5, 2, 4]:
+                            if i == j:
+                                self.channels[j].unpause()
+                            else:
+                                self.channels[j].pause()
+                        break
+                    elif i == 4:
+                        for channel in self.channels:
+                            if channel is not None:
+                                channel.pause()
+
+
+    def ready_respawn(self):
+        """
+        Apparaît l'image «Ready!.png» lorsqu'une partie est relancée.
+        :return: None
+        """
+        window.blit(self.ctrl.get_surface(), (0, 0))
+        window.blit(Vue.READY, (270, 485))
+        pygame.display.update()
+
+        pygame.time.delay(1500)
 
     def mode_joueur(self):
         """
@@ -137,7 +154,7 @@ class Vue:
         clock = pygame.time.Clock()
         key_pressed = []
         self.vie_sup = False
-        self.ready()
+        self.intro()
 
         while not quitter:
 
@@ -170,9 +187,12 @@ class Vue:
                         quitter = True
 
             if key_pressed:
-                self.ctrl.update_jeu(key_pressed[-1])
+                p_terminee = self.ctrl.update_jeu(key_pressed[-1])
             else:
-                self.ctrl.update_jeu(Direction.AUCUNE)
+                p_terminee = self.ctrl.update_jeu(Direction.AUCUNE)
+
+            if p_terminee:
+                self.ready_respawn()
 
             self.audio()
             window.blit(self.ctrl.get_surface(), (0, 0))

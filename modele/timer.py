@@ -7,6 +7,7 @@ class TimerAbstrait:
     Le timer compte le nombre de frame et le compare avec le frame rate du jeu.
     ATTENTION : Le frame rate est approximé par une constante, il ne faut donc pas avoir de baisse de fps.
     """
+
     def __init__(self, frame_rate):
         """
         Construit un timer abstrait selon le frame rate.
@@ -54,6 +55,7 @@ class TimerJeu(TimerAbstrait):
     TEMPS_DISPERSION = 7
     TEMPS_CHASSE = 20
     TEMPS_EFFRAYE = 10
+    TEMPS_FRUIT = 10
 
     def __init__(self, jeu, frame_rate):
         """
@@ -66,6 +68,7 @@ class TimerJeu(TimerAbstrait):
         self.set_timer(TimerJeu.TEMPS_DISPERSION)
         self.timer_fantome = TimerFantome(frame_rate)
         self.timer_animation = TimerAnimation(jeu)
+        self.timer_fruit = TimerFruit(frame_rate)
         self.jeu = jeu
 
     def update(self):
@@ -90,6 +93,7 @@ class TimerJeu(TimerAbstrait):
             self.paused = False  # Repartir le timer du jeu.
             self.update_mode()
 
+        self.timer_fruit.is_running()
         self.timer_animation.update(self.timer_fantome)
 
     def pacman_mort(self):
@@ -100,6 +104,15 @@ class TimerJeu(TimerAbstrait):
         """
         self.paused = True
         self.timer_animation.compteur = 0
+
+    def nouveau_fruit(self, fruit):
+        """
+        Part un timer de 10 secondes, soit la durée de vie d'un fruit et ajoute un délai de 2 secondes par la suite.
+        :return: None
+        """
+        if fruit != self.timer_fruit.fruit and fruit not in self.timer_fruit.queue:
+            self.timer_fruit.queue.append(fruit)
+            self.timer_fruit.queue.append(TimerFruit.TEMPS_DELAI)
 
     def mode_effraye(self):
         """
@@ -113,7 +126,7 @@ class TimerJeu(TimerAbstrait):
     def update_mode(self):
         """
         S'occupe des changements de mode des fantômes. Cette méthode est appelée seulement à la fin d'un timer.
-        :return:
+        :return: None
         """
         for fantome in self.jeu.fantomes:
             fantome.peur = False
@@ -121,11 +134,31 @@ class TimerJeu(TimerAbstrait):
                 fantome.set_mode(self.current_mode)
 
 
+class TimerFruit(TimerAbstrait):
+    TEMPS_DELAI = 2
+
+    def __init__(self, frame_rate):
+        TimerAbstrait.__init__(self, frame_rate)
+        self.fruit = None
+        self.queue = []
+
+    def is_running(self):
+        if self.ended and self.queue:
+            self.fruit = self.queue.pop(0)
+
+            if self.fruit == TimerFruit.TEMPS_DELAI:
+                self.set_timer(TimerFruit.TEMPS_DELAI)
+            else:
+                self.set_timer(TimerJeu.TEMPS_FRUIT)
+        super(TimerFruit, self).is_running()
+
+
 class TimerFantome(TimerAbstrait):
     """
     Cette classe est le timer des fantômes lorsqu'ils sont effrayé.
     Les fantômes doivent clignoter quand il reste 2 secondes.
     """
+
     def __init__(self, frame_rate):
         """
         Constructeur du timer des fantômes en mode effrayé.
@@ -170,15 +203,18 @@ class TimerAnimation:
             self.compteur = 0
 
         if self.compteur % 3 == 0:
-            self.jeu.pacman.sprite.animation(self.compteur)
+            partie_gagnee = len(self.jeu.pastilles) + len(self.jeu.power_pellets) == 0
 
-            if not timer_fantome.ended and timer_fantome.acheve:
-                self.action_fantome = (self.action_fantome + 1) % 4
-            else:
-                self.action_fantome = not self.action_fantome
+            self.jeu.pacman.sprite.animation(self.compteur, partie_gagnee)
 
-            for fantome in self.jeu.fantomes:
-                fantome.animation(self.action_fantome)
+            if not partie_gagnee:
+                if not timer_fantome.ended and timer_fantome.acheve:
+                    self.action_fantome = (self.action_fantome + 1) % 4
+                else:
+                    self.action_fantome = not self.action_fantome
 
-            if self.compteur % 6 == 0:
-                self.pastilles_visibles = not self.pastilles_visibles
+                for fantome in self.jeu.fantomes:
+                    fantome.animation(self.action_fantome)
+
+                if self.compteur % 6 == 0:
+                    self.pastilles_visibles = not self.pastilles_visibles

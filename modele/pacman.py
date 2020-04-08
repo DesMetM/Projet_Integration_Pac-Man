@@ -36,6 +36,15 @@ class PacMan(pygame.sprite.Sprite):
         self.is_alive = True
         self.action = 1
 
+    @staticmethod
+    def get_pacman():
+        """
+        Retourne un SingleGroup contenant le Pac-Man.
+        :return: Un SingleGroup contenant le Pac-Man.
+        """
+        groupe = pygame.sprite.GroupSingle()
+        groupe.add(PacMan())
+        return groupe
 
     def update(self, direction):
         """
@@ -54,13 +63,15 @@ class PacMan(pygame.sprite.Sprite):
         board.tunnel(self.rect)
         self.rect = self.rect.move(self.vitesse)
 
-    def animation(self, compteur):
+    def animation(self, compteur, partie_gagnee):
         """
         Affecte l'image de Pac-Man selon le temps, sa direction et s'il est en vie.
         :param compteur: Le temps du timer.
         :return: None
         """
-        if self.is_alive:
+        if partie_gagnee:
+            self.image = PacMan.MORT[0]
+        elif self.is_alive:
             if self.vitesse != [0, 0]:
                 self.action = not self.action
                 self.image = PacMan.IMAGES[self.direction][self.action]
