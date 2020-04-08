@@ -37,7 +37,7 @@ class Jeu:
         self.count_board_anim = 0
 
         '''peut être enlevé pour version finale'''
-        self.game_rapide = True
+        self.game_rapide = False
 
         if Jeu.FONT is None:
             Jeu.FONT = pygame.font.Font(os.path.abspath("ressource/font/emulogic.ttf"), 20)
