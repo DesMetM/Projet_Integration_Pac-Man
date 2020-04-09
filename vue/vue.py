@@ -78,7 +78,7 @@ class Vue:
                         return True
                     elif IA_rect.collidepoint(pygame.mouse.get_pos()):
                         print('Ça lance le joueur 1 puisque l\'IA n\'est pas encore prêt :)')
-                        return True
+                        return False
                     elif text_rect.collidepoint(pygame.mouse.get_pos()):
                         quit()
 
