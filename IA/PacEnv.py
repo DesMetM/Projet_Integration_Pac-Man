@@ -3,7 +3,8 @@ from modele.jeu import Jeu
 from gym import spaces
 import numpy as np
 import pandas as pd
-from modele.board import SCALING, DECALAGEX, DECALAGE, GRILLE_DE_JEU
+from modele.board import SCALING, DECALAGEX, DECALAGE, GRILLE_DE_JEU, Blinky, Pinky, Inky, Clyde
+from math import ceil
 
 class PacEnv(gym.Env):
 
@@ -23,6 +24,7 @@ class PacEnv(gym.Env):
   __PACMAN = 9
   __FANTOME_EFFRAYE = 7
   __BOARD_INIT = GRILLE_DE_JEU.copy()
+  __FANTOMES = {Blinky:__BLINKY, Pinky:__PINKY, Inky:__INKY, Clyde:__CLYDE}
 
   def __init__(self, jeu):
     super(PacEnv, self).__init__()
@@ -34,8 +36,12 @@ class PacEnv(gym.Env):
 
   def __next_observation(self):
     self.observation_space = self.jeu.maGrille
-    self.jeu.pacman.sprite.rect.x -
-    pass
+    x, y = ceil((self.jeu.pacman.sprite.rect.x - DECALAGEX)/SCALING), ceil((self.jeu.pacman.sprite.rect.y - DECALAGE)/SCALING)
+    self.observation_space[y, x] = self.__PACMAN
+
+    for fantome in self.jeu.fantomes:
+      x,y = ceil((fantome.sprite.rect.x-DECALAGEX)/SCALING), ceil((fantome.sprite.rect.y-DECALAGE)/SCALING)
+      self.observation_space[y, x] = self.__FANTOMES[type(fantome)]
 
   def step(self, action):
     # Take action

@@ -19,6 +19,7 @@ class Jeu:
     FONT = None
     FONT2 = None
 
+
     def __init__(self):
         """
         Le constructeur déclare seulement les attributs. Il faut appeller la méthode nouvelle_partie(self) par la suite.
@@ -163,10 +164,6 @@ class Jeu:
                     self.nouvelle_partie(self.timer_jeu.frame_rate)
                     return True
                 return False
-
-            if self.pacman.sprite.nbr_vie < 0:
-                self.game_over(self.timer_jeu.frame_rate)
-                return True
 
             self.collision()
             self.pacman.update(direction)
