@@ -221,7 +221,7 @@ class Fantome(pygame.sprite.Sprite):
             else:
                 return pos_pacman.centerx - n_cases * board.SCALING, pos_pacman.centery
         elif pac_direction == Direction.DROITE:
-            if pos_pacman.centerx + n_cases * board.SCALING > 672 and pos_pacman.y == 400:  # revoir pour les cases
+            if pos_pacman.centerx + n_cases * board.SCALING > 672 and pos_pacman.y == 400:
                 return n_cases * board.SCALING, pos_pacman.centery  # environ 4 cases à la sorite du tunnel
             else:
                 return pos_pacman.centerx + n_cases * board.SCALING, pos_pacman.centery

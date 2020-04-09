@@ -16,6 +16,7 @@ class Jeu:
     BACKGROUND_BLANC = pygame.image.load(os.path.join('ressource', 'images', 'Board_Blanc.png'))
     FRUIT = Fruit.get_liste_fruits()
     FONT = None
+    FONT2 = None
 
     def __init__(self):
         """
@@ -30,13 +31,24 @@ class Jeu:
         self.pastilles_mangees = 0
         self.timer_jeu = None
         self.channel_actif = [False] * 9
+        self.fantome_mange = False
+        self.position_fantome_mange = None
+        self.frame_fantome_mange = 0
         self.nbr_fantomes_manges = 0
         self.score = 0
         self.derniere_pastille = None
+        self.count_board_anim = 0
+
+        '''peut être enlevé pour version finale'''
+        self.game_rapide = False
         self.fruits_mangees = 0
+        self.fruit_est_mange = False
+        self.frame_fruit_mange = 0
 
         if Jeu.FONT is None:
             Jeu.FONT = pygame.font.Font(os.path.abspath("ressource/font/emulogic.ttf"), 20)
+        if Jeu.FONT2 is None:
+            Jeu.FONT2 = pygame.font.Font(os.path.abspath("ressource/font/emulogic.ttf"), 12)
 
     def nouvelle_partie(self, frame_rate):
         '''
@@ -91,6 +103,9 @@ class Jeu:
                     self.pacman.sprite.is_alive = False
                     self.timer_jeu.pacman_mort()
                 elif ghost.peur:
+                    self.fantome_mange = True
+                    self.position_fantome_mange = (ghost.rect.left - 10, ghost.rect.top - 10)
+                    self.frame_fantome_mange = self.timer_jeu.timer_animation.compteur if self.timer_jeu.timer_animation.compteur < self.timer_jeu.timer_animation.CYCLE - 20 else self.timer_jeu.timer_animation.CYCLE - 1 - 20
                     self.channel_actif[3] = True
                     self.nbr_fantomes_manges += 1
                     self.ajouter_points_fantome()
@@ -103,6 +118,8 @@ class Jeu:
             self.score += Jeu.FRUIT[self.fruits_mangees if self.fruits_mangees < 13 else 12].score
             self.fruits_mangees += 1
             self.channel_actif[6] = True
+            self.fruit_est_mange = True
+            self.frame_fruit_mange = self.timer_jeu.timer_animation.compteur if self.timer_jeu.timer_animation.compteur < self.timer_jeu.timer_animation.CYCLE - 20 else self.timer_jeu.timer_animation.CYCLE - 1 - 20
 
     def nouveau_fruit(self, fruit):
         self.timer_jeu.nouveau_fruit(fruit)
@@ -127,6 +144,10 @@ class Jeu:
                     self.nouvelle_partie(self.timer_jeu.frame_rate)
                     return True
                 return False
+
+            if self.pacman.sprite.nbr_vie < 0:
+                self.game_over(self.timer_jeu.frame_rate)
+                return True
 
             self.collision()
             self.pacman.update(direction)
@@ -154,6 +175,16 @@ class Jeu:
             background.blit(Jeu.BACKGROUND_BLANC, (0, 0))
         else:
             background.blit(Jeu.BACKGROUND, (0, 0))
+        self.pacman.draw(background)
+        return background
+
+    def surface_partie_perdu(self, background):
+        """
+        Fais clignoter la grille de jeu selon le timer.
+        :param background: La surface à retourner.
+        :return: Une surface de la grille de jeu qui contient Pac-Man et qui est soit blanche, soit bleu.
+        """
+        background.blit(Jeu.BACKGROUND, (0, 0))
         self.pacman.draw(background)
         return background
 
@@ -186,6 +217,19 @@ class Jeu:
 
         for life in range(self.pacman.sprite.nbr_vie):
             background.blit(PacMan.IMAGES[Direction.GAUCHE][1], (50 + life * 60, 815))
+
+        if self.fantome_mange:  # permet d'indiquer les points à coté du fantôme mangé
+            if self.frame_fantome_mange + 20 == self.timer_jeu.timer_animation.compteur:
+                self.fantome_mange = False
+            text_pts = Jeu.FONT2.render(str(self.nbr_fantomes_manges * 200), 1, (3, 240, 252))
+            background.blit(text_pts, self.position_fantome_mange)
+
+        if self.fruit_est_mange:  # permet d'indiquer les points à coté d'un fruit mangé
+            if self.frame_fruit_mange + 20 == self.timer_jeu.timer_animation.compteur:
+                self.fruit_est_mange = False
+            text_pts = Jeu.FONT2.render(str(Jeu.FRUIT[self.fruits_mangees if self.fruits_mangees < 13 else 12].score),
+                                        1, (185, 44, 232))
+            background.blit(text_pts, (Fruit.POSITION[0] - 10, Fruit.POSITION[1] - 10))
 
         if self.pacman.sprite.is_alive:
             self.fantomes.draw(background)
