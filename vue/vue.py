@@ -192,12 +192,19 @@ class Vue:
                 p_terminee = self.ctrl.update_jeu(Direction.AUCUNE)
 
             if p_terminee:
-                self.ready_respawn()
+                if self.ctrl.jeu.pacman.sprite.nbr_vie<0:
+                    quitter = True
+                else:
+                    self.ready_respawn()
 
             self.audio()
             window.blit(self.ctrl.get_surface(), (0, 0))
             clock.tick(Vue.FRAME_RATE)
             pygame.display.update()
+
+        self.ctrl.start()
+        #LEADERBOARD
+        #MAIN MENU
 
     def mode_IA(self):
         """
