@@ -222,12 +222,3 @@ class Vue:
         self.ctrl.start()
         #LEADERBOARD
         #MAIN MENU
-
-    def mode_IA(self):
-        """
-        Lance une partie où est-ce-que l'IA joue à notre place'
-        :return: None
-        """
-        # Choose direction using model
-        # Send choice to game
-        # Read&Save new game_info

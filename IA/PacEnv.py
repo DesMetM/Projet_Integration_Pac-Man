@@ -60,9 +60,11 @@ class PacEnv(gym.Env):
     self.action_space = [0,1,2,3,4]
     self.jeu = jeu
     # self.observation_space = la grille. Reconstruite à chaque itération pour voir la position des fantomes, pellets etc
-    self.observation_space = self.__BOARD_INIT
+    self.observation_space = self.jeu.maGrille
 
   def __next_observation(self):
+    self.observation_space = self.jeu.maGrille
+
     pass
 
   def step(self, action):
