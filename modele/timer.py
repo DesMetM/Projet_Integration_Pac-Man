@@ -194,7 +194,7 @@ class TimerAnimation:
 
     def update(self, timer_fantome):
         """
-        Met à jour l'image de Pac-Man, des fantômes et des grosses pastilles selon le temps.
+        Mets à jour l'image de Pac-Man, des fantômes et des grosses pastilles selon le temps.
         :param timer_fantome: Le timer du mode effrayé des fantômes.
         :return: None
         """

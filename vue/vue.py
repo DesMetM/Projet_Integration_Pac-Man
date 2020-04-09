@@ -33,6 +33,7 @@ class Vue:
                          pygame.mixer.Sound(os.path.join('ressource', 'sons', 'pacman_mort.ogg'))]
 
         self.channels = [None] * 9
+        self.text_font = pygame.font.Font(os.path.abspath("ressource/font/emulogic.ttf"), 26)
         for i in [1, 2, 4, 5]:
             self.channels[i] = Vue.SOUND[i].play(-1)
             self.channels[i].pause()
@@ -42,19 +43,29 @@ class Vue:
         Affiche l'interface qui donne le choix d'accéder au jeu en tant que joueur ou IA.
         :return: «True» si le joueur à été sélectionner.
         '''
+        PositionP1 = (217, 232)
+        PositionIA = (290, 432)
+        PositionQuit = (217,632)
+
         board = pygame.image.load(os.path.join('ressource', 'images', 'Board_Intro.png'))
 
         player1 = pygame.image.load(os.path.join('ressource', 'images', 'PlayerOne.png'))
         player1_rect = player1.get_rect()
-        player1_rect.topleft = (217, 332)
+        player1_rect.topleft = PositionP1
 
         IA = pygame.image.load(os.path.join('ressource', 'images', 'Player_IA.png'))
         IA_rect = IA.get_rect()
-        IA_rect.topleft = (285, 532)
+        IA_rect.topleft = PositionIA
+
+
+        text_quitter = self.text_font.render('EXIT GAME', True, (0,255,255))
+        text_rect = text_quitter.get_rect()
+        text_rect.topleft = PositionQuit
 
         window.blit(board, (0, 0))
-        window.blit(player1, (217, 332))
-        window.blit(IA, (285, 532))
+        window.blit(player1, PositionP1)
+        window.blit(IA, PositionIA)
+        window.blit(text_quitter, PositionQuit)
         pygame.display.flip()
 
         running = True
@@ -68,6 +79,8 @@ class Vue:
                     elif IA_rect.collidepoint(pygame.mouse.get_pos()):
                         print('Ça lance le joueur 1 puisque l\'IA n\'est pas encore prêt :)')
                         return True
+                    elif text_rect.collidepoint(pygame.mouse.get_pos()):
+                        quit()
 
     def intro(self):
         """
@@ -192,9 +205,29 @@ class Vue:
                 p_terminee = self.ctrl.update_jeu(Direction.AUCUNE)
 
             if p_terminee:
-                self.ready_respawn()
+                if self.ctrl.jeu.pacman.sprite.nbr_vie<0:
+                    quitter = True
+                else:
+                    self.ready_respawn()
 
             self.audio()
             window.blit(self.ctrl.get_surface(), (0, 0))
             clock.tick(Vue.FRAME_RATE)
             pygame.display.update()
+
+        for ch in self.channels:
+            if ch is not None:
+                ch.pause()
+
+        self.ctrl.start()
+        #LEADERBOARD
+        #MAIN MENU
+
+    def mode_IA(self):
+        """
+        Lance une partie où est-ce-que l'IA joue à notre place'
+        :return: None
+        """
+        # Choose direction using model
+        # Send choice to game
+        # Read&Save new game_info
