@@ -82,8 +82,6 @@ class Vue:
                     if player1_rect.collidepoint(pygame.mouse.get_pos()):
                         return True
                     elif IA_rect.collidepoint(pygame.mouse.get_pos()):
-                        #print('Ça lance le joueur 1 puisque l\'IA n\'est pas encore prêt :)')
-                        #tkinter.filedialog.askopenfilename()
                         return False
                     elif text_rect.collidepoint(pygame.mouse.get_pos()):
                         quit()
@@ -107,7 +105,8 @@ class Vue:
         '''
 
         name = tkinter.filedialog.askopenfilename(initialdir=os.path.join('ressource', 'Iterations'))
-        print(name)
+
+        print("Voici le nom du fichier selectionné\n" + name)
 
 
 
