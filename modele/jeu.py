@@ -68,15 +68,6 @@ class Jeu:
         self.pastilles_mangees = 0
         self.timer_jeu.timer_sortie.debut_compteur()
 
-    def game_over(self, frame_rate):
-        #Afficher Game Over
-        #Afficher LeaderBoard
-            #Afficher ENTER NAME si high score
-        #Afficher Menu principal
-        self.nouvelle_partie(frame_rate)
-        self.pacman.sprite.nbr_vie=4
-        self.score=0
-
     def collision(self):
         """
         Cette méthode s'occupe des collisions entre les pastilles, Pac-Man et les fantômes.
