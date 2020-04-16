@@ -63,6 +63,7 @@ class Jeu:
         self.fantomes, self.blinky = board.fantomes_init_pos()
         self.timer_jeu = TimerJeu(self, frame_rate)
         self.pastilles_mangees = 0
+        self.timer_jeu.timer_sortie.debut_compteur()
 
     def collision(self):
         """
@@ -159,6 +160,7 @@ class Jeu:
 
         elif self.timer_jeu.timer_animation.compteur == 0:
             self.pacman.sprite.respawn()
+            self.timer_jeu.timer_sortie.debut_compteur()
             for fantome in self.fantomes:
                 fantome.respawn(self)
             return True
