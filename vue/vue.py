@@ -80,9 +80,9 @@ class Vue:
                     running = False
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if player1_rect.collidepoint(pygame.mouse.get_pos()):
-                        return True
+                        return 1
                     elif IA_rect.collidepoint(pygame.mouse.get_pos()):
-                        return False
+                        return 2
                     elif text_rect.collidepoint(pygame.mouse.get_pos()):
                         quit()
 
