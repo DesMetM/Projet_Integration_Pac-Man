@@ -25,3 +25,5 @@ pygame.display.set_icon(pygame.image.load(os.path.join('ressource', 'images', 'I
 # Le contrôleur débute la partie.
 monCtrl = ctrl.Ctrl()
 monCtrl.start()
+
+#dernière version 3

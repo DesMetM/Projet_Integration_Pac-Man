@@ -1,6 +1,10 @@
-import pygame
-from modele.direction import Direction
 import os
+
+import pygame
+
+from modele.direction import Direction
+
+import tkinter.filedialog
 
 window = pygame.display.set_mode((672, 864))
 
@@ -13,6 +17,7 @@ class Vue:
     FRAME_RATE = 30
     SOUND = None
     READY = pygame.image.load(os.path.join('ressource', 'images', 'Ready!.png'))
+
 
     def __init__(self, p_ctrl):
         """
@@ -45,7 +50,7 @@ class Vue:
         :return: «True» si le joueur à été sélectionner.
         '''
         PositionP1 = (217, 232)
-        PositionIA = (290, 432)
+        PositionIA = (310, 432)
         PositionQuit = (217,632)
 
         board = pygame.image.load(os.path.join('ressource', 'images', 'Board_Intro.png'))
@@ -78,7 +83,6 @@ class Vue:
                     if player1_rect.collidepoint(pygame.mouse.get_pos()):
                         return 1
                     elif IA_rect.collidepoint(pygame.mouse.get_pos()):
-                        print('Ça lance le joueur 1 puisque l\'IA n\'est pas encore prêt :)')
                         return 2
                     elif text_rect.collidepoint(pygame.mouse.get_pos()):
                         quit()
@@ -102,6 +106,12 @@ class Vue:
         Lance une partie avec l'IA.
         :return: None
         '''
+
+        name = tkinter.filedialog.askopenfilename(initialdir=os.path.join('ressource', 'Iterations'))
+
+        print("Voici le nom du fichier selectionné\n" + name)
+
+
         quitter = False
         clock = pygame.time.Clock()
         self.vie_sup = False
@@ -243,6 +253,20 @@ class Vue:
             if ch is not None:
                 ch.pause()
 
+        #Game over
+        board = pygame.image.load(os.path.join('ressource', 'images', 'Board_Intro.png'))
+        window.blit(board, (0, 0))
+
+
+        texteG_O = self.text_font.render('GAME  OVER', True, (255,0,0))
+        texte_pos = (205, 485)
+        window.blit(texteG_O, texte_pos)
+
+        pygame.display.flip()
+
+        pygame.time.delay(4500)
+
+        #LeaderBoard
         self.ctrl.start()
         #LEADERBOARD
         #MAIN MENU

@@ -39,6 +39,10 @@ class Jeu:
         self.nbr_fantomes_manges = 0
         self.score = 0
         self.derniere_pastille = None
+        self.count_board_anim = 0
+
+        '''peut être enlevé pour version finale'''
+        self.game_rapide = False
         self.fruits_mangees = 0
         self.fruit_est_mange = False
         self.frame_fruit_mange = 0
