@@ -1,6 +1,10 @@
-import pygame
-from modele.direction import Direction
 import os
+
+import pygame
+
+from modele.direction import Direction
+
+import tkinter.filedialog
 
 window = pygame.display.set_mode((672, 864))
 
@@ -13,6 +17,7 @@ class Vue:
     FRAME_RATE = 30
     SOUND = None
     READY = pygame.image.load(os.path.join('ressource', 'images', 'Ready!.png'))
+
 
     def __init__(self, p_ctrl):
         """
@@ -33,6 +38,7 @@ class Vue:
                          pygame.mixer.Sound(os.path.join('ressource', 'sons', 'pacman_mort.ogg'))]
 
         self.channels = [None] * 9
+        self.text_font = pygame.font.Font(os.path.abspath("ressource/font/emulogic.ttf"), 26)
         for i in [1, 2, 4, 5]:
             self.channels[i] = Vue.SOUND[i].play(-1)
             self.channels[i].pause()
@@ -42,19 +48,29 @@ class Vue:
         Affiche l'interface qui donne le choix d'accéder au jeu en tant que joueur ou IA.
         :return: «True» si le joueur à été sélectionner.
         '''
+        PositionP1 = (217, 232)
+        PositionIA = (310, 432)
+        PositionQuit = (217,632)
+
         board = pygame.image.load(os.path.join('ressource', 'images', 'Board_Intro.png'))
 
         player1 = pygame.image.load(os.path.join('ressource', 'images', 'PlayerOne.png'))
         player1_rect = player1.get_rect()
-        player1_rect.topleft = (217, 332)
+        player1_rect.topleft = PositionP1
 
         IA = pygame.image.load(os.path.join('ressource', 'images', 'Player_IA.png'))
         IA_rect = IA.get_rect()
-        IA_rect.topleft = (285, 532)
+        IA_rect.topleft = PositionIA
+
+
+        text_quitter = self.text_font.render('EXIT GAME', True, (0,255,255))
+        text_rect = text_quitter.get_rect()
+        text_rect.topleft = PositionQuit
 
         window.blit(board, (0, 0))
-        window.blit(player1, (217, 332))
-        window.blit(IA, (285, 532))
+        window.blit(player1, PositionP1)
+        window.blit(IA, PositionIA)
+        window.blit(text_quitter, PositionQuit)
         pygame.display.flip()
 
         running = True
@@ -64,10 +80,11 @@ class Vue:
                     running = False
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if player1_rect.collidepoint(pygame.mouse.get_pos()):
-                        return True
+                        return 1
                     elif IA_rect.collidepoint(pygame.mouse.get_pos()):
-                        print('Ça lance le joueur 1 puisque l\'IA n\'est pas encore prêt :)')
-                        return True
+                        return 2
+                    elif text_rect.collidepoint(pygame.mouse.get_pos()):
+                        quit()
 
     def intro(self):
         """
@@ -86,7 +103,12 @@ class Vue:
         Lance une partie avec l'IA.
         :return: None
         '''
-        pass
+
+        name = tkinter.filedialog.askopenfilename(initialdir=os.path.join('ressource', 'Iterations'))
+
+        print("Voici le nom du fichier selectionné\n" + name)
+
+
 
     def audio(self):
         """
@@ -192,9 +214,34 @@ class Vue:
                 p_terminee = self.ctrl.update_jeu(Direction.AUCUNE)
 
             if p_terminee:
-                self.ready_respawn()
+                if self.ctrl.jeu.pacman.sprite.nbr_vie<0:
+                    quitter = True
+                else:
+                    self.ready_respawn()
 
             self.audio()
             window.blit(self.ctrl.get_surface(), (0, 0))
             clock.tick(Vue.FRAME_RATE)
             pygame.display.update()
+
+        for ch in self.channels:
+            if ch is not None:
+                ch.pause()
+
+        #Game over
+        board = pygame.image.load(os.path.join('ressource', 'images', 'Board_Intro.png'))
+        window.blit(board, (0, 0))
+
+
+        texteG_O = self.text_font.render('GAME  OVER', True, (255,0,0))
+        texte_pos = (205, 485)
+        window.blit(texteG_O, texte_pos)
+
+        pygame.display.flip()
+
+        pygame.time.delay(4500)
+
+        #LeaderBoard
+        self.ctrl.start()
+
+        #MAIN MENU

@@ -68,6 +68,7 @@ class TimerJeu(TimerAbstrait):
         self.set_timer(TimerJeu.TEMPS_DISPERSION)
         self.timer_fantome = TimerFantome(frame_rate)
         self.timer_animation = TimerAnimation(jeu)
+        self.timer_sortie = TimerSortie()
         self.timer_fruit = TimerFruit(frame_rate)
         self.jeu = jeu
 
@@ -95,6 +96,7 @@ class TimerJeu(TimerAbstrait):
 
         self.timer_fruit.is_running()
         self.timer_animation.update(self.timer_fantome)
+        self.timer_sortie.update()
 
     def pacman_mort(self):
         """
@@ -218,3 +220,31 @@ class TimerAnimation:
 
                 if self.compteur % 6 == 0:
                     self.pastilles_visibles = not self.pastilles_visibles
+
+
+class TimerSortie:
+    """
+        Timer qui permet de savoir si le fantôme peut sortir de la cage. Surtout utile pour limiter que les fantômes
+        sortent en même temps après avoir respawn
+        """
+
+    def __init__(self):
+        """
+        Constructeur d'un timer de sortie.
+        """
+        self.compteur = 0
+        self.compteur_actif = False
+        self.marche = 75
+
+    def update(self):
+        """
+        Mets à jour le timer de sortie
+        """
+        if self.compteur_actif:
+            self.compteur += 1
+            if self.compteur == 3 * self.marche + 1:
+                self.compteur_actif = False
+
+    def debut_compteur(self):
+        self.compteur_actif = True
+        self.compteur = 0

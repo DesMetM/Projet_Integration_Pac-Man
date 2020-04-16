@@ -38,6 +38,7 @@ class Fantome(pygame.sprite.Sprite):
         self.vitesse = [0, 0]
         self.radius = 16
         self.scatter = scatter
+        self.ordre_sortie = 0
         pygame.sprite.Sprite.__init__(self)
 
         self.images = {
@@ -278,6 +279,7 @@ class Pinky(Fantome):
         """
         Fantome.__init__(self, Pinky.SPAWN, "Pinky", Pinky.SCATTER_TARGET)
         self.nbr_activation = 5
+        self.ordre_sortie = 1
 
     def respawn(self, jeu):
         """
@@ -312,6 +314,7 @@ class Inky(Fantome):
         """
         Fantome.__init__(self, Inky.SPAWN, "Inky", Inky.SCATTER_TARGET)
         self.nbr_activation = 30
+        self.ordre_sortie = 2
 
     def respawn(self, jeu):
         """
@@ -352,6 +355,7 @@ class Clyde(Fantome):
         """
         Fantome.__init__(self, Clyde.SPAWN, "Clyde", Clyde.SCATTER_TARGET)
         self.nbr_activation = 60
+        self.ordre_sortie = 3
 
     def respawn(self, jeu):
         """

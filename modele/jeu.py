@@ -37,6 +37,10 @@ class Jeu:
         self.nbr_fantomes_manges = 0
         self.score = 0
         self.derniere_pastille = None
+        self.count_board_anim = 0
+
+        '''peut être enlevé pour version finale'''
+        self.game_rapide = False
         self.fruits_mangees = 0
         self.fruit_est_mange = False
         self.frame_fruit_mange = 0
@@ -59,6 +63,7 @@ class Jeu:
         self.fantomes, self.blinky = board.fantomes_init_pos()
         self.timer_jeu = TimerJeu(self, frame_rate)
         self.pastilles_mangees = 0
+        self.timer_jeu.timer_sortie.debut_compteur()
 
     def collision(self):
         """
@@ -141,6 +146,10 @@ class Jeu:
                     return True
                 return False
 
+            if self.pacman.sprite.nbr_vie < 0:
+                self.game_over(self.timer_jeu.frame_rate)
+                return True
+
             self.collision()
             self.pacman.update(direction)
             self.fantomes.update(self)
@@ -151,6 +160,7 @@ class Jeu:
 
         elif self.timer_jeu.timer_animation.compteur == 0:
             self.pacman.sprite.respawn()
+            self.timer_jeu.timer_sortie.debut_compteur()
             for fantome in self.fantomes:
                 fantome.respawn(self)
             return True
@@ -167,6 +177,16 @@ class Jeu:
             background.blit(Jeu.BACKGROUND_BLANC, (0, 0))
         else:
             background.blit(Jeu.BACKGROUND, (0, 0))
+        self.pacman.draw(background)
+        return background
+
+    def surface_partie_perdu(self, background):
+        """
+        Fais clignoter la grille de jeu selon le timer.
+        :param background: La surface à retourner.
+        :return: Une surface de la grille de jeu qui contient Pac-Man et qui est soit blanche, soit bleu.
+        """
+        background.blit(Jeu.BACKGROUND, (0, 0))
         self.pacman.draw(background)
         return background
 
