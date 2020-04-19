@@ -2,6 +2,7 @@ import os
 
 import pygame
 
+from modele.Leaderboard import Leaderboard
 from modele.direction import Direction
 
 import tkinter.filedialog
@@ -239,9 +240,60 @@ class Vue:
 
         pygame.display.flip()
 
-        pygame.time.delay(4500)
+        pygame.time.delay(3000)
 
-        #LeaderBoard
+    #LeaderBoard
+        self.leader_board = Leaderboard()
+        board = pygame.image.load(os.path.join('ressource', 'images', 'Board_Intro.png'))
+        window.blit(board, (0, 0))
+
+        #Voici la liste de tous les textes prédéfinis
+        texte_instruction1 = self.text_font.render('Entrer votre nom et', True, (255, 255, 255))
+        texte_instruction2 = self.text_font.render('appuyer sur', True, (255, 255, 255))
+        texte_instruction3 = self.text_font.render('la touche retour', True, (255, 255, 255))
+        texte_leaderboard = self.text_font.render('LEADERBOARD', True, (255, 255, 255))
+        texte_quitter1 = self.text_font.render('Appuyer sur la touche', True, (255, 255, 255))
+        texte_quitter2 = self.text_font.render('espace pour quitter', True, (255, 255, 255))
+
+        name = ''
+        enter_name = True
+        while enter_name:
+            for event in pygame.event.get():
+                if event.type == pygame.KEYDOWN:
+                    if event.unicode.isalpha():
+                        name += event.unicode
+                    elif event.key == pygame.K_BACKSPACE:
+                        name = name[:-1]
+                    elif event.key == pygame.K_RETURN:
+                        enter_name = False
+            window.blit(board, (0,0))
+            texte_nom = self.text_font.render(name, True, (255, 255, 255))
+
+            window.blit(texte_nom, (336 - (texte_nom.get_rect().width/2), 485))
+            window.blit(texte_instruction1, (336 - (texte_instruction1.get_rect().width/2), 185))
+            window.blit(texte_instruction2, (336 - (texte_instruction2.get_rect().width/2), 235))
+            window.blit(texte_instruction3, (336 - (texte_instruction3.get_rect().width / 2), 285))
+            pygame.display.flip()
+
+        self.leader_board.compare_lead(score=self.ctrl.jeu.score, name=name)
+
+        window.blit(board, (0,0))
+        pressed_enter = True
+        while pressed_enter:
+
+            for i in range(5):
+                window.blit(self.text_font.render(self.leader_board.df.loc[i]['name'], True, (255, 255, 255)), (150, 235 + i * 50))
+            for i in range(5):
+                window.blit(self.text_font.render(str(self.leader_board.df.loc[i]['score']), True, (255, 255, 255)), (450, 235 + i * 50))
+            window.blit(texte_leaderboard, (336 - (texte_leaderboard.get_rect().width / 2), 185))
+
+            window.blit(texte_quitter1, (336- (texte_quitter1.get_rect().width/2), 635))
+            window.blit(texte_quitter2, (336- (texte_quitter2.get_rect().width/2), 735))
+            pygame.display.flip()
+            for event in pygame.event.get():
+                if event.key == pygame.K_SPACE:
+                    pressed_enter = False
+
         self.ctrl.start()
 
         #MAIN MENU

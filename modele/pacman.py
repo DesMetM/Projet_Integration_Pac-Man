@@ -32,7 +32,7 @@ class PacMan(pygame.sprite.Sprite):
         self.radius = 21
         self.direction = Direction.GAUCHE
         self.vitesse = [0, 0]
-        self.nbr_vie = 4
+        self.nbr_vie = 0
         self.is_alive = True
         self.action = 1
 
