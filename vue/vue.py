@@ -280,9 +280,11 @@ class Vue:
         texte_quitter1 = self.text_font.render('Appuyer sur la touche', True, (255, 255, 255))
         texte_quitter2 = self.text_font.render('espace pour quitter', True, (255, 255, 255))
 
+        #Couleur pour les noms dans le leaderboard
         couleurs_c = ((255, 153, 153), (255, 102, 102), (255, 51, 51), (255, 153, 51), (255, 255, 51))
         couleurs_f = ((51,255,255), (51, 153, 255), (51, 51, 255), (153, 51, 255), (255, 51, 255))
 
+        #la boucle permet d'entrer le nom du joueur et de voir le texte se rafraichir à toutes les fois qu'une touche est appuyé
         name = ''
         enter_name = True
         while enter_name:
@@ -303,12 +305,13 @@ class Vue:
             window.blit(texte_instruction3, (336 - (texte_instruction3.get_rect().width / 2), 285))
             pygame.display.flip()
 
+        #classe les meilleurs score afin d'afficher le meilleur classement
         self.leader_board.compare_lead(score=self.ctrl.jeu.score, name=name)
 
+        #affiche le leaderboard par colonne et applique la police et la couleur en plus de les alligner
         window.blit(board, (0,0))
         pressed_enter = True
         while pressed_enter:
-
             for i in range(5):
                 if self.leader_board.df.loc[i]['name'] == name:
                     window.blit(self.text_font.render(self.leader_board.df.loc[i]['name'], True, (0, 255, 0)),
@@ -320,14 +323,16 @@ class Vue:
                     window.blit(self.text_font.render(str(self.leader_board.df.loc[i]['score']), True, (0, 255, 0)),
                                 (450, 235 + i * 50))
                 else:
+                    '''juste après le True, on peut changer la couleur du texte du leaderboard en changeant couleur_c 
+                    par couleur_f '''
                     window.blit(self.text_font.render(str(self.leader_board.df.loc[i]['score']), True, couleurs_c[i]), (450, 235 + i * 50))
             window.blit(texte_leaderboard, (336 - (texte_leaderboard.get_rect().width / 2), 85))
-
             window.blit(texte_quitter1, (336 - (texte_quitter1.get_rect().width/2), 635))
             window.blit(texte_quitter2, (336 - (texte_quitter2.get_rect().width/2), 685))
             pygame.display.flip()
+
+            #boucle permettant au joueur de cliquer sur espace pour quitter le leaderboard
             for event in pygame.event.get():
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_SPACE:
                         pressed_enter = False
-        #MAIN MENU
