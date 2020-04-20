@@ -251,9 +251,12 @@ class Vue:
         texte_instruction1 = self.text_font.render('Entrer votre nom et', True, (255, 255, 255))
         texte_instruction2 = self.text_font.render('appuyer sur', True, (255, 255, 255))
         texte_instruction3 = self.text_font.render('la touche retour', True, (255, 255, 255))
-        texte_leaderboard = self.text_font.render('LEADERBOARD', True, (255, 255, 255))
+        texte_leaderboard = self.text_font.render('LEADERBOARD', True, (0, 55, 255))
         texte_quitter1 = self.text_font.render('Appuyer sur la touche', True, (255, 255, 255))
         texte_quitter2 = self.text_font.render('espace pour quitter', True, (255, 255, 255))
+
+        couleurs_c = ((255, 153, 153), (255, 102, 102), (255, 51, 51), (255, 153, 51), (255, 255, 51))
+        couleurs_f = ((51,255,255), (51, 153, 255), (51, 51, 255), (153, 51, 255), (255, 51, 255))
 
         name = ''
         enter_name = True
@@ -282,17 +285,26 @@ class Vue:
         while pressed_enter:
 
             for i in range(5):
-                window.blit(self.text_font.render(self.leader_board.df.loc[i]['name'], True, (255, 255, 255)), (150, 235 + i * 50))
+                if self.leader_board.df.loc[i]['name'] == name:
+                    window.blit(self.text_font.render(self.leader_board.df.loc[i]['name'], True, (0, 255, 0)),
+                                (150, 235 + i * 50))
+                else:
+                    window.blit(self.text_font.render(self.leader_board.df.loc[i]['name'], True, couleurs_c[i]), (150, 235 + i * 50))
             for i in range(5):
-                window.blit(self.text_font.render(str(self.leader_board.df.loc[i]['score']), True, (255, 255, 255)), (450, 235 + i * 50))
-            window.blit(texte_leaderboard, (336 - (texte_leaderboard.get_rect().width / 2), 185))
+                if self.leader_board.df.loc[i]['score'] == self.ctrl.jeu.score:
+                    window.blit(self.text_font.render(str(self.leader_board.df.loc[i]['score']), True, (0, 255, 0)),
+                                (450, 235 + i * 50))
+                else:
+                    window.blit(self.text_font.render(str(self.leader_board.df.loc[i]['score']), True, couleurs_c[i]), (450, 235 + i * 50))
+            window.blit(texte_leaderboard, (336 - (texte_leaderboard.get_rect().width / 2), 85))
 
-            window.blit(texte_quitter1, (336- (texte_quitter1.get_rect().width/2), 635))
-            window.blit(texte_quitter2, (336- (texte_quitter2.get_rect().width/2), 735))
+            window.blit(texte_quitter1, (336 - (texte_quitter1.get_rect().width/2), 635))
+            window.blit(texte_quitter2, (336 - (texte_quitter2.get_rect().width/2), 685))
             pygame.display.flip()
             for event in pygame.event.get():
-                if event.key == pygame.K_SPACE:
-                    pressed_enter = False
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_SPACE:
+                        pressed_enter = False
 
         self.ctrl.start()
 
