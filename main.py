@@ -1,7 +1,6 @@
 import pygame
 import ctrl.ctrl as ctrl
 import os
-import ctrl
 import IA
 import modele
 import vue
