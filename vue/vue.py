@@ -40,6 +40,7 @@ class Vue:
 
         self.channels = [None] * 9
         self.text_font = pygame.font.Font(os.path.abspath("ressource/font/emulogic.ttf"), 26)
+        self.__action_ia = 4
         for i in [1, 2, 4, 5]:
             self.channels[i] = Vue.SOUND[i].play(-1)
             self.channels[i].pause()
@@ -99,6 +100,8 @@ class Vue:
         Vue.SOUND[-2].play(loops=0)
         pygame.time.delay(4500)
 
+    def update_action_ia(self, action):
+        self.__action_ia = action
     def mode_IA(self):
         '''
         Lance une partie avec l'IA.
@@ -110,6 +113,28 @@ class Vue:
         print("Voici le nom du fichier selectionné\n" + name)
 
 
+        quitter = False
+        clock = pygame.time.Clock()
+        self.vie_sup = False
+        self.intro()
+        while not quitter:
+            p_terminee = self.jeu.update_jeu(self.__action_ia)
+            if p_terminee:
+                if self.ctrl.jeu.pacman.sprite.nbr_vie<0:
+                    quitter = True
+                else:
+                    self.ready_respawn()
+            self.audio()
+            window.blit(self.ctrl.get_surface(), (0, 0))
+            clock.tick(Vue.FRAME_RATE)
+            pygame.display.update()
+
+        for ch in self.channels:
+            if ch is not None:
+                ch.pause()
+
+        self.ctrl.start()
+        print("IA")
 
     def audio(self):
         """
@@ -307,5 +332,5 @@ class Vue:
                         pressed_enter = False
 
         self.ctrl.start()
-
+        #LEADERBOARD
         #MAIN MENU

@@ -1,6 +1,16 @@
 import pygame
 import ctrl.ctrl as ctrl
 import os
+import IA
+import modele
+import vue
+import ressource
+import numpy
+import pandas
+import random
+import math
+import gym
+
 
 # Initialiser pygame.
 pygame.mixer.pre_init(44100, 16, 8, 4096)

@@ -1,11 +1,12 @@
 import pygame
 import os
 import modele.board as board
+from math import ceil
 from modele.modes_fantome import Mode
 from modele.timer import TimerJeu, TimerFruit, TimerAnimation
 from modele.pacman import PacMan
 from modele.direction import Direction
-from modele.board import Pastille, GrossePastille, Fruit
+from modele.board import Pastille, GrossePastille, Fruit, GRILLE_DE_JEU, SCALING, DECALAGE, DECALAGEX
 
 
 class Jeu:
@@ -17,6 +18,7 @@ class Jeu:
     FRUIT = Fruit.get_liste_fruits()
     FONT = None
     FONT2 = None
+
 
     def __init__(self):
         """
@@ -44,11 +46,16 @@ class Jeu:
         self.fruits_mangees = 0
         self.fruit_est_mange = False
         self.frame_fruit_mange = 0
+        self.maGrille = GRILLE_DE_JEU.copy()
 
         if Jeu.FONT is None:
             Jeu.FONT = pygame.font.Font(os.path.abspath("ressource/font/emulogic.ttf"), 20)
         if Jeu.FONT2 is None:
             Jeu.FONT2 = pygame.font.Font(os.path.abspath("ressource/font/emulogic.ttf"), 12)
+
+    def printGrille(self):
+        for ligne in self.maGrille:
+            print(ligne, '\n')
 
     def nouvelle_partie(self, frame_rate):
         '''
@@ -78,9 +85,13 @@ class Jeu:
             self.pastilles_mangees += 1
             self.ajouter_points_pellet()
             self.derniere_pastille = list(dict.values())[0][0]
+            x, y = ceil((self.derniere_pastille.rect.x - DECALAGEX) / SCALING), ceil(
+                (self.derniere_pastille.rect.y-DECALAGE) / SCALING)
+            self.maGrille[y][x] = 6
 
         dict = pygame.sprite.groupcollide(groupa=self.pacman, groupb=self.power_pellets, dokilla=False,
                                           dokillb=True)
+
         if dict:  # collision avec une power pellet
             if len(self.pastilles) + len(self.power_pellets) == 0:
                 self.timer_jeu.timer_animation.compteur = TimerAnimation.CYCLE // 2
@@ -88,6 +99,9 @@ class Jeu:
             self.ajouter_points_powerpellet()
             self.nbr_fantomes_manges = 0
             self.derniere_pastille = list(dict.values())[0][0]
+            x, y = ceil((self.derniere_pastille.rect.x - DECALAGEX) / SCALING), ceil(
+                (self.derniere_pastille.rect.y - DECALAGE) / SCALING)
+            self.maGrille[y][x] = 6
 
             for x in self.fantomes:
                 x.peur = True
@@ -145,10 +159,6 @@ class Jeu:
                     self.nouvelle_partie(self.timer_jeu.frame_rate)
                     return True
                 return False
-
-            if self.pacman.sprite.nbr_vie < 0:
-                self.game_over(self.timer_jeu.frame_rate)
-                return True
 
             self.collision()
             self.pacman.update(direction)
