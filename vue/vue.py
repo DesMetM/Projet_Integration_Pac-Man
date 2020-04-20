@@ -267,7 +267,7 @@ class Vue:
 
         pygame.time.delay(3000)
 
-    #LeaderBoard
+        #LeaderBoard
         self.leader_board = Leaderboard()
         board = pygame.image.load(os.path.join('ressource', 'images', 'Board_Intro.png'))
         window.blit(board, (0, 0))
@@ -330,7 +330,4 @@ class Vue:
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_SPACE:
                         pressed_enter = False
-
-        self.ctrl.start()
-        #LEADERBOARD
         #MAIN MENU

@@ -41,12 +41,14 @@ class Jeu:
         self.derniere_pastille = None
         self.count_board_anim = 0
 
-        '''peut être enlevé pour version finale'''
-        self.game_rapide = False
+
         self.fruits_mangees = 0
         self.fruit_est_mange = False
         self.frame_fruit_mange = 0
         self.maGrille = GRILLE_DE_JEU.copy()
+
+        '''peut être enlevé pour version finale'''
+        self.game_rapide = False
 
         if Jeu.FONT is None:
             Jeu.FONT = pygame.font.Font(os.path.abspath("ressource/font/emulogic.ttf"), 20)
