@@ -31,6 +31,7 @@ class PacEnv(gym.Env):
 
     __BOARD_INIT = GRILLE_DE_JEU.copy()
 
+    REWARD_MORT = -5
     REWARD_RIEN = -1
     REWARD_P = 0
     REWARD_PP = 1
@@ -45,8 +46,6 @@ class PacEnv(gym.Env):
         """
         super(PacEnv, self).__init__()
         self.action_space = [0, 1, 2, 3, 4]
-        self.action_space = np.reshape(self.action_space, (1, 5))
-        self.action_space = self.action_space.T
         self.jeu = jeu
         self.observation_space = []
         self.__next_observation()
@@ -67,27 +66,22 @@ class PacEnv(gym.Env):
                 (fantome.sprite.rect.y - DECALAGE) / SCALING)
             self.observation_space[y, x] = self.__FANTOMES[type(fantome)]
 
-        self.observation_space = np.reshape(self.observation_space, (1, 840))
-        self.observation_space = self.observation_space.T
+        self.observation_space = np.reshape(self.observation_space, (1, 1, 840))
+        #self.observation_space = self.observation_space.T
 
     def calculer_score(self):
         Dscore = self.jeu.score - self.last_obs[1]
 
         if not self.jeu.pacman.sprite.is_alive:
-            return -5
-
+            return PacEnv.REWARD_MORT
         elif Dscore == 0:
             return PacEnv.REWARD_RIEN
-
         elif Dscore > 0 and Dscore < 30:
             return PacEnv.REWARD_P
-
         elif Dscore >= 30 and Dscore < 70:
             return PacEnv.REWARD_PP
-
         elif Dscore >= 180 and Dscore <= 1620:
             return PacEnv.REWARD_F
-
         else:
             return PacEnv.REWARD_CLE
 
@@ -110,7 +104,7 @@ class PacEnv(gym.Env):
         # Determine if game finished
         """Vérifier si la partie est terminée. La partie est terminée si tous les points sont mangés ou si le Pac n'a
           plus de vies."""
-        done = self.jeu.pacman.sprite.nbr_vie == 0 or len(self.jeu.pastilles) + len(self.jeu.power_pellets) == 0
+        done = self.jeu.pacman.sprite.nbr_vie == 0
         return self.observation_space, reward, done, self.jeu.pacman.sprite.is_alive
 
     def reset(self):
