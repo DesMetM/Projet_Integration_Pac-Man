@@ -63,12 +63,11 @@ class Jeu:
         :param frame_rate: La vitesse que doit compter le timer. Le frame rate doit correspondre à celui de la vue.
         :return: None
         '''
-        self.score = 0
         self.maGrille = copy_grille()
         self.pastilles = Pastille.pastilles()
         self.power_pellets = GrossePastille.grosses_pastilles()
         self.pacman.sprite.respawn()
-        self.pacman.sprite.nbr_vie = 4
+        self.pacman.sprite.nbr_vie += 1
         self.fantomes, self.blinky = board.fantomes_init_pos()
         self.timer_jeu = TimerJeu(self, frame_rate)
         self.pastilles_mangees = 0

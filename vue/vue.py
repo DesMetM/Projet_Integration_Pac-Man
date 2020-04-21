@@ -101,6 +101,7 @@ class Vue:
 
     def update_action_ia(self, action):
         self.__action_ia = action
+
     def mode_IA(self):
         '''
         Lance une partie avec l'IA.
@@ -239,7 +240,7 @@ class Vue:
                 p_terminee = self.ctrl.update_jeu(Direction.AUCUNE)
 
             if p_terminee:
-                if self.ctrl.jeu.pacman.sprite.nbr_vie<0:
+                if self.ctrl.jeu.pacman.sprite.nbr_vie==0:
                     quitter = True
                 else:
                     self.ready_respawn()
