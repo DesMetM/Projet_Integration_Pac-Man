@@ -3,10 +3,10 @@ import os
 import pandas as pd
 
 
-class Leaderboard(object):
+class Leaderboard:
 
     def __init__(self):
-        self.file = os.path.join("ressource", "data", "Leaderboard.pkl")
+        self.file = os.path.join("ressource", "leaderboard", "Leaderboard.pkl")
         self.load_lead()
 
     def load_lead(self):

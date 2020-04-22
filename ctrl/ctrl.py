@@ -26,17 +26,15 @@ class Ctrl:
 
         while en_jeu:
             mode_de_jeu = self.vue.interface_debut()
-            self.jeu.score = 0
             # Si mode_de_jeu est vrai, alors on lance la partie en mode joueur. Sinon, on lance la partie en mode IA.
+            if mode_de_jeu == 3:
+                break
             self.jeu.nouvelle_partie(Vue.FRAME_RATE)
-            self.jeu.pacman.sprite.nbr_vie = 4
-            if mode_de_jeu == 1:
-                self.vue.mode_joueur()
-            elif mode_de_jeu == 2:
-                self.vue.mode_IA()
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    en_jeu = False
+            self.jeu.pacman.sprite.nbr_vie = 3
+            self.jeu.fruits_mangees = 0
+            self.jeu.score = 0
+            if mode_de_jeu == 1 and self.vue.mode_joueur() or mode_de_jeu == 2 and self.vue.mode_IA():
+                break
 
     def update_jeu(self, direction):
         """
@@ -46,7 +44,6 @@ class Ctrl:
         La deuxième valeur désigne si la partie est relancée.
         """
         return self.jeu.update_jeu(direction)
-
 
     def get_surface(self):
         """

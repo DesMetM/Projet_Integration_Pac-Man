@@ -230,7 +230,7 @@ class Jeu:
             background.blit(Jeu.FRUIT[self.fruits_mangees - fruit if fruit < 13 else 12].image,
                             (620 - (self.fruits_mangees - fruit if fruit < 13 else 12) * 50, 815))
 
-        for life in range(self.pacman.sprite.nbr_vie):
+        for life in range(self.pacman.sprite.nbr_vie - 1):
             background.blit(PacMan.IMAGES[Direction.GAUCHE][1], (50 + life * 60, 815))
 
         if self.fantome_mange:  # permet d'indiquer les points à coté du fantôme mangé
