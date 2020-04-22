@@ -1,3 +1,5 @@
+import pygame
+
 from modele.jeu import Jeu
 from vue.vue import Vue
 
@@ -20,14 +22,21 @@ class Ctrl:
         On demande à l'utilisateur ce qu'il veut faire et on démarre une nouvelle partie.
         :return: None
         """
-        mode_de_jeu = self.vue.interface_debut()
+        en_jeu = True
 
-        # Si mode_de_jeu est vrai, alors on lance la partie en mode joueur. Sinon, on lance la partie en mode IA.
-        self.jeu.nouvelle_partie(Vue.FRAME_RATE)
-        if mode_de_jeu == 1:
-            self.vue.mode_joueur()
-        elif mode_de_jeu == 2:
-            self.vue.mode_IA()
+        while en_jeu:
+            mode_de_jeu = self.vue.interface_debut()
+            self.jeu.score = 0
+            # Si mode_de_jeu est vrai, alors on lance la partie en mode joueur. Sinon, on lance la partie en mode IA.
+            self.jeu.nouvelle_partie(Vue.FRAME_RATE)
+            self.jeu.pacman.sprite.nbr_vie = 4
+            if mode_de_jeu == 1:
+                self.vue.mode_joueur()
+            elif mode_de_jeu == 2:
+                self.vue.mode_IA()
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    en_jeu = False
 
     def update_jeu(self, direction):
         """
