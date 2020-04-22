@@ -1,5 +1,3 @@
-import pygame
-
 from modele.jeu import Jeu
 from vue.vue import Vue
 
