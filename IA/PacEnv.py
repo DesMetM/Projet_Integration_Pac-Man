@@ -66,6 +66,7 @@ class PacEnv(gym.Env):
                 (fantome.sprite.rect.y - DECALAGE) / SCALING)
             self.observation_space[y, x] = self.__FANTOMES[type(fantome)]
 
+        self.obs_mat = self.observation_space
         self.observation_space = np.reshape(self.observation_space, (1, 1, 840))
         #self.observation_space = self.observation_space.T
 

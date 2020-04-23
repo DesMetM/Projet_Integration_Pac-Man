@@ -19,7 +19,7 @@ class Leaderboard(object):
         self.df = self.df.sort_values(by='score', axis=0, ascending=False)
         self.df = self.df.reset_index(drop=True)
 
-    def compare_lead(self, score, name, current_index=4):
+    def compare_lead(self, score, name):
             self.df = self.df.append({'name':name,'score':score}, ignore_index=True)
             self.sort_df()
             self.df = self.df.drop(self.df.tail(1).index)

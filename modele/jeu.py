@@ -73,6 +73,14 @@ class Jeu:
         self.pastilles_mangees = 0
         self.timer_jeu.timer_sortie.debut_compteur()
 
+    def print_mat(self, mat):
+        retour = ""
+        for ligne in mat:
+            for colonne in ligne:
+                retour += colonne
+            retour +="\n"
+        return retour
+
     def collision(self):
         """
         Cette méthode s'occupe des collisions entre les pastilles, Pac-Man et les fantômes.
@@ -89,6 +97,8 @@ class Jeu:
             x, y = ceil((self.derniere_pastille.rect.x - DECALAGEX) / SCALING), ceil(
                 (self.derniere_pastille.rect.y-DECALAGE) / SCALING)
             self.maGrille[y][x] = 6
+            #PACENV DOIT ALLER ICI POUR LE TEST. PAS ENCORE  IMPORT OU INSTANCIÉ
+            print(self.print_mat())
 
         dict = pygame.sprite.groupcollide(groupa=self.pacman, groupb=self.power_pellets, dokilla=False,
                                           dokillb=True)
