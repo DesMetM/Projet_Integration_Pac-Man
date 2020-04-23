@@ -1,6 +1,6 @@
 ('C:\\Users\\Alex\\PycharmProjects\\Projet_Integration_Pac-Man\\build\\main\\setuptools-40.8.0-py3.7.egg',
  None,
- {'*.cp37-win_amd64.pyd', '*.py', '*.pyc', '*.pyd', 'EGG-INFO', '*.pyw'},
+ {'*.cp37-win_amd64.pyd', '*.pyc', '*.py', '*.pyw', '*.pyd', 'EGG-INFO'},
  'DATA',
  [('setuptools\\cli-32.exe',
    'C:\\Users\\Alex\\PycharmProjects\\Projet_Integration_Pac-Man\\build\\main\\setuptools-40.8.0-py3.7.egg\\setuptools\\cli-32.exe',

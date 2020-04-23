@@ -952,7 +952,7 @@ class easy_install(Command):
         return self.egg_distribution(destination)
 
     def install_exe(self, dist_filename, tmpdir):
-        # See if it's valid, get leaderboard
+        # See if it's valid, get data
         cfg = extract_wininst_cfg(dist_filename)
         if cfg is None:
             raise DistutilsError(
@@ -1497,7 +1497,7 @@ def expand_paths(inputs):
 
 
 def extract_wininst_cfg(dist_filename):
-    """Extract configuration leaderboard from a bdist_wininst .exe
+    """Extract configuration data from a bdist_wininst .exe
 
     Returns a configparser.RawConfigParser, or None
     """
@@ -1508,7 +1508,7 @@ def extract_wininst_cfg(dist_filename):
             return None
 
         prepended = (endrec[9] - endrec[5]) - endrec[6]
-        if prepended < 12:  # no wininst leaderboard here
+        if prepended < 12:  # no wininst data here
             return None
         f.seek(prepended - 12)
 
@@ -1732,13 +1732,13 @@ def auto_chmod(func, arg, exc):
 
 def update_dist_caches(dist_path, fix_zipimporter_caches):
     """
-    Fix any globally cached `dist_path` related leaderboard
+    Fix any globally cached `dist_path` related data
 
     `dist_path` should be a path of a newly installed egg distribution (zipped
     or unzipped).
 
     sys.path_importer_cache contains finder objects that have been cached when
-    importing leaderboard from the original distribution. Any such finders need to be
+    importing data from the original distribution. Any such finders need to be
     cleared since the replacement distribution might be packaged differently,
     e.g. a zipped egg distribution might get replaced with an unzipped egg
     folder or vice versa. Having the old finders cached may then cause Python
@@ -1746,15 +1746,15 @@ def update_dist_caches(dist_path, fix_zipimporter_caches):
     incorrect loader.
 
     zipimport.zipimporter objects are Python loaders charged with importing
-    leaderboard packaged inside zip archives. If stale loaders referencing the
+    data packaged inside zip archives. If stale loaders referencing the
     original distribution, are left behind, they can fail to load modules from
     the replacement distribution. E.g. if an old zipimport.zipimporter instance
-    is used to load leaderboard from a new zipped egg archive, it may cause the
-    operation to attempt to locate the requested leaderboard in the wrong location -
+    is used to load data from a new zipped egg archive, it may cause the
+    operation to attempt to locate the requested data in the wrong location -
     one indicated by the original distribution's zip archive directory
     information. Such an operation may then fail outright, e.g. report having
     read a 'bad local file header', or even worse, it may fail silently &
-    return invalid leaderboard.
+    return invalid data.
 
     zipimport._zip_directory_cache contains cached zip archive directory
     information for all existing zipimport.zipimporter instances and all such
@@ -1768,10 +1768,10 @@ def update_dist_caches(dist_path, fix_zipimporter_caches):
     replacement distribution is packaged as a zipped egg.
 
     If not asked to fix existing zipimport.zipimporter instances, we still do
-    our best to clear any remaining zipimport.zipimporter related cached leaderboard
-    that might somehow later get used when attempting to load leaderboard from the new
+    our best to clear any remaining zipimport.zipimporter related cached data
+    that might somehow later get used when attempting to load data from the new
     distribution and thus cause such load operations to fail. Note that when
-    tracking down such remaining stale leaderboard, we can not catch every conceivable
+    tracking down such remaining stale data, we can not catch every conceivable
     usage from here, and we clear only those that we know of and have found to
     cause problems if left alive. Any remaining caches should be updated by
     whomever is in charge of maintaining them, i.e. they should be ready to
@@ -1804,7 +1804,7 @@ def update_dist_caches(dist_path, fix_zipimporter_caches):
         #   2. Remove the entry from the cache so any newly constructed
         #      zipimport.zipimporter instances do not end up using old stale
         #      zip archive directory information.
-        # This whole stale leaderboard removal step does not seem strictly necessary,
+        # This whole stale data removal step does not seem strictly necessary,
         # but has been left in because it was done before we started replacing
         # the zip archive directory information cache content if possible, and
         # there are no relevant unit tests that we can depend on to tell us if
@@ -1834,7 +1834,7 @@ def _collect_zipimporter_cache_entries(normalized_path, cache):
 
 def _update_zipimporter_cache(normalized_path, cache, updater=None):
     """
-    Update zipimporter cache leaderboard for a given normalized path.
+    Update zipimporter cache data for a given normalized path.
 
     Any sub-path entries are processed as well, i.e. those corresponding to zip
     archives embedded in other zip archives.

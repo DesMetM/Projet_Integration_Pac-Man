@@ -124,7 +124,8 @@ class Jeu:
 
         if fantome_list:  # collision avec un fantome
             for ghost in fantome_list:
-                if (ghost.mode is not Mode.EFFRAYE) and (ghost.mode is not Mode.RETOUR):
+                if (ghost.mode is not Mode.EFFRAYE) and (ghost.mode is not Mode.RETOUR) and (
+                        ghost.mode is not Mode.SORTIR):
                     self.channel_actif[8] = True
                     self.pacman.sprite.is_alive = False
                     self.timer_jeu.pacman_mort()

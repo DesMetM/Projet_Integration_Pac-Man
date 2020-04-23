@@ -1847,7 +1847,7 @@ class FileMetadata(EmptyProvider):
 
         metadata = FileMetadata("/path/to/PKG-INFO")
 
-    This provider rejects all leaderboard and metadata requests except for PKG-INFO,
+    This provider rejects all data and metadata requests except for PKG-INFO,
     which is treated as existing, and will be the contents of the file at
     the provided location.
     """
