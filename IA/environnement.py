@@ -1,12 +1,9 @@
 import gym
-from modele.jeu import Jeu
-from gym import spaces
 import numpy as np
-import pandas as pd
 from modele.board import SCALING, DECALAGEX, DECALAGE, GRILLE_DE_JEU, Blinky, Pinky, Inky, Clyde
 from math import ceil
-from vue import vue
 from modele.direction import Direction
+import copy
 
 
 class PacEnv(gym.Env):
@@ -38,7 +35,7 @@ class PacEnv(gym.Env):
     REWARD_F = 3
     REWARD_CLE = 5
 
-    def __init__(self, jeu, vue):
+    def __init__(self, jeu):
         """
         Initie l'environnement du réseau neuronal.
         :param jeu: L'objet jeu qui va permettre à l'environnement de repérer les informations dont il a besoin.
@@ -47,49 +44,58 @@ class PacEnv(gym.Env):
         super(PacEnv, self).__init__()
         self.action_space = [0, 1, 2, 3, 4]
         self.jeu = jeu
-        self.observation_space = []
+        self.observation_space = None
+        self.last_score = 0
         self.__next_observation()
-        self.vue = vue
 
     def __next_observation(self):
         """
         Crée à nouveau l'observation_space pour prendre en compte la position des entitées importantes.
         """
-        self.last_obs = [self.observation_space, self.jeu.score]
-        self.observation_space = self.jeu.maGrille
         x, y = ceil((self.jeu.pacman.sprite.rect.x - DECALAGEX) / SCALING), ceil(
             (self.jeu.pacman.sprite.rect.y - DECALAGE) / SCALING)
-        self.observation_space[y, x] = self.__PACMAN
+
+        self.jeu.maGrille[y][x] = PacEnv.__VIDE
+
+        self.observation_space = copy.deepcopy(self.jeu.maGrille)
+
+        self.observation_space[y][x] = self.__PACMAN
 
         for fantome in self.jeu.fantomes:
-            x, y = ceil((fantome.sprite.rect.x - DECALAGEX) / SCALING), ceil(
-                (fantome.sprite.rect.y - DECALAGE) / SCALING)
-            self.observation_space[y, x] = self.__FANTOMES[type(fantome)]
+            x, y = ceil((fantome.rect.x - DECALAGEX) / SCALING), ceil(
+                (fantome.rect.y - DECALAGE) / SCALING)
+            self.observation_space[y][x] = self.__FANTOMES[type(fantome)]
 
-        self.observation_space = np.reshape(self.observation_space, (1, 1, 840))
-        #self.observation_space = self.observation_space.T
+        self.observation_space = np.reshape(self.observation_space, (1, 1, 868))
 
     def calculer_score(self):
-        Dscore = self.jeu.score - self.last_obs[1]
+        """
+        Calcule le reward de l'observation actuel.
+        :return: le reward de l'observation actuel.
+        """
+        delta_score = self.jeu.score - self.last_score
 
         if not self.jeu.pacman.sprite.is_alive:
-            return PacEnv.REWARD_MORT
-        elif Dscore == 0:
-            return PacEnv.REWARD_RIEN
-        elif Dscore > 0 and Dscore < 30:
-            return PacEnv.REWARD_P
-        elif Dscore >= 30 and Dscore < 70:
-            return PacEnv.REWARD_PP
-        elif Dscore >= 180 and Dscore <= 1620:
-            return PacEnv.REWARD_F
+            reward = PacEnv.REWARD_MORT
+        elif delta_score == 0:
+            reward = PacEnv.REWARD_RIEN
+        elif 0 < delta_score < 30:
+            reward = PacEnv.REWARD_P
+        elif 30 <= delta_score < 70:
+            reward = PacEnv.REWARD_PP
+        elif 180 <= delta_score < 1620:
+            reward = PacEnv.REWARD_F
         else:
-            return PacEnv.REWARD_CLE
+            reward = PacEnv.REWARD_CLE
+
+        self.last_score = self.jeu.score
+        return reward
 
     def step(self, action):
         # Take action
         """Dans ce cas-ci, il faudrait feed au jeu l'action que l'IA a choisi. Il va choisir
           une valeur entre 0 et 3 qui représente chacun une direction"""
-        self.jeu.update_jeu(Direction.value[action])
+        self.jeu.update_jeu(Direction(int(action.__str__())))
         # Determine new state
         """ On regarde ce que le move a fait. Est-ce Pac est mort? Est-ce que Pac a eu des points? Si oui cb?"""
         self.__next_observation()
@@ -114,12 +120,13 @@ class PacEnv(gym.Env):
         Ensuite, il observe la grille fraichement crée et la prends en mémoire.
         :return:
         """
-        self.jeu.nouvelle_partie()
-        self.jeu.pacman.sprite.nbr_vie = 4
-        self.jeu.score = 0
-        self.jeu.channel_actif = [False for x in range(len(self.jeu.channel_actif))]
-
+        self.jeu.reset()
         self.__next_observation()
 
     def render(self, mode='human'):
-        pass
+        """
+        Retourne le frame du jeu et les channels actifs.
+        :param mode: Peu importe.
+        :return: le frame du jeu et les channels actifs.
+        """
+        return self.jeu.get_surface(), self.jeu.get_audio()

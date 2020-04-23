@@ -1,11 +1,8 @@
 import os
-
 import pygame
-
 from modele.leaderboard import Leaderboard
 from modele.direction import Direction
-
-import tkinter.filedialog
+from tkinter.filedialog import askopenfilename
 
 window = pygame.display.set_mode((672, 864))
 
@@ -107,32 +104,43 @@ class Vue:
         :return: None
         '''
 
-        name = tkinter.filedialog.askopenfilename(initialdir=os.path.join('ressource', 'IA'))
+        name = askopenfilename(initialdir=os.path.join('ressource', 'IA'),
+                               filetypes=(("Fichiers HDF5", "*.hdf5"), ("All Files", "*.*")))
 
-        print("Voici le nom du fichier selectionné\n" + name)
+        if name[-4:] != "hdf5":
+            return False
 
-        quitter = False
+        self.ctrl.load_agent_dqn(name)
+
+        done = False
+        is_alive = True
         clock = pygame.time.Clock()
         self.vie_sup = False
         self.intro()
-        while not quitter:
-            p_terminee = self.jeu.update_jeu(self.__action_ia)
-            if p_terminee:
-                if self.ctrl.jeu.pacman.sprite.nbr_vie < 0:
-                    quitter = True
-                else:
-                    self.ready_respawn()
+
+        while not done:
+            surface, audio, done, info = self.ctrl.get_surface_dqn()
+
+            if done:
+                break
+            elif not is_alive and info:
+                self.ready_respawn()
+
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    return True
+                elif (event.type == pygame.KEYDOWN or event.type == pygame.KEYUP) and event.key == pygame.K_ESCAPE:
+                    done = True
+
+            is_alive = info
+
             self.audio()
-            window.blit(self.ctrl.get_surface(), (0, 0))
+            window.blit(surface, (0, 0))
             clock.tick(Vue.FRAME_RATE)
             pygame.display.update()
 
-        for ch in self.channels:
-            if ch is not None:
-                ch.pause()
-
-        self.ctrl.start()
-        print("IA")
+        self.gameover()
+        return False
 
     def audio(self):
         """
@@ -252,14 +260,6 @@ class Vue:
         return False
 
     def leaderboard(self):
-        texteG_O = self.text_font.render('GAME  OVER', True, (255, 0, 0))
-        texte_pos = (205, 485)
-        window.blit(texteG_O, texte_pos)
-
-        pygame.display.flip()
-
-        pygame.time.delay(3000)
-
         # LeaderBoard
         self.leader_board = Leaderboard()
         board = pygame.image.load(os.path.join('ressource', 'images', 'Board_Intro.png'))
@@ -332,7 +332,6 @@ class Vue:
                     if event.key == pygame.K_SPACE:
                         pressed_enter = False
 
-
     def gameover(self):
         for ch in self.channels:
             if ch is not None:
@@ -341,3 +340,12 @@ class Vue:
             # Game over
         board = pygame.image.load(os.path.join('ressource', 'images', 'Board_Intro.png'))
         window.blit(board, (0, 0))
+
+        texteG_O = self.text_font.render('GAME  OVER', True, (255, 0, 0))
+        texte_pos = (205, 485)
+        window.blit(texteG_O, texte_pos)
+
+        pygame.display.flip()
+
+        pygame.time.delay(3000)
+
