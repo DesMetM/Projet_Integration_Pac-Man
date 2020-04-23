@@ -57,19 +57,19 @@ class TimerJeu(TimerAbstrait):
     TEMPS_EFFRAYE = 10
     TEMPS_FRUIT = 10
 
-    def __init__(self, jeu, frame_rate):
+    def __init__(self, jeu):
         """
         Constructeur du timer.
         :param jeu: Le jeu auquel il appartient.
         :param frame_rate: La vitesse d'affichage du jeu.
         """
-        TimerAbstrait.__init__(self, frame_rate)
+        TimerAbstrait.__init__(self, jeu.frame_rate)
         self.current_mode = Mode.DISPERSION
         self.set_timer(TimerJeu.TEMPS_DISPERSION)
-        self.timer_fantome = TimerFantome(frame_rate)
+        self.timer_fantome = TimerFantome(jeu.frame_rate)
         self.timer_animation = TimerAnimation(jeu)
         self.timer_sortie = TimerSortie()
-        self.timer_fruit = TimerFruit(frame_rate)
+        self.timer_fruit = TimerFruit(jeu.frame_rate)
         self.jeu = jeu
 
     def update(self):

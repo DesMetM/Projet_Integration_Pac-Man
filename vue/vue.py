@@ -1,11 +1,8 @@
 import os
-
 import pygame
-
-from modele.Leaderboard import Leaderboard
+from modele.leaderboard import Leaderboard
 from modele.direction import Direction
-
-import tkinter.filedialog
+from tkinter.filedialog import askopenfilename
 
 window = pygame.display.set_mode((672, 864))
 
@@ -18,7 +15,6 @@ class Vue:
     FRAME_RATE = 30
     SOUND = None
     READY = pygame.image.load(os.path.join('ressource', 'images', 'Ready!.png'))
-
 
     def __init__(self, p_ctrl):
         """
@@ -52,7 +48,7 @@ class Vue:
         '''
         PositionP1 = (217, 232)
         PositionIA = (310, 432)
-        PositionQuit = (217,632)
+        PositionQuit = (217, 632)
 
         board = pygame.image.load(os.path.join('ressource', 'images', 'Board_Intro.png'))
 
@@ -64,8 +60,7 @@ class Vue:
         IA_rect = IA.get_rect()
         IA_rect.topleft = PositionIA
 
-
-        text_quitter = self.text_font.render('EXIT GAME', True, (0,255,255))
+        text_quitter = self.text_font.render('EXIT GAME', True, (0, 255, 255))
         text_rect = text_quitter.get_rect()
         text_rect.topleft = PositionQuit
 
@@ -79,14 +74,14 @@ class Vue:
         while running:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
-                    running = False
+                    return 3
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if player1_rect.collidepoint(pygame.mouse.get_pos()):
                         return 1
                     elif IA_rect.collidepoint(pygame.mouse.get_pos()):
                         return 2
                     elif text_rect.collidepoint(pygame.mouse.get_pos()):
-                        quit()
+                        return 3
 
     def intro(self):
         """
@@ -102,39 +97,50 @@ class Vue:
 
     def update_action_ia(self, action):
         self.__action_ia = action
+
     def mode_IA(self):
         '''
         Lance une partie avec l'IA.
         :return: None
         '''
 
-        name = tkinter.filedialog.askopenfilename(initialdir=os.path.join('ressource', 'Iterations'))
+        name = askopenfilename(initialdir=os.path.join('ressource', 'IA'),
+                               filetypes=(("Fichiers HDF5", "*.hdf5"), ("All Files", "*.*")))
 
-        print("Voici le nom du fichier selectionné\n" + name)
+        if name[-4:] != "hdf5":
+            return False
 
+        self.ctrl.load_agent_dqn(name)
 
-        quitter = False
+        done = False
+        is_alive = True
         clock = pygame.time.Clock()
         self.vie_sup = False
         self.intro()
-        while not quitter:
-            p_terminee = self.jeu.update_jeu(self.__action_ia)
-            if p_terminee:
-                if self.ctrl.jeu.pacman.sprite.nbr_vie<0:
-                    quitter = True
-                else:
-                    self.ready_respawn()
+
+        while not done:
+            surface, audio, done, info = self.ctrl.get_surface_dqn()
+
+            if done:
+                break
+            elif not is_alive and info:
+                self.ready_respawn()
+
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    return True
+                elif (event.type == pygame.KEYDOWN or event.type == pygame.KEYUP) and event.key == pygame.K_ESCAPE:
+                    done = True
+
+            is_alive = info
+
             self.audio()
-            window.blit(self.ctrl.get_surface(), (0, 0))
+            window.blit(surface, (0, 0))
             clock.tick(Vue.FRAME_RATE)
             pygame.display.update()
 
-        for ch in self.channels:
-            if ch is not None:
-                ch.pause()
-
-        self.ctrl.start()
-        print("IA")
+        self.gameover()
+        return False
 
     def audio(self):
         """
@@ -181,7 +187,6 @@ class Vue:
                             if channel is not None:
                                 channel.pause()
 
-
     def ready_respawn(self):
         """
         Apparaît l'image «Ready!.png» lorsqu'une partie est relancée.
@@ -196,7 +201,7 @@ class Vue:
     def mode_joueur(self):
         """
         Lance une partie où est-ce-que le joueur peut interagir avec les touches directionnelles.
-        :return: None
+        :return: «True» si et seulement si le jeu doit fermer.
         """
         quitter = False
         clock = pygame.time.Clock()
@@ -208,7 +213,7 @@ class Vue:
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
-                    quitter = True
+                    return True
 
                 elif event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_LEFT:
@@ -240,7 +245,7 @@ class Vue:
                 p_terminee = self.ctrl.update_jeu(Direction.AUCUNE)
 
             if p_terminee:
-                if self.ctrl.jeu.pacman.sprite.nbr_vie<0:
+                if self.ctrl.jeu.pacman.sprite.nbr_vie == 0:
                     quitter = True
                 else:
                     self.ready_respawn()
@@ -250,29 +255,17 @@ class Vue:
             clock.tick(Vue.FRAME_RATE)
             pygame.display.update()
 
-        for ch in self.channels:
-            if ch is not None:
-                ch.pause()
+        self.gameover()
+        self.leaderboard()
+        return False
 
-        #Game over
-        board = pygame.image.load(os.path.join('ressource', 'images', 'Board_Intro.png'))
-        window.blit(board, (0, 0))
-
-
-        texteG_O = self.text_font.render('GAME  OVER', True, (255,0,0))
-        texte_pos = (205, 485)
-        window.blit(texteG_O, texte_pos)
-
-        pygame.display.flip()
-
-        pygame.time.delay(3000)
-
-        #LeaderBoard
+    def leaderboard(self):
+        # LeaderBoard
         self.leader_board = Leaderboard()
         board = pygame.image.load(os.path.join('ressource', 'images', 'Board_Intro.png'))
         window.blit(board, (0, 0))
 
-        #Voici la liste de tous les textes prédéfinis
+        # Voici la liste de tous les textes prédéfinis
         texte_instruction1 = self.text_font.render('Entrer votre nom et', True, (255, 255, 255))
         texte_instruction2 = self.text_font.render('appuyer sur', True, (255, 255, 255))
         texte_instruction3 = self.text_font.render('la touche retour', True, (255, 255, 255))
@@ -280,11 +273,11 @@ class Vue:
         texte_quitter1 = self.text_font.render('Appuyer sur la touche', True, (255, 255, 255))
         texte_quitter2 = self.text_font.render('espace pour quitter', True, (255, 255, 255))
 
-        #Couleur pour les noms dans le leaderboard
+        # Couleur pour les noms dans le leaderboard
         couleurs_c = ((255, 153, 153), (255, 102, 102), (255, 51, 51), (255, 153, 51), (255, 255, 51))
-        couleurs_f = ((51,255,255), (51, 153, 255), (51, 51, 255), (153, 51, 255), (255, 51, 255))
+        couleurs_f = ((51, 255, 255), (51, 153, 255), (51, 51, 255), (153, 51, 255), (255, 51, 255))
 
-        #la boucle permet d'entrer le nom du joueur et de voir le texte se rafraichir à toutes les fois qu'une touche est appuyé
+        # la boucle permet d'entrer le nom du joueur et de voir le texte se rafraichir à toutes les fois qu'une touche est appuyé
         name = ''
         enter_name = True
         while enter_name:
@@ -296,20 +289,20 @@ class Vue:
                         name = name[:-1]
                     elif event.key == pygame.K_RETURN:
                         enter_name = False
-            window.blit(board, (0,0))
+            window.blit(board, (0, 0))
             texte_nom = self.text_font.render(name, True, (255, 255, 255))
 
-            window.blit(texte_nom, (336 - (texte_nom.get_rect().width/2), 485))
-            window.blit(texte_instruction1, (336 - (texte_instruction1.get_rect().width/2), 185))
-            window.blit(texte_instruction2, (336 - (texte_instruction2.get_rect().width/2), 235))
+            window.blit(texte_nom, (336 - (texte_nom.get_rect().width / 2), 485))
+            window.blit(texte_instruction1, (336 - (texte_instruction1.get_rect().width / 2), 185))
+            window.blit(texte_instruction2, (336 - (texte_instruction2.get_rect().width / 2), 235))
             window.blit(texte_instruction3, (336 - (texte_instruction3.get_rect().width / 2), 285))
             pygame.display.flip()
 
-        #classe les meilleurs score afin d'afficher le meilleur classement
+        # classe les meilleurs score afin d'afficher le meilleur classement
         self.leader_board.compare_lead(score=self.ctrl.jeu.score, name=name)
 
-        #affiche le leaderboard par colonne et applique la police et la couleur en plus de les alligner
-        window.blit(board, (0,0))
+        # affiche le leaderboard par colonne et applique la police et la couleur en plus de les alligner
+        window.blit(board, (0, 0))
         pressed_enter = True
         while pressed_enter:
             for i in range(5):
@@ -317,7 +310,8 @@ class Vue:
                     window.blit(self.text_font.render(self.leader_board.df.loc[i]['name'], True, (0, 255, 0)),
                                 (150, 235 + i * 50))
                 else:
-                    window.blit(self.text_font.render(self.leader_board.df.loc[i]['name'], True, couleurs_c[i]), (150, 235 + i * 50))
+                    window.blit(self.text_font.render(self.leader_board.df.loc[i]['name'], True, couleurs_c[i]),
+                                (150, 235 + i * 50))
             for i in range(5):
                 if self.leader_board.df.loc[i]['score'] == self.ctrl.jeu.score:
                     window.blit(self.text_font.render(str(self.leader_board.df.loc[i]['score']), True, (0, 255, 0)),
@@ -325,14 +319,33 @@ class Vue:
                 else:
                     '''juste après le True, on peut changer la couleur du texte du leaderboard en changeant couleur_c 
                     par couleur_f '''
-                    window.blit(self.text_font.render(str(self.leader_board.df.loc[i]['score']), True, couleurs_c[i]), (450, 235 + i * 50))
+                    window.blit(self.text_font.render(str(self.leader_board.df.loc[i]['score']), True, couleurs_c[i]),
+                                (450, 235 + i * 50))
             window.blit(texte_leaderboard, (336 - (texte_leaderboard.get_rect().width / 2), 85))
-            window.blit(texte_quitter1, (336 - (texte_quitter1.get_rect().width/2), 635))
-            window.blit(texte_quitter2, (336 - (texte_quitter2.get_rect().width/2), 685))
+            window.blit(texte_quitter1, (336 - (texte_quitter1.get_rect().width / 2), 635))
+            window.blit(texte_quitter2, (336 - (texte_quitter2.get_rect().width / 2), 685))
             pygame.display.flip()
 
-            #boucle permettant au joueur de cliquer sur espace pour quitter le leaderboard
+            # boucle permettant au joueur de cliquer sur espace pour quitter le leaderboard
             for event in pygame.event.get():
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_SPACE:
                         pressed_enter = False
+
+    def gameover(self):
+        for ch in self.channels:
+            if ch is not None:
+                ch.pause()
+
+            # Game over
+        board = pygame.image.load(os.path.join('ressource', 'images', 'Board_Intro.png'))
+        window.blit(board, (0, 0))
+
+        texteG_O = self.text_font.render('GAME  OVER', True, (255, 0, 0))
+        texte_pos = (205, 485)
+        window.blit(texteG_O, texte_pos)
+
+        pygame.display.flip()
+
+        pygame.time.delay(3000)
+

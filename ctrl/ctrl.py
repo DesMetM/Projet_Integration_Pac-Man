@@ -1,7 +1,7 @@
-import pygame
-
 from modele.jeu import Jeu
 from vue.vue import Vue
+from IA.environnement import PacEnv
+from IA.agent_dqn import AgentDQN
 
 
 # Classe contrôleur; passe l'information de la vue au modèle
@@ -14,8 +14,10 @@ class Ctrl:
         """
         Constructeur de la classe. Instancie le jeu et la vue.
         """
-        self.jeu = Jeu()
+        self.jeu = Jeu(Vue.FRAME_RATE)
         self.vue = Vue(self)
+        self.agent = None
+        self.env = None
 
     def start(self):
         """
@@ -26,17 +28,13 @@ class Ctrl:
 
         while en_jeu:
             mode_de_jeu = self.vue.interface_debut()
-            self.jeu.score = 0
             # Si mode_de_jeu est vrai, alors on lance la partie en mode joueur. Sinon, on lance la partie en mode IA.
-            self.jeu.nouvelle_partie(Vue.FRAME_RATE)
-            self.jeu.pacman.sprite.nbr_vie = 4
-            if mode_de_jeu == 1:
-                self.vue.mode_joueur()
-            elif mode_de_jeu == 2:
-                self.vue.mode_IA()
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    en_jeu = False
+            if mode_de_jeu == 3:
+                break
+            self.jeu.reset()
+
+            if mode_de_jeu == 1 and self.vue.mode_joueur() or mode_de_jeu == 2 and self.vue.mode_IA():
+                break
 
     def update_jeu(self, direction):
         """
@@ -46,7 +44,6 @@ class Ctrl:
         La deuxième valeur désigne si la partie est relancée.
         """
         return self.jeu.update_jeu(direction)
-
 
     def get_surface(self):
         """
@@ -61,3 +58,15 @@ class Ctrl:
         :return: une liste de channel à activer.
         """
         return self.jeu.get_audio()
+
+    def load_agent_dqn(self, name):
+        self.env = PacEnv(self.jeu)
+        self.agent = AgentDQN(868, 4)
+
+        self.agent.load(name)
+
+    def get_surface_dqn(self):
+        action = self.agent.predict(self.env.observation_space)
+        next_observation, reward, done, info = self.env.step(action)
+        surface, audio = self.env.render()
+        return surface, audio, done, info
