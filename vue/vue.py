@@ -287,7 +287,7 @@ class Vue:
                         name += event.unicode
                     elif event.key == pygame.K_BACKSPACE:
                         name = name[:-1]
-                    elif event.key == pygame.K_RETURN:
+                    elif event.key == pygame.K_RETURN and name != '':
                         enter_name = False
             window.blit(board, (0, 0))
             texte_nom = self.text_font.render(name, True, (255, 255, 255))
@@ -300,6 +300,7 @@ class Vue:
 
         # classe les meilleurs score afin d'afficher le meilleur classement
         self.leader_board.compare_lead(score=self.ctrl.jeu.score, name=name)
+        self.leader_board.save_lead()
 
         # affiche le leaderboard par colonne et applique la police et la couleur en plus de les alligner
         window.blit(board, (0, 0))

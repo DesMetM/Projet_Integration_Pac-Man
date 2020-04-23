@@ -21,7 +21,7 @@ class Leaderboard:
         self.df = self.df.sort_values(by='score', axis=0, ascending=False)
         self.df = self.df.reset_index(drop=True)
 
-    def compare_lead(self, score, name, current_index=4):
+    def compare_lead(self, score, name):
         #Ajoute la nouvelle valeur, trie les valeur et enlève celui à la dernière position pour garder 5 positions
             self.df = self.df.append({'name':name,'score':score}, ignore_index=True)
             self.sort_df()
