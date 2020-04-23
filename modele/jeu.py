@@ -205,7 +205,7 @@ class Jeu:
         if self.fantome_mange:  # permet d'indiquer les points à coté du fantôme mangé
             if self.frame_fantome_mange + 20 == self.timer_jeu.timer_animation.compteur:
                 self.fantome_mange = False
-            text_pts = Jeu.FONT2.render(str(self.nbr_fantomes_manges * 200), 1, (3, 240, 252))
+            text_pts = Jeu.FONT2.render(str(2 ** self.nbr_fantomes_manges * 100), 1, (3, 240, 252))
             background.blit(text_pts, self.position_fantome_mange)
 
         if self.fruit_est_mange:  # permet d'indiquer les points à coté d'un fruit mangé
@@ -241,7 +241,7 @@ class Jeu:
         Incrémente le score du jeu pour avoir mangé un fantôme.
         :return: None
         """
-        self.score += 200 * self.nbr_fantomes_manges
+        self.score += 2 ** self.nbr_fantomes_manges * 100
 
     def get_audio(self):
         """
