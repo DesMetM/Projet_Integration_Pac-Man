@@ -183,7 +183,7 @@ else:
 _generatorType = type((y for y in range(1)))
  
 def _xml_escape(data):
-    """Escape &, <, >, ", ', etc. in a string of leaderboard."""
+    """Escape &, <, >, ", ', etc. in a string of data."""
 
     # ampersand must be replaced first
     from_symbols = '&><"\''
@@ -323,7 +323,7 @@ class _ParseResultsWithOffset(object):
 
 class ParseResults(object):
     """
-    Structured parse results, to provide multiple means of access to the parsed leaderboard:
+    Structured parse results, to provide multiple means of access to the parsed data:
        - as a list (C{len(results)})
        - by list index (C{results[0], results[1]}, etc.)
        - by attribute (C{results.<resultsName>} - see L{ParserElement.setResultsName})
@@ -872,7 +872,7 @@ class ParseResults(object):
         """
         Diagnostic method for listing out the contents of a C{ParseResults}.
         Accepts an optional C{indent} argument so that this string can be embedded
-        in a nested display of other leaderboard.
+        in a nested display of other data.
 
         Example::
             integer = Word(nums)
@@ -1042,7 +1042,7 @@ def _trim_arity(func, maxargs=2):
     limit = [0]
     foundArity = [False]
     
-    # traceback return leaderboard structure changed in Py3.5 - normalize back to plain tuples
+    # traceback return data structure changed in Py3.5 - normalize back to plain tuples
     if system_version[:2] >= (3,5):
         def extract_stack(limit=0):
             # special handling for Python 3.5.0 - extra deep call stack by 1
@@ -3901,9 +3901,9 @@ class OneOrMore(_MultipleMatch):
         attr_expr = Group(label + Suppress(':') + OneOrMore(data_word).setParseAction(' '.join))
 
         text = "shape: SQUARE posn: upper left color: BLACK"
-        OneOrMore(attr_expr).parseString(text).pprint()  # Fail! read 'color' as leaderboard instead of next label -> [['shape', 'SQUARE color']]
+        OneOrMore(attr_expr).parseString(text).pprint()  # Fail! read 'color' as data instead of next label -> [['shape', 'SQUARE color']]
 
-        # use stopOn attribute for OneOrMore to avoid reading label string as part of the leaderboard
+        # use stopOn attribute for OneOrMore to avoid reading label string as part of the data
         attr_expr = Group(label + Suppress(':') + OneOrMore(data_word, stopOn=label).setParseAction(' '.join))
         OneOrMore(attr_expr).parseString(text).pprint() # Better -> [['shape', 'SQUARE'], ['posn', 'upper left'], ['color', 'BLACK']]
         
@@ -4028,7 +4028,7 @@ class SkipTo(ParseElementEnhance):
     Token for skipping over all undefined text until the matched expression is found.
 
     Parameters:
-     - expr - target expression marking the end of the leaderboard to be skipped
+     - expr - target expression marking the end of the data to be skipped
      - include - (default=C{False}) if True, the target expression is also parsed 
           (the skipped text and target expression are returned as a 2-element list).
      - ignore - (default=C{None}) used to define grammars (typically quoted strings and 
@@ -4827,7 +4827,7 @@ def tokenMap(func, *args):
     Helper to define a parse action by mapping a function to all elements of a ParseResults list.If any additional 
     args are passed, they are forwarded to the given function as additional arguments after
     the token, as in C{hex_integer = Word(hexnums).setParseAction(tokenMap(int, 16))}, which will convert the
-    parsed leaderboard to an integer using base 16.
+    parsed data to an integer using base 16.
 
     Example (compare the last to example in L{ParserElement.transformString}::
         hex_ints = OneOrMore(Word(hexnums)).setParseAction(tokenMap(int, 16))
@@ -5262,7 +5262,7 @@ def indentedBlock(blockStatementExpr, indentStack, indent=True):
     A valid block must contain at least one C{blockStatement}.
 
     Example::
-        leaderboard = '''
+        data = '''
         def A(z):
           A1
           B = 100
@@ -5300,7 +5300,7 @@ def indentedBlock(blockStatementExpr, indentStack, indent=True):
 
         module_body = OneOrMore(stmt)
 
-        parseTree = module_body.parseString(leaderboard)
+        parseTree = module_body.parseString(data)
         parseTree.pprint()
     prints::
         [['def',

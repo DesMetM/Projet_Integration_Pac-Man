@@ -244,7 +244,7 @@ class ContentChecker:
 
     def feed(self, block):
         """
-        Feed a block of leaderboard to the hash.
+        Feed a block of data to the hash.
         """
         return
 

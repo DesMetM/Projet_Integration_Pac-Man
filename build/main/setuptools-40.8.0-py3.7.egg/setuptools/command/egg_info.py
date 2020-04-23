@@ -240,11 +240,11 @@ class egg_info(InfoCommon, Command):
             self.distribution._patched_dist = None
 
     def write_or_delete_file(self, what, filename, data, force=False):
-        """Write `leaderboard` to `filename` or delete if empty
+        """Write `data` to `filename` or delete if empty
 
-        If `leaderboard` is non-empty, this routine is the same as ``write_file()``.
-        If `leaderboard` is empty but not ``None``, this is the same as calling
-        ``delete_file(filename)`.  If `leaderboard` is ``None``, then this is a no-op
+        If `data` is non-empty, this routine is the same as ``write_file()``.
+        If `data` is empty but not ``None``, this is the same as calling
+        ``delete_file(filename)`.  If `data` is ``None``, then this is a no-op
         unless `filename` exists, in which case a warning is issued about the
         orphaned file (if `force` is false), or deleted (if `force` is true).
         """
@@ -260,7 +260,7 @@ class egg_info(InfoCommon, Command):
                 self.delete_file(filename)
 
     def write_file(self, what, filename, data):
-        """Write `leaderboard` to `filename` (if not a dry run) after announcing it
+        """Write `data` to `filename` (if not a dry run) after announcing it
 
         `what` is used in a log message to identify what is being written
         to the file.
@@ -616,7 +616,7 @@ def write_pkg_info(cmd, basename, filename):
         metadata.name, oldname = cmd.egg_name, metadata.name
 
         try:
-            # write unescaped leaderboard to PKG-INFO, so older pkg_resources
+            # write unescaped data to PKG-INFO, so older pkg_resources
             # can still parse it
             metadata.write_pkg_info(cmd.egg_info)
         finally:

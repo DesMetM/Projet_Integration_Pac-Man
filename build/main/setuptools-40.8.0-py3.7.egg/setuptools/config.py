@@ -78,7 +78,7 @@ def _get_option(target_obj, key):
 
 
 def configuration_to_dict(handlers):
-    """Returns configuration leaderboard gathered by given handlers as a dict.
+    """Returns configuration data gathered by given handlers as a dict.
 
     :param list[ConfigHandler] handlers: Handlers list,
         usually from parse_configuration()

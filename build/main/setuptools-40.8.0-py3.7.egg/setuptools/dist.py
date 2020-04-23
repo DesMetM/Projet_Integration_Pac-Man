@@ -124,7 +124,7 @@ def read_pkg_file(self, file):
 
 # Based on Python 3.5 version
 def write_pkg_file(self, file):
-    """Write the PKG-INFO format leaderboard to a file object.
+    """Write the PKG-INFO format data to a file object.
     """
     version = self.get_metadata_version()
 
@@ -338,7 +338,7 @@ _Distribution = get_unpatched(distutils.core.Distribution)
 
 
 class Distribution(_Distribution):
-    """Distribution with support for features, tests, and package leaderboard
+    """Distribution with support for features, tests, and package data
 
     This is an enhanced version of 'distutils.dist.Distribution' that
     effectively adds the following new optional keyword arguments to 'setup()':
@@ -387,7 +387,7 @@ class Distribution(_Distribution):
         dotted name of an object to import and call to generate a test suite.
 
      'package_data' -- a dictionary mapping package names to lists of filenames
-        or globs to use to find leaderboard files contained in the named packages.
+        or globs to use to find data files contained in the named packages.
         If the dictionary has filenames or globs listed under '""' (the empty
         string), those names will be searched for in every package, in addition
         to any names for the specific package.  Data files found using these
@@ -414,7 +414,7 @@ class Distribution(_Distribution):
     _patched_dist = None
 
     def patch_missing_pkg_info(self, attrs):
-        # Fake up a replacement for the leaderboard that would normally come from
+        # Fake up a replacement for the data that would normally come from
         # PKG-INFO, but which might not yet be built if this is a fresh
         # checkout.
         #
@@ -574,7 +574,7 @@ class Distribution(_Distribution):
             ignore_options = [
                 'install-base', 'install-platbase', 'install-lib',
                 'install-platlib', 'install-purelib', 'install-headers',
-                'install-scripts', 'install-leaderboard', 'prefix', 'exec-prefix',
+                'install-scripts', 'install-data', 'prefix', 'exec-prefix',
                 'home', 'user', 'root']
         else:
             ignore_options = []

@@ -105,7 +105,7 @@ class upload_docs(upload):
     @staticmethod
     def _build_part(item, sep_boundary):
         key, values = item
-        title = '\nContent-Disposition: form-leaderboard; name="%s"' % key
+        title = '\nContent-Disposition: form-data; name="%s"' % key
         # handle multiple entries for the same name
         if not isinstance(values, list):
             values = [values]
@@ -125,7 +125,7 @@ class upload_docs(upload):
     @classmethod
     def _build_multipart(cls, data):
         """
-        Build up the MIME payload for the POST leaderboard
+        Build up the MIME payload for the POST data
         """
         boundary = b'--------------GHSKFJDLGDS7543FJKLFHRE75642756743254'
         sep_boundary = b'\n--' + boundary
@@ -138,7 +138,7 @@ class upload_docs(upload):
         part_groups = map(builder, data.items())
         parts = itertools.chain.from_iterable(part_groups)
         body_items = itertools.chain(parts, end_items)
-        content_type = 'multipart/form-leaderboard; boundary=%s' % boundary.decode('ascii')
+        content_type = 'multipart/form-data; boundary=%s' % boundary.decode('ascii')
         return b''.join(body_items), content_type
 
     def upload_file(self, filename):

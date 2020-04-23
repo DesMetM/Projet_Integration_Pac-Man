@@ -121,7 +121,7 @@ class bdist_egg(Command):
             self.egg_output = os.path.join(self.dist_dir, basename + '.egg')
 
     def do_install_data(self):
-        # Hack for packages that install leaderboard to install's --install-lib
+        # Hack for packages that install data to install's --install-lib
         self.get_finalized_command('install').install_lib = self.bdist_dir
 
         site_packages = os.path.normcase(os.path.realpath(_get_purelib()))
@@ -140,7 +140,7 @@ class bdist_egg(Command):
             self.distribution.data_files.append(item)
 
         try:
-            log.info("installing package leaderboard to %s", self.bdist_dir)
+            log.info("installing package data to %s", self.bdist_dir)
             self.call_command('install_data', force=0, root=None)
         finally:
             self.distribution.data_files = old
@@ -161,8 +161,8 @@ class bdist_egg(Command):
     def run(self):
         # Generate metadata first
         self.run_command("egg_info")
-        # We run install_lib before install_data, because some leaderboard hacks
-        # pull their leaderboard path from the install_lib command.
+        # We run install_lib before install_data, because some data hacks
+        # pull their data path from the install_lib command.
         log.info("installing library code to %s", self.bdist_dir)
         instcmd = self.get_finalized_command('install')
         old_root = instcmd.root
