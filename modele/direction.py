@@ -1,7 +1,7 @@
-from enum import Enum
+from enum import IntEnum
 
 
-class Direction(Enum):
+class Direction(IntEnum):
     """
     Enum contenant les différentes actions que l'utilisateur peut faire.
     Cet enum est aussi utile pour connaître la direction des sprites.
