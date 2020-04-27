@@ -1,10 +1,11 @@
 import pandas as pd
+import os
 
 
-class Leaderboard(object):
+class Leaderboard:
 
     def __init__(self):
-        self.file = '../ressource/data/Leaderboard.pkl'
+        self.file = os.path.join("ressource", "leaderboard", "Leaderboard.pkl")
         self.load_lead()
 
     def load_lead(self):
@@ -20,6 +21,7 @@ class Leaderboard(object):
         self.df = self.df.reset_index(drop=True)
 
     def compare_lead(self, score, name):
+        #Ajoute la nouvelle valeur, trie les valeur et enlève celui à la dernière position pour garder 5 positions
             self.df = self.df.append({'name':name,'score':score}, ignore_index=True)
             self.sort_df()
             self.df = self.df.drop(self.df.tail(1).index)
