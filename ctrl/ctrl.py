@@ -88,9 +88,6 @@ class Ctrl:
 
     def get_surface_dqn(self):
         action = self.agent.predict(self.env.observation_space)
-        next_observation, reward, done, info = self.env.step(action)
-        printstring = np.reshape(next_observation, (1,31,28))
-        print(self.printobs(printstring))
-        print('reward : ', reward)
+        next_observation, reward, done, info = self.env.step(action, fantome=False)
         surface, audio = self.env.render()
         return surface, audio, done, info[0]

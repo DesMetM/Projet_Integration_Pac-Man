@@ -35,13 +35,14 @@ class Reseau:
             hf.create_dataset('losses', data=[Reseau.ID_LOSSES[self.loss], Reseau.ID_LOSSES[self.loss_derivee]])
 
             for i, l in enumerate(self.layers):
+                name = "no.{:04d}".format(i)
                 if isinstance(l, FCLayer):
-                    layers.create_dataset(str(i), data=[Reseau.ID_LAYERS[FCLayer]])
-                    weights.create_dataset(str(i), l.weights.shape, data=l.weights)
-                    biases.create_dataset(str(i), l.biases.shape, data=l.biases)
+                    layers.create_dataset(name, data=[Reseau.ID_LAYERS[FCLayer]])
+                    weights.create_dataset(name, l.weights.shape, data=l.weights)
+                    biases.create_dataset(name, l.biases.shape, data=l.biases)
 
                 elif isinstance(l, ActivationLayer):
-                    layers.create_dataset(str(i),
+                    layers.create_dataset(name,
                                           data=[Reseau.ID_LAYERS[ActivationLayer], Reseau.ID_ACTIVATIONS[l.activation],
                                                 Reseau.ID_ACTIVATIONS[l.activation_derivee]])
 

@@ -1,9 +1,8 @@
 import gym
 import numpy as np
-from modele.board import SCALING, DECALAGEX, DECALAGE, GRILLE_DE_JEU, Blinky, Pinky, Inky, Clyde
+from modele.board import SCALING, DECALAGEX, DECALAGE
 from math import ceil
 from modele.direction import Direction
-import copy
 
 
 class PacEnv(gym.Env):
@@ -13,18 +12,14 @@ class PacEnv(gym.Env):
     score a augmenté et ainsi déterminer sa récompense(Je ne crois pas que c'est ici que cela se fera tho)
     """
 
-    __VIDE = 6
+    __VIDE = 0
     __MUR = 1
-    __POWER_PELLET = 8
-    __POINT = 0
-    __CLYDE = 2
-    __PINKY = 3
-    __BLINKY = 4
-    __INKY = 5
-    __PACMAN = 9
-    __FANTOME_EFFRAYE = 7
+    __POWER_PELLET = 6
+    __POINT = 4
 
-    __FANTOMES = {Blinky: __BLINKY, Pinky: __PINKY, Inky: __INKY, Clyde: __CLYDE}
+    __PACMAN = 9
+    __FANTOME_EFFRAYE = 6
+    __FANTOME = -9
 
     REWARD_MORT = -5
     REWARD_RIEN = -3
@@ -54,23 +49,21 @@ class PacEnv(gym.Env):
 
         self.jeu.maGrille[y_pacman][x_pacman] = PacEnv.__VIDE
 
-        self.observation_space = copy.deepcopy(self.jeu.maGrille)
+        self.observation_space = np.array(self.jeu.maGrille)
 
         self.observation_space[y_pacman][x_pacman] = self.__PACMAN
 
         for fantome in self.jeu.fantomes:
             x, y = PacEnv.__position(fantome.rect)
-            # self.observation_space[y][x] = self.__FANTOMES[type(fantome)]
-            if self.observation_space[y][x] != PacEnv.__MUR:
-                self.observation_space[y][x] = -9
 
-        self.observation_space = np.array(self.observation_space)
+            if self.observation_space[y][x] != PacEnv.__MUR:
+                if fantome.peur:
+                    self.observation_space[y][x] = PacEnv.__FANTOME_EFFRAYE
+                else:
+                    self.observation_space[y][x] = PacEnv.__FANTOME
+
         self.observation_space = self.observation_space[self.observation_space != PacEnv.__MUR]
         self.observation_space = np.reshape(self.observation_space, (1, 1, 318))
-        self.observation_space[self.observation_space == PacEnv.__POINT] = 4
-        self.observation_space[self.observation_space == PacEnv.__VIDE] = 0
-        self.observation_space[self.observation_space == PacEnv.__POWER_PELLET] = 6
-
         self.observation_space = self.observation_space.astype("float") / 9
 
         return x_pacman, y_pacman
@@ -107,25 +100,23 @@ class PacEnv(gym.Env):
         self.last_score = self.jeu.score
         return reward
 
-    def step(self, action):
+    def step(self, action: int, fantome=True):
         # Take action
-        """Dans ce cas-ci, il faudrait feed au jeu l'action que l'IA a choisi. Il va choisir
-          une valeur entre 0 et 3 qui représente chacun une direction"""
-        self.jeu.update_jeu(Direction(action))
+        if fantome:
+            self.jeu.update_jeu(Direction(action))
+        else:
+            self.jeu.update_jeu_test(Direction(action))
+
         # Determine new state
-        """ On regarde ce que le move a fait. Est-ce Pac est mort? Est-ce que Pac a eu des points? Si oui cb?"""
         info = self.jeu.pacman.sprite.is_alive, self.__next_observation()
+
         # Determine reward linked with outcome(?)
-        """Dependemment du nouveau state, donc de ce qui s'est passé avec l'action, on attribue un reward. De base, 
-          toute les actions ont une reward de -1 pour motiver l'IA à travailler rapidement. Il reste à déterminer
-          ce que vaut de plus les autres résultats(mort, points, etc)"""
         if action != 4:
             reward = self.calculer_score()
         else:
             reward = 0
+
         # Determine if game finished
-        """Vérifier si la partie est terminée. La partie est terminée si tous les points sont mangés ou si le Pac n'a
-          plus de vies."""
         done = self.jeu.pacman.sprite.nbr_vie == 0
         return self.observation_space, reward, done, info
 

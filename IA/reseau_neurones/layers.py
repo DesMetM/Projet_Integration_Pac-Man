@@ -69,6 +69,9 @@ class FCLayer(Layer):
         return isinstance(other, FCLayer) and np.all(np.equal(self.weights, other.weights)) and np.all(
             np.equal(self.biases, other.biases))
 
+    def __repr__(self):
+        return "Entrée : " + str(self.weights.shape[0]) + "Sortie : " + str(self.weights.shape[1])
+
 
 class ActivationLayer(Layer):
     """
