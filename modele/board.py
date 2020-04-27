@@ -216,9 +216,9 @@ class Fruit(pygame.sprite.Sprite):
     def get_liste_fruits():
         return [Fruit(pygame.image.load(os.path.join('ressource', 'images', 'Cherry.png')), 100),
                 Fruit(pygame.image.load(os.path.join('ressource', 'images', 'Strawberry.png')), 200),
-                Fruit(pygame.image.load(os.path.join('ressource', 'images', 'Peach.png')), 500),
-                Fruit(pygame.image.load(os.path.join('ressource', 'images', 'Peach.png')), 500),
                 Fruit(pygame.image.load(os.path.join('ressource', 'images', 'Apple.png')), 700),
+                Fruit(pygame.image.load(os.path.join('ressource', 'images', 'Peach.png')), 500),
+                Fruit(pygame.image.load(os.path.join('ressource', 'images', 'Peach.png')), 500),
                 Fruit(pygame.image.load(os.path.join('ressource', 'images', 'Apple.png')), 700),
                 Fruit(pygame.image.load(os.path.join('ressource', 'images', 'Grape.png')), 1000),
                 Fruit(pygame.image.load(os.path.join('ressource', 'images', 'Grape.png')), 1000),

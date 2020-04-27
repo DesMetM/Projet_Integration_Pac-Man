@@ -1,6 +1,5 @@
-import os
-
 import pandas as pd
+import os
 
 
 class Leaderboard:

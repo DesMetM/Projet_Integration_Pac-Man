@@ -2,6 +2,7 @@ from modele.jeu import Jeu
 from vue.vue import Vue
 from IA.environnement import PacEnv
 from IA.agent_dqn import AgentDQN
+import numpy as np
 
 
 # Classe contrôleur; passe l'information de la vue au modèle
@@ -45,6 +46,16 @@ class Ctrl:
         """
         return self.jeu.update_jeu(direction)
 
+    def update_jeu_test(self, direction):
+        """
+        Le jeu passe à l'état suivant selon l'action qui a été fait. Version Test de la méthode
+        qui ne vas pas changer l'état des fantômes et ne prendra pas en compte les collisions avec ceux-ci
+        :param direction: L'action que le joueur veut faire.
+        :return: Un tuple de bool. La première valeur désigne si la partie a été gagnée.
+        La deuxième valeur désigne si la partie est relancée.
+        """
+        return self.jeu.update_jeu_test(direction)
+
     def get_surface(self):
         """
         Construit l'image de l'état du jeu et la retourne.
@@ -65,8 +76,21 @@ class Ctrl:
 
         self.agent.load(name)
 
+    def printobs(self, mat):
+        retour = ""
+        mat = mat[0]
+        mat = map(str, mat)
+        for ligne in mat:
+            for col in ligne:
+                retour+= col
+            retour+="\n"
+        return retour
+
     def get_surface_dqn(self):
         action = self.agent.predict(self.env.observation_space)
         next_observation, reward, done, info = self.env.step(action)
+        printstring = np.reshape(next_observation, (1,31,28))
+        print(self.printobs(printstring))
+        print('reward : ', reward)
         surface, audio = self.env.render()
         return surface, audio, done, info[0]
