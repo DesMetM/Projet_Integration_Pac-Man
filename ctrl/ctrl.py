@@ -69,4 +69,4 @@ class Ctrl:
         action = self.agent.predict(self.env.observation_space)
         next_observation, reward, done, info = self.env.step(action)
         surface, audio = self.env.render()
-        return surface, audio, done, info
+        return surface, audio, done, info[0]

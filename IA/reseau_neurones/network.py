@@ -1,6 +1,7 @@
 from IA.reseau_neurones.layers import FCLayer, ActivationLayer
-from IA.reseau_neurones.activations import sigmoid, sigmoid_derivee, tanh, tanh_derivee, relu, relu_derivee, bent_identity, \
-    bent_identity_derivee
+from IA.reseau_neurones.activations import sigmoid, sigmoid_derivee, tanh, tanh_derivee, relu, relu_derivee, \
+    bent_identity, \
+    bent_identity_derivee, identity, identity_derivee
 from IA.reseau_neurones.losses import mse, mse_derivee
 import h5py
 import numpy as np
@@ -13,7 +14,7 @@ class Reseau:
     """
     ID_LAYERS = {FCLayer: 0, ActivationLayer: 1}
     ID_ACTIVATIONS = {sigmoid: 0, sigmoid_derivee: 1, tanh: 2, tanh_derivee: 3, relu: 4, relu_derivee: 5,
-                      bent_identity: 6, bent_identity_derivee: 7}
+                      bent_identity: 6, bent_identity_derivee: 7, identity: 8, identity_derivee: 9}
     ID_LOSSES = {mse: 0, mse_derivee: 1}
 
     def __init__(self, loss, loss_derivee):
@@ -103,7 +104,7 @@ class Reseau:
 
         return resultat
 
-    def apprendre(self, entree, sortie_attendue, epochs=1, learning_rate=0.001,info=True):
+    def apprendre(self, entree, sortie_attendue, epochs=1, learning_rate=0.001, info=True):
         """
         Entraîne le réseau de neurones, c'est-à-dire qu'il ajuste ses paramètres pour mieux prédire.
         :param entree: L'entrée du réseau.
