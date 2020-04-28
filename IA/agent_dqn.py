@@ -45,10 +45,13 @@ class AgentDQN:
             return random.randrange(self.action_size)
 
         act_values = self.reseau.predire(state)
-        return np.argmax(act_values[0])
+        return np.argmax(act_values[0]).item()
 
     def predict(self, state):
-        return np.argmax(self.reseau.predire(state)[0])
+        actions = self.reseau.predire(state)[0]
+        action = np.argmax(actions).item()
+        print(actions, action, sep="\n")
+        return action
 
     def replay(self, batch_size):
         minibatch = random.sample(self.memory, batch_size)
@@ -62,7 +65,7 @@ class AgentDQN:
             targetf = np.array(self.reseau.predire(state))
             targetf[0][0][action] = target
 
-            self.reseau.apprendre(state, targetf, epochs=1, learning_rate=self.learning_rate)
+            self.reseau.apprendre(state, targetf, epochs=1, learning_rate=self.learning_rate, info=False)
 
         if self.epsilon > self.epsilon_min:
             self.epsilon *= self.epsilon_decay

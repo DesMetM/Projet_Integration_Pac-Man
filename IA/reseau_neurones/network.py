@@ -1,6 +1,7 @@
 from IA.reseau_neurones.layers import FCLayer, ActivationLayer
-from IA.reseau_neurones.activations import sigmoid, sigmoid_derivee, tanh, tanh_derivee, relu, relu_derivee, bent_identity, \
-    bent_identity_derivee
+from IA.reseau_neurones.activations import sigmoid, sigmoid_derivee, tanh, tanh_derivee, relu, relu_derivee, \
+    bent_identity, \
+    bent_identity_derivee, identity, identity_derivee
 from IA.reseau_neurones.losses import mse, mse_derivee
 import h5py
 import numpy as np
@@ -13,7 +14,7 @@ class Reseau:
     """
     ID_LAYERS = {FCLayer: 0, ActivationLayer: 1}
     ID_ACTIVATIONS = {sigmoid: 0, sigmoid_derivee: 1, tanh: 2, tanh_derivee: 3, relu: 4, relu_derivee: 5,
-                      bent_identity: 6, bent_identity_derivee: 7}
+                      bent_identity: 6, bent_identity_derivee: 7, identity: 8, identity_derivee: 9}
     ID_LOSSES = {mse: 0, mse_derivee: 1}
 
     def __init__(self, loss, loss_derivee):
@@ -34,13 +35,14 @@ class Reseau:
             hf.create_dataset('losses', data=[Reseau.ID_LOSSES[self.loss], Reseau.ID_LOSSES[self.loss_derivee]])
 
             for i, l in enumerate(self.layers):
+                name = "no.{:04d}".format(i)
                 if isinstance(l, FCLayer):
-                    layers.create_dataset(str(i), data=[Reseau.ID_LAYERS[FCLayer]])
-                    weights.create_dataset(str(i), l.weights.shape, data=l.weights)
-                    biases.create_dataset(str(i), l.biases.shape, data=l.biases)
+                    layers.create_dataset(name, data=[Reseau.ID_LAYERS[FCLayer]])
+                    weights.create_dataset(name, l.weights.shape, data=l.weights)
+                    biases.create_dataset(name, l.biases.shape, data=l.biases)
 
                 elif isinstance(l, ActivationLayer):
-                    layers.create_dataset(str(i),
+                    layers.create_dataset(name,
                                           data=[Reseau.ID_LAYERS[ActivationLayer], Reseau.ID_ACTIVATIONS[l.activation],
                                                 Reseau.ID_ACTIVATIONS[l.activation_derivee]])
 
@@ -103,7 +105,7 @@ class Reseau:
 
         return resultat
 
-    def apprendre(self, entree, sortie_attendue, epochs=1, learning_rate=0.001,info=True):
+    def apprendre(self, entree, sortie_attendue, epochs=1, learning_rate=0.001, info=True):
         """
         Entraîne le réseau de neurones, c'est-à-dire qu'il ajuste ses paramètres pour mieux prédire.
         :param entree: L'entrée du réseau.
