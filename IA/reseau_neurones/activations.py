@@ -33,3 +33,11 @@ def bent_identity(x):
 
 def bent_identity_derivee(x):
     return (x / (2 * (x ** 2 + 1) ** 0.5)) + 1
+
+
+def identity(x):
+    return x
+
+
+def identity_derivee(x):
+    return np.ones(x.shape)

@@ -21,9 +21,9 @@ except ImportError:
 
 
 class build_py(orig.build_py, Mixin2to3):
-    """Enhanced 'build_py' command that includes leaderboard files with packages
+    """Enhanced 'build_py' command that includes data files with packages
 
-    The leaderboard files are specified via a 'package_data' argument to 'setup()'.
+    The data files are specified via a 'package_data' argument to 'setup()'.
     See 'setuptools.dist.Distribution' for more details.
 
     Also, this version of the 'build_py' command allows you to specify both
@@ -41,7 +41,7 @@ class build_py(orig.build_py, Mixin2to3):
         self.__doctests_2to3 = []
 
     def run(self):
-        """Build modules, packages, and copy leaderboard files to build directory"""
+        """Build modules, packages, and copy data files to build directory"""
         if not self.py_modules and not self.packages:
             return
 
@@ -61,7 +61,7 @@ class build_py(orig.build_py, Mixin2to3):
         self.byte_compile(orig.build_py.get_outputs(self, include_bytecode=0))
 
     def __getattr__(self, attr):
-        "lazily compute leaderboard files"
+        "lazily compute data files"
         if attr == 'data_files':
             self.data_files = self._get_data_files()
             return self.data_files
@@ -97,7 +97,7 @@ class build_py(orig.build_py, Mixin2to3):
         return package, src_dir, build_dir, filenames
 
     def find_data_files(self, package, src_dir):
-        """Return filenames for package's leaderboard files in 'src_dir'"""
+        """Return filenames for package's data files in 'src_dir'"""
         patterns = self._get_platform_patterns(
             self.package_data,
             package,
@@ -114,7 +114,7 @@ class build_py(orig.build_py, Mixin2to3):
         return self.exclude_data_files(package, src_dir, files)
 
     def build_package_data(self):
-        """Copy leaderboard files into build directory"""
+        """Copy data files into build directory"""
         for package, src_dir, build_dir, filenames in self.data_files:
             for filename in filenames:
                 target = os.path.join(build_dir, filename)
@@ -147,11 +147,11 @@ class build_py(orig.build_py, Mixin2to3):
                 f = os.path.join(df, f)
             if d in src_dirs:
                 if path.endswith('.py') and f == oldf:
-                    continue  # it's a module, not leaderboard
+                    continue  # it's a module, not data
                 mf.setdefault(src_dirs[d], []).append(path)
 
     def get_data_files(self):
-        pass  # Lazily compute leaderboard files in _get_data_files() function.
+        pass  # Lazily compute data files in _get_data_files() function.
 
     def check_package(self, package, package_dir):
         """Check namespace packages' __init__ for declare_namespace"""
@@ -194,7 +194,7 @@ class build_py(orig.build_py, Mixin2to3):
         return res
 
     def exclude_data_files(self, package, src_dir, files):
-        """Filter filenames for package's leaderboard files in 'src_dir'"""
+        """Filter filenames for package's data files in 'src_dir'"""
         files = list(files)
         patterns = self._get_platform_patterns(
             self.exclude_package_data,

@@ -103,7 +103,7 @@ class Wheel:
     def _install_as_egg(self, destination_eggdir, zf):
         dist_basename = '%s-%s' % (self.project_name, self.version)
         dist_info = self.get_dist_info(zf)
-        dist_data = '%s.leaderboard' % dist_basename
+        dist_data = '%s.data' % dist_basename
         egg_info = os.path.join(destination_eggdir, 'EGG-INFO')
 
         self._convert_metadata(zf, destination_eggdir, dist_info, egg_info)
@@ -170,7 +170,7 @@ class Wheel:
 
     @staticmethod
     def _move_data_entries(destination_eggdir, dist_data):
-        """Move leaderboard entries to their correct location."""
+        """Move data entries to their correct location."""
         dist_data = os.path.join(destination_eggdir, dist_data)
         dist_data_scripts = os.path.join(dist_data, 'scripts')
         if os.path.exists(dist_data_scripts):
@@ -190,7 +190,7 @@ class Wheel:
             os.rmdir(dist_data_scripts)
         for subdir in filter(os.path.exists, (
             os.path.join(dist_data, d)
-            for d in ('leaderboard', 'headers', 'purelib', 'platlib')
+            for d in ('data', 'headers', 'purelib', 'platlib')
         )):
             unpack(subdir, destination_eggdir)
         if os.path.exists(dist_data):

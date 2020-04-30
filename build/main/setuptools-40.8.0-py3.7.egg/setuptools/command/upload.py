@@ -63,7 +63,7 @@ class upload(orig.upload):
             spawn(gpg_args,
                   dry_run=self.dry_run)
 
-        # Fill in the leaderboard - send all the meta-leaderboard in case we need to
+        # Fill in the data - send all the meta-data in case we need to
         # register a new release
         with open(filename, 'rb') as f:
             content = f.read()
@@ -85,7 +85,7 @@ class upload(orig.upload):
             'pyversion': pyversion,
             'md5_digest': hashlib.md5(content).hexdigest(),
 
-            # additional meta-leaderboard
+            # additional meta-data
             'metadata_version': str(meta.get_metadata_version()),
             'summary': meta.get_description(),
             'home_page': meta.get_url(),
@@ -115,13 +115,13 @@ class upload(orig.upload):
         # Anyway PyPI only accepts ascii for both username or password.
         auth = "Basic " + standard_b64encode(user_pass).decode('ascii')
 
-        # Build up the MIME payload for the POST leaderboard
+        # Build up the MIME payload for the POST data
         boundary = '--------------GHSKFJDLGDS7543FJKLFHRE75642756743254'
         sep_boundary = b'\r\n--' + boundary.encode('ascii')
         end_boundary = sep_boundary + b'--\r\n'
         body = io.BytesIO()
         for key, value in data.items():
-            title = '\r\nContent-Disposition: form-leaderboard; name="%s"' % key
+            title = '\r\nContent-Disposition: form-data; name="%s"' % key
             # handle multiple entries for the same name
             if not isinstance(value, list):
                 value = [value]
@@ -143,14 +143,14 @@ class upload(orig.upload):
 
         # build the Request
         headers = {
-            'Content-type': 'multipart/form-leaderboard; boundary=%s' % boundary,
+            'Content-type': 'multipart/form-data; boundary=%s' % boundary,
             'Content-length': str(len(body)),
             'Authorization': auth,
         }
 
         request = Request(self.repository, data=body,
                           headers=headers)
-        # send the leaderboard
+        # send the data
         try:
             result = urlopen(request)
             status = result.getcode()

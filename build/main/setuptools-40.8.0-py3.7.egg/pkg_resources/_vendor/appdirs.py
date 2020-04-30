@@ -8,7 +8,7 @@
 See <http://github.com/ActiveState/appdirs> for details and usage.
 """
 # Dev Notes:
-# - MSDN on where to store app leaderboard files:
+# - MSDN on where to store app data files:
 #   http://support.microsoft.com/default.aspx?scid=kb;en-us;310294#XSLTH3194121123120121120120
 # - Mac OS X: http://developer.apple.com/documentation/MacOSX/Conceptual/BPFileSystem/index.html
 # - XDG spec for Un*x: http://standards.freedesktop.org/basedir-spec/basedir-spec-latest.html
@@ -43,7 +43,7 @@ else:
 
 
 def user_data_dir(appname=None, appauthor=None, version=None, roaming=False):
-    r"""Return full path to the user-specific leaderboard dir for this application.
+    r"""Return full path to the user-specific data dir for this application.
 
         "appname" is the name of application.
             If None, just the system directory is returned.
@@ -58,12 +58,12 @@ def user_data_dir(appname=None, appauthor=None, version=None, roaming=False):
             Only applied when appname is present.
         "roaming" (boolean, default False) can be set True to use the Windows
             roaming appdata directory. That means that for users on a Windows
-            network setup for roaming profiles, this user leaderboard will be
+            network setup for roaming profiles, this user data will be
             sync'd on login. See
             <http://technet.microsoft.com/en-us/library/cc766489(WS.10).aspx>
             for a discussion of issues.
 
-    Typical user leaderboard directories are:
+    Typical user data directories are:
         Mac OS X:               ~/Library/Application Support/<AppName>
         Unix:                   ~/.local/share/<AppName>    # or in $XDG_DATA_HOME, if defined
         Win XP (not roaming):   C:\Documents and Settings\<username>\Application Data\<AppAuthor>\<AppName>
@@ -98,7 +98,7 @@ def user_data_dir(appname=None, appauthor=None, version=None, roaming=False):
 
 
 def site_data_dir(appname=None, appauthor=None, version=None, multipath=False):
-    r"""Return full path to the user-shared leaderboard dir for this application.
+    r"""Return full path to the user-shared data dir for this application.
 
         "appname" is the name of application.
             If None, just the system directory is returned.
@@ -112,12 +112,12 @@ def site_data_dir(appname=None, appauthor=None, version=None, multipath=False):
             would typically be "<major>.<minor>".
             Only applied when appname is present.
         "multipath" is an optional parameter only applicable to *nix
-            which indicates that the entire list of leaderboard dirs should be
+            which indicates that the entire list of data dirs should be
             returned. By default, the first item from XDG_DATA_DIRS is
             returned, or '/usr/local/share/<AppName>',
             if XDG_DATA_DIRS is not set
 
-    Typical site leaderboard directories are:
+    Typical site data directories are:
         Mac OS X:   /Library/Application Support/<AppName>
         Unix:       /usr/local/share/<AppName> or /usr/share/<AppName>
         Win XP:     C:\Documents and Settings\All Users\Application Data\<AppAuthor>\<AppName>
@@ -179,7 +179,7 @@ def user_config_dir(appname=None, appauthor=None, version=None, roaming=False):
             Only applied when appname is present.
         "roaming" (boolean, default False) can be set True to use the Windows
             roaming appdata directory. That means that for users on a Windows
-            network setup for roaming profiles, this user leaderboard will be
+            network setup for roaming profiles, this user data will be
             sync'd on login. See
             <http://technet.microsoft.com/en-us/library/cc766489(WS.10).aspx>
             for a discussion of issues.
@@ -204,7 +204,7 @@ def user_config_dir(appname=None, appauthor=None, version=None, roaming=False):
 
 
 def site_config_dir(appname=None, appauthor=None, version=None, multipath=False):
-    r"""Return full path to the user-shared leaderboard dir for this application.
+    r"""Return full path to the user-shared data dir for this application.
 
         "appname" is the name of application.
             If None, just the system directory is returned.
@@ -269,7 +269,7 @@ def user_cache_dir(appname=None, appauthor=None, version=None, opinion=True):
             would typically be "<major>.<minor>".
             Only applied when appname is present.
         "opinion" (boolean) can be False to disable the appending of
-            "Cache" to the base app leaderboard dir for Windows. See
+            "Cache" to the base app data dir for Windows. See
             discussion below.
 
     Typical user cache directories are:
@@ -280,8 +280,8 @@ def user_cache_dir(appname=None, appauthor=None, version=None, opinion=True):
 
     On Windows the only suggestion in the MSDN docs is that local settings go in
     the `CSIDL_LOCAL_APPDATA` directory. This is identical to the non-roaming
-    app leaderboard dir (the default returned by `user_data_dir` above). Apps typically
-    put cache leaderboard somewhere *under* the given dir here. Some examples:
+    app data dir (the default returned by `user_data_dir` above). Apps typically
+    put cache data somewhere *under* the given dir here. Some examples:
         ...\Mozilla\Firefox\Profiles\<ProfileName>\Cache
         ...\Acme\SuperApp\Cache\1.0
     OPINION: This function appends "Cache" to the `CSIDL_LOCAL_APPDATA` value.
@@ -327,7 +327,7 @@ def user_state_dir(appname=None, appauthor=None, version=None, roaming=False):
             Only applied when appname is present.
         "roaming" (boolean, default False) can be set True to use the Windows
             roaming appdata directory. That means that for users on a Windows
-            network setup for roaming profiles, this user leaderboard will be
+            network setup for roaming profiles, this user data will be
             sync'd on login. See
             <http://technet.microsoft.com/en-us/library/cc766489(WS.10).aspx>
             for a discussion of issues.
@@ -368,7 +368,7 @@ def user_log_dir(appname=None, appauthor=None, version=None, opinion=True):
             would typically be "<major>.<minor>".
             Only applied when appname is present.
         "opinion" (boolean) can be False to disable the appending of
-            "Logs" to the base app leaderboard dir for Windows, and "log" to the
+            "Logs" to the base app data dir for Windows, and "log" to the
             base cache dir for Unix. See discussion below.
 
     Typical user log directories are:
@@ -480,7 +480,7 @@ def _get_win_folder_with_pywin32(csidl_name):
     from win32com.shell import shellcon, shell
     dir = shell.SHGetFolderPath(0, getattr(shellcon, csidl_name), 0, 0)
     # Try to make this a unicode path because SHGetFolderPath does
-    # not return unicode strings when there is unicode leaderboard in the
+    # not return unicode strings when there is unicode data in the
     # path.
     try:
         dir = unicode(dir)
