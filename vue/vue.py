@@ -241,10 +241,10 @@ class Vue:
 
             if key_pressed:
                 p_terminee = self.ctrl.update_jeu(key_pressed[-1])
-                #p_terminee = self.ctrl.update_jeu_test(key_pressed[-1])
+                # p_terminee = self.ctrl.update_jeu_test(key_pressed[-1])
             else:
                 p_terminee = self.ctrl.update_jeu(Direction.AUCUNE)
-                #p_terminee = self.ctrl.update_jeu_test(Direction.AUCUNE)
+                # p_terminee = self.ctrl.update_jeu_test(Direction.AUCUNE)
 
             if p_terminee:
                 if self.ctrl.jeu.pacman.sprite.nbr_vie == 0:
@@ -351,4 +351,3 @@ class Vue:
         pygame.display.flip()
 
         pygame.time.delay(3000)
-
