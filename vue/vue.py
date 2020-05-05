@@ -240,11 +240,11 @@ class Vue:
                         quitter = True
 
             if key_pressed:
-                #p_terminee = self.ctrl.update_jeu(key_pressed[-1])
-                p_terminee = self.ctrl.update_jeu_test(key_pressed[-1])
+                p_terminee = self.ctrl.update_jeu(key_pressed[-1])
+                # p_terminee = self.ctrl.update_jeu_test(key_pressed[-1])
             else:
-                #p_terminee = self.ctrl.update_jeu(Direction.AUCUNE)
-                p_terminee = self.ctrl.update_jeu_test(Direction.AUCUNE)
+                p_terminee = self.ctrl.update_jeu(Direction.AUCUNE)
+                # p_terminee = self.ctrl.update_jeu_test(Direction.AUCUNE)
 
             if p_terminee:
                 if self.ctrl.jeu.pacman.sprite.nbr_vie == 0:
@@ -309,7 +309,7 @@ class Vue:
         pressed_enter = True
         while pressed_enter:
             for i in range(5):
-                if self.leader_board.df.loc[i]['name'] == name:
+                if self.leader_board.df.loc[i]['name'] == name and self.leader_board.df.loc[i]['score'] == self.ctrl.jeu.score:
                     window.blit(self.text_font.render(self.leader_board.df.loc[i]['name'], True, (0, 255, 0)),
                                 (150, 235 + i * 50))
                 else:
@@ -351,4 +351,3 @@ class Vue:
         pygame.display.flip()
 
         pygame.time.delay(3000)
-
