@@ -15,5 +15,3 @@ pygame.display.set_mode((0, 0), pygame.FULLSCREEN)  # pour mettre en plenine éc
 # Le contrôleur débute la partie.
 monCtrl = ctrl.Ctrl()
 monCtrl.start()
-
-#dernière version 3

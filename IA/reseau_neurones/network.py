@@ -88,6 +88,21 @@ class Reseau:
         """
         self.layers.append(layer)
 
+    def get_weights(self):
+        weights = []
+        for layer in self.layers:
+            if isinstance(layer, FCLayer):
+                weights.append(layer.weights)
+                weights.append(layer.biases)
+        return np.array(weights)
+
+    def set_weights(self, weights):
+        for i, weight in enumerate(weights):
+            if i % 2 == 0:
+                self.layers[i].weights = weight
+            else:
+                self.layers[i - 1].biases = weight
+
     def predire(self, entree):
         """
         Fait une prédiction selon l'entrée. Chaque entrée doit être une ligne dans une matrice.
@@ -112,6 +127,7 @@ class Reseau:
         :param sortie_attendue: La sortie qu'on veut que le réseau apprenne pour son entrée respetive.
         :param epochs: Le nombre de fois qu'on repasse sur l'entrée.
         :param learning_rate: Un scalaire pour ajuster la grandeur des ajustements des constantes des couches.
+        :param info: Si on imprime les informations de la descente de gradient.
         :return: None
         """
 

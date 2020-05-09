@@ -72,8 +72,8 @@ class Ctrl:
 
     def load_agent_dqn(self, name):
         self.env = PacEnv(self.jeu)
-        self.agent = AgentDQN(868, 4)
-
+        self.agent = AgentDQN(318, 4)
+        self.agent.epsilon = 0.0
         self.agent.load(name)
 
     def printobs(self, mat):
@@ -87,7 +87,7 @@ class Ctrl:
         return retour
 
     def get_surface_dqn(self):
-        action = self.agent.predict(self.env.observation_space)
-        next_observation, reward, done, info = self.env.step(action, fantome=False)
+        action = self.agent.act(self.env.observation_space)
+        next_observation, reward, done, info = self.env.step(action, fantome=True)
         surface, audio = self.env.render()
         return surface, audio, done, info[0]
