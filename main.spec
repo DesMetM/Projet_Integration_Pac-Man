@@ -4,7 +4,7 @@ block_cipher = None
 
 
 a = Analysis(['main.py'],
-             pathex=['C:\\Users\\Alex\\PycharmProjects\\Projet_Integration_Pac-Man'],
+             pathex=['C:\\Users\\dylan\\Desktop\\Projet_Integration_Pac-Man'],
              binaries=[],
              datas=[],
              hiddenimports=[],
@@ -30,4 +30,4 @@ exe = EXE(pyz,
           upx=True,
           upx_exclude=[],
           runtime_tmpdir=None,
-          console=False , icon='C:\\Users\\Alex\\PycharmProjects\\Projet_Integration_Pac-Man\\ressource\\images\\Icon.ico')
+          console=True )

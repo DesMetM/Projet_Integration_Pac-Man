@@ -246,6 +246,7 @@ class Vue:
                 p_terminee = self.ctrl.update_jeu(Direction.AUCUNE)
                 #p_terminee = self.ctrl.update_jeu_test(Direction.AUCUNE)
 
+
             if p_terminee:
                 if self.ctrl.jeu.pacman.sprite.nbr_vie == 0:
                     quitter = True
@@ -271,6 +272,7 @@ class Vue:
         texte_instruction1 = self.text_font.render('Entrer votre nom et', True, (255, 255, 255))
         texte_instruction2 = self.text_font.render('appuyer sur', True, (255, 255, 255))
         texte_instruction3 = self.text_font.render('la touche retour', True, (255, 255, 255))
+        texte_instruction4 = self.text_font.render('10 caracteres maximum', True, (255, 255, 255))
         texte_leaderboard = self.text_font.render('LEADERBOARD', True, (0, 55, 255))
         texte_quitter1 = self.text_font.render('Appuyer sur la touche', True, (255, 255, 255))
         texte_quitter2 = self.text_font.render('espace pour quitter', True, (255, 255, 255))
@@ -285,7 +287,7 @@ class Vue:
         while enter_name:
             for event in pygame.event.get():
                 if event.type == pygame.KEYDOWN:
-                    if event.unicode.isalpha():
+                    if event.unicode.isalpha() and len(name) <= 10:
                         name += event.unicode
                     elif event.key == pygame.K_BACKSPACE:
                         name = name[:-1]
@@ -298,6 +300,7 @@ class Vue:
             window.blit(texte_instruction1, (336 - (texte_instruction1.get_rect().width / 2), 185))
             window.blit(texte_instruction2, (336 - (texte_instruction2.get_rect().width / 2), 235))
             window.blit(texte_instruction3, (336 - (texte_instruction3.get_rect().width / 2), 285))
+            window.blit(texte_instruction4, (336 - (texte_instruction4.get_rect().width / 2), 685))
             pygame.display.flip()
 
         # classe les meilleurs score afin d'afficher le meilleur classement
@@ -309,7 +312,7 @@ class Vue:
         pressed_enter = True
         while pressed_enter:
             for i in range(5):
-                if self.leader_board.df.loc[i]['name'] == name:
+                if self.leader_board.df.loc[i]['name'] == name and self.leader_board.df.loc[i]['score'] == self.ctrl.jeu.score:
                     window.blit(self.text_font.render(self.leader_board.df.loc[i]['name'], True, (0, 255, 0)),
                                 (150, 235 + i * 50))
                 else:
@@ -351,4 +354,3 @@ class Vue:
         pygame.display.flip()
 
         pygame.time.delay(3000)
-
