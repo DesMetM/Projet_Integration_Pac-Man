@@ -1,8 +1,8 @@
 import gym
 import numpy as np
-from modele.board import SCALING, DECALAGEX, DECALAGE
+from modele.jeu.board import SCALING, DECALAGEX, DECALAGE
 from math import ceil
-from modele.direction import Direction
+from modele.jeu.direction import Direction
 
 
 class PacEnv(gym.Env):

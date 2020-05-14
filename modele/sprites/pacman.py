@@ -1,7 +1,7 @@
 import os
 import pygame
-from modele.direction import Direction
-import modele.board as board
+from modele.jeu.direction import Direction
+import modele.jeu.board as board
 
 
 class PacMan(pygame.sprite.Sprite):

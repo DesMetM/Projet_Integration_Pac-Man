@@ -1,7 +1,7 @@
 import pygame
 import os
-from modele.direction import Direction
-from modele.fantome import Blinky, Pinky, Inky, Clyde
+from modele.jeu.direction import Direction
+from modele.sprites.fantome import Blinky, Pinky, Inky, Clyde
 
 # 28i x 31j
 GRILLE_DE_JEU = [[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],

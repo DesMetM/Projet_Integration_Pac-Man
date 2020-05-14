@@ -1,7 +1,0 @@
-reseau = Reseau(mse, mse_derivee)
-reseau.add(FCLayer(len(env.observation_space[0][0]),100))
-reseau.add(ActivationLayer(relu,relu_derivee))
-reseau.add(FCLayer(100,50))
-reseau.add(ActivationLayer(relu,relu_derivee))
-reseau.add(FCLayer(50,4))
-reseau.add(ActivationLayer(identity,identity_derivee))

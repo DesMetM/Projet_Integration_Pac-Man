@@ -1,13 +1,13 @@
 import pygame
 import os
 import copy
-import modele.board as board
+import modele.jeu.board as board
 from math import ceil
-from modele.modes_fantome import Mode
-from modele.timer import TimerJeu, TimerFruit, TimerAnimation
-from modele.pacman import PacMan
-from modele.direction import Direction
-from modele.board import Pastille, GrossePastille, Fruit, GRILLE_DE_JEU, SCALING, DECALAGE, DECALAGEX
+from modele.sprites.modes_fantome import Mode
+from modele.timer.timer import TimerJeu, TimerFruit, TimerAnimation
+from modele.sprites.pacman import PacMan
+from modele.jeu.direction import Direction
+from modele.jeu.board import Pastille, GrossePastille, Fruit, GRILLE_DE_JEU, SCALING, DECALAGE, DECALAGEX
 
 
 class Jeu:
@@ -47,8 +47,6 @@ class Jeu:
         self.frame_fruit_mange = 0
         self.maGrille = copy.deepcopy(GRILLE_DE_JEU)
 
-        '''peut être enlevé pour version finale'''
-        self.game_rapide = False
         self.reset()
 
         if Jeu.FONT is None:
@@ -79,14 +77,6 @@ class Jeu:
         self.timer_jeu = TimerJeu(self)
         self.pastilles_mangees = 0
         self.timer_jeu.timer_sortie.debut_compteur()
-
-    def print_mat(self, mat):
-        retour = ""
-        for ligne in mat:
-            for colonne in ligne:
-                retour += colonne
-            retour +="\n"
-        return retour
 
     def collision(self, fantomes=True):
         """
@@ -196,43 +186,6 @@ class Jeu:
 
         return False
 
-    def update_jeu_test(self, direction):
-        """
-                Passe au prochain état du jeu selon l'action du joueur.
-                :param direction: L'action du joueur.
-                :return: «True» si la partie est relancée.
-                """
-        self.channel_actif = [False] * 9
-        self.channel_actif[0] = self.score >= 10000
-
-        self.timer_jeu.update()
-
-        if self.pacman.sprite.is_alive:
-            if self.pastilles_mangees == 70 or self.pastilles_mangees == 100:
-                self.nouveau_fruit(self.pastilles_mangees)
-
-            elif len(self.pastilles) + len(self.power_pellets) == 0:
-                if self.timer_jeu.timer_animation.compteur == 0:
-                    self.nouvelle_partie()
-                    return True
-                return False
-
-            self.collision(False)
-            self.pacman.update(direction)
-
-            if not self.channel_actif[0] and self.score >= 10000:
-                self.pacman.sprite.nbr_vie += 1
-                self.channel_actif[0] = True
-
-        elif self.timer_jeu.timer_animation.compteur == 0:
-            self.pacman.sprite.respawn()
-            self.timer_jeu.timer_sortie.debut_compteur()
-            for fantome in self.fantomes:
-                fantome.respawn(self)
-            return True
-
-        return False
-
     def surface_partie_gagnee(self, background):
         """
         Fais clignoter la grille de jeu selon le timer.
@@ -246,7 +199,7 @@ class Jeu:
         self.pacman.draw(background)
         return background
 
-    def surface_partie_perdu(self, background):
+    def surface_partie_perdue(self, background):
         """
         Fais clignoter la grille de jeu selon le timer.
         :param background: La surface à retourner.

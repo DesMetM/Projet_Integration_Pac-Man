@@ -1,9 +1,9 @@
 import pygame
 import os
-from modele.direction import Direction
-import modele.board as board
+from modele.jeu.direction import Direction
+import modele.jeu.board as board
 from math import hypot
-from modele.modes_fantome import Mode
+from modele.sprites.modes_fantome import Mode
 import random
 
 
