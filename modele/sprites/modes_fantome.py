@@ -20,5 +20,6 @@ class Mode(Enum):
         :param jeu: Le jeu auquel le fantôme appartient.
         :return: None
         """
-        if fantome.nbr_activation < jeu.pastilles_mangees and fantome.ordre_sortie * jeu.timer_jeu.timer_sortie.marche <= jeu.timer_jeu.timer_sortie.compteur:
+        if fantome.nbr_activation < jeu.pastilles_mangees and fantome.ordre_sortie * jeu.timer_jeu.timer_sortie.marche\
+                <= jeu.timer_jeu.timer_sortie.compteur:
             fantome.mode = Mode.SORTIR

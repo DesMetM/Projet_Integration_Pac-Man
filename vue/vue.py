@@ -1,7 +1,6 @@
 import os
 import pygame
-from modele.leaderboard import Leaderboard
-from modele.direction import Direction
+from modele.jeu.direction import Direction
 from tkinter.filedialog import askopenfilename
 
 window = pygame.display.set_mode((672, 864))
@@ -36,7 +35,6 @@ class Vue:
 
         self.channels = [None] * 9
         self.text_font = pygame.font.Font(os.path.abspath("ressource/font/emulogic.ttf"), 26)
-        self.__action_ia = 4
         for i in [1, 2, 4, 5]:
             self.channels[i] = Vue.SOUND[i].play(-1)
             self.channels[i].pause()
@@ -46,28 +44,28 @@ class Vue:
         Affiche l'interface qui donne le choix d'accéder au jeu en tant que joueur ou IA.
         :return: «True» si le joueur à été sélectionner.
         '''
-        PositionP1 = (217, 232)
-        PositionIA = (310, 432)
-        PositionQuit = (217, 632)
+        position_p1 = (217, 232)
+        position_ia = (310, 432)
+        position_quit = (217, 632)
 
         board = pygame.image.load(os.path.join('ressource', 'images', 'Board_Intro.png'))
 
         player1 = pygame.image.load(os.path.join('ressource', 'images', 'PlayerOne.png'))
         player1_rect = player1.get_rect()
-        player1_rect.topleft = PositionP1
+        player1_rect.topleft = position_p1
 
         IA = pygame.image.load(os.path.join('ressource', 'images', 'Player_IA.png'))
         IA_rect = IA.get_rect()
-        IA_rect.topleft = PositionIA
+        IA_rect.topleft = position_ia
 
         text_quitter = self.text_font.render('EXIT GAME', True, (0, 255, 255))
         text_rect = text_quitter.get_rect()
-        text_rect.topleft = PositionQuit
+        text_rect.topleft = position_quit
 
         window.blit(board, (0, 0))
-        window.blit(player1, PositionP1)
-        window.blit(IA, PositionIA)
-        window.blit(text_quitter, PositionQuit)
+        window.blit(player1, position_p1)
+        window.blit(IA, position_ia)
+        window.blit(text_quitter, position_quit)
         pygame.display.flip()
 
         running = True
@@ -94,9 +92,6 @@ class Vue:
 
         Vue.SOUND[-2].play(loops=0)
         pygame.time.delay(4500)
-
-    def update_action_ia(self, action):
-        self.__action_ia = action
 
     def mode_IA(self):
         '''
@@ -241,10 +236,8 @@ class Vue:
 
             if key_pressed:
                 p_terminee = self.ctrl.update_jeu(key_pressed[-1])
-                #p_terminee = self.ctrl.update_jeu_test(key_pressed[-1])
             else:
                 p_terminee = self.ctrl.update_jeu(Direction.AUCUNE)
-                #p_terminee = self.ctrl.update_jeu_test(Direction.AUCUNE)
 
             if p_terminee:
                 if self.ctrl.jeu.pacman.sprite.nbr_vie == 0:
@@ -263,7 +256,7 @@ class Vue:
 
     def leaderboard(self):
         # LeaderBoard
-        self.leader_board = Leaderboard()
+        leaderboard = self.ctrl.get_leaderboard()
         board = pygame.image.load(os.path.join('ressource', 'images', 'Board_Intro.png'))
         window.blit(board, (0, 0))
 
@@ -301,28 +294,28 @@ class Vue:
             pygame.display.flip()
 
         # classe les meilleurs score afin d'afficher le meilleur classement
-        self.leader_board.compare_lead(score=self.ctrl.jeu.score, name=name)
-        self.leader_board.save_lead()
+        leaderboard.compare_lead(score=self.ctrl.jeu.score, name=name)
+        leaderboard.save_lead()
 
         # affiche le leaderboard par colonne et applique la police et la couleur en plus de les alligner
         window.blit(board, (0, 0))
         pressed_enter = True
         while pressed_enter:
             for i in range(5):
-                if self.leader_board.df.loc[i]['name'] == name:
-                    window.blit(self.text_font.render(self.leader_board.df.loc[i]['name'], True, (0, 255, 0)),
+                if leaderboard.df.loc[i]['name'] == name:
+                    window.blit(self.text_font.render(leaderboard.df.loc[i]['name'], True, (0, 255, 0)),
                                 (150, 235 + i * 50))
                 else:
-                    window.blit(self.text_font.render(self.leader_board.df.loc[i]['name'], True, couleurs_c[i]),
+                    window.blit(self.text_font.render(leaderboard.df.loc[i]['name'], True, couleurs_c[i]),
                                 (150, 235 + i * 50))
             for i in range(5):
-                if self.leader_board.df.loc[i]['score'] == self.ctrl.jeu.score:
-                    window.blit(self.text_font.render(str(self.leader_board.df.loc[i]['score']), True, (0, 255, 0)),
+                if leaderboard.df.loc[i]['score'] == self.ctrl.jeu.score:
+                    window.blit(self.text_font.render(str(leaderboard.df.loc[i]['score']), True, (0, 255, 0)),
                                 (450, 235 + i * 50))
                 else:
                     '''juste après le True, on peut changer la couleur du texte du leaderboard en changeant couleur_c 
                     par couleur_f '''
-                    window.blit(self.text_font.render(str(self.leader_board.df.loc[i]['score']), True, couleurs_c[i]),
+                    window.blit(self.text_font.render(str(leaderboard.df.loc[i]['score']), True, couleurs_c[i]),
                                 (450, 235 + i * 50))
             window.blit(texte_leaderboard, (336 - (texte_leaderboard.get_rect().width / 2), 85))
             window.blit(texte_quitter1, (336 - (texte_quitter1.get_rect().width / 2), 635))
@@ -351,4 +344,3 @@ class Vue:
         pygame.display.flip()
 
         pygame.time.delay(3000)
-

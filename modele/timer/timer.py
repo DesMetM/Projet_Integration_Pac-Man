@@ -1,4 +1,4 @@
-from modele.modes_fantome import Mode
+from modele.sprites.modes_fantome import Mode
 
 
 class TimerAbstrait:
