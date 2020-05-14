@@ -1,0 +1,16 @@
+Premier essai sans fantome
+
+318
+relu
+32
+relu
+32
+relu
+32
+relu
+32
+relu
+4
+bent_identity
+
+même environnement que trimmed-inator

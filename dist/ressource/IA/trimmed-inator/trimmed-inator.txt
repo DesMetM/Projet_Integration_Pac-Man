@@ -1,0 +1,26 @@
+gamma = 0.95
+learning_rate = 0.001
+
+reseau = Reseau(mse, mse_derivee)
+reseau.add(FCLayer(318,50)) # Ne prend pas les murs en entrée!!!!
+reseau.add(ActivationLayer(relu,relu_derivee))
+reseau.add(FCLayer(50,50))
+reseau.add(ActivationLayer(relu,relu_derivee))
+reseau.add(FCLayer(50,4))
+reseau.add(ActivationLayer(bent_identity,bent_identity_derivee))
+
+    REWARD_MORT = -5
+    REWARD_RIEN = -3
+    REWARD_P = 1
+    REWARD_PP = 2
+    REWARD_F = 3
+    REWARD_CLE = 5
+
+	self.observation_space[y_pacman][x_pacman] = self.__PACMAN -> 9
+	self.observation_space = self.observation_space[self.observation_space != PacEnv.__MUR]
+        self.observation_space = np.reshape(self.observation_space, (1, 1, 318))
+        self.observation_space[self.observation_space == PacEnv.__POINT] = 4
+        self.observation_space[self.observation_space == PacEnv.__VIDE] = 0
+        self.observation_space[self.observation_space == PacEnv.__POWER_PELLET] = 6
+
+	fantome = -9 # Il n'y a pas de code pour les fantômes effrayés.
